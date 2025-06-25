@@ -17,16 +17,27 @@ from time import time
 from typing import Union, Tuple, List, get_args
 from loguru import logger
 from tqdm import tqdm
-from nnssl.adaptation_planning.adaptation_plan import DYN_ARCHITECTURE_PRESETS, AdaptationPlan
+from nnssl.adaptation_planning.adaptation_plan import (
+    DYN_ARCHITECTURE_PRESETS,
+    AdaptationPlan,
+)
 from nnssl.architectures.get_network_by_name import get_network_by_name
 import signal
 
 import numpy as np
 import torch
-from batchgenerators.dataloading.single_threaded_augmenter import SingleThreadedAugmenter
+from batchgenerators.dataloading.single_threaded_augmenter import (
+    SingleThreadedAugmenter,
+)
 from batchgenerators.transforms.abstract_transforms import AbstractTransform
 
-from batchgenerators.utilities.file_and_folder_operations import join, isfile, save_json, maybe_mkdir_p, load_json
+from batchgenerators.utilities.file_and_folder_operations import (
+    join,
+    isfile,
+    save_json,
+    maybe_mkdir_p,
+    load_json,
+)
 from torch._dynamo import OptimizedModule
 
 
@@ -34,11 +45,18 @@ from nnssl.architectures.get_network_from_plan import get_network_from_plans
 from nnssl.data.raw_dataset import Collection
 from nnssl.experiment_planning.experiment_planners.plan import ConfigurationPlan, Plan
 from nnssl.paths import nnssl_preprocessed, nnssl_results
-from nnssl.ssl_data.configure_basic_dummyDA import configure_rotation_dummyDA_mirroring_and_inital_patch_size
-from nnssl.ssl_data.dataloading.data_loader_3d import nnsslDataLoader3D, nnsslAnatDataLoader3D
+from nnssl.ssl_data.configure_basic_dummyDA import (
+    configure_rotation_dummyDA_mirroring_and_inital_patch_size,
+)
+from nnssl.ssl_data.dataloading.data_loader_3d import (
+    nnsslDataLoader3D,
+    nnsslAnatDataLoader3D,
+)
 from nnssl.ssl_data.dataloading.utils import get_subject_identifiers
 from nnssl.ssl_data.limited_len_wrapper import LimitedLenWrapper
-from dynamic_network_architectures.architectures.abstract_arch import AbstractDynamicNetworkArchitectures
+from dynamic_network_architectures.architectures.abstract_arch import (
+    AbstractDynamicNetworkArchitectures,
+)
 
 from nnssl.data.dataloading.dataset import nnSSLDatasetBlosc2
 from nnssl.training.logging.nnssl_logger import nnSSLLogger
@@ -117,13 +135,17 @@ class AbstractBaseTrainer(ABC):
             cur_frame = cur_frame.f_back
 
         # Use the inspect module to get the init args and their values in highest frame
-        for k in inspect.signature(cur_frame.f_locals["self"].__init__).parameters.keys():
+        for k in inspect.signature(
+            cur_frame.f_locals["self"].__init__
+        ).parameters.keys():
             self.my_init_kwargs[k] = cur_frame.f_locals[k]
         self.my_init_kwargs = make_serializable(self.my_init_kwargs)
         # ------ Saving all the init args into class variables for later access ------ #
         self.plan: Plan = plan
         # Just keep the configuration we are using. The rest just confuses downstream.
-        self.plan.configurations = {configuration_name: plan.configurations[configuration_name]}
+        self.plan.configurations = {
+            configuration_name: plan.configurations[configuration_name]
+        }
         self.config_plan: ConfigurationPlan = plan.configurations[configuration_name]
         self.configuration_name = configuration_name
         self.pretrain_json = pretrain_json
@@ -134,18 +156,26 @@ class AbstractBaseTrainer(ABC):
         ###  We need to make sure things don't crash in case we are just running
         # inference and some of the folders may not be defined!
         self.preprocessed_dataset_folder_base = (
-            join(nnssl_preprocessed, self.plan.dataset_name) if nnssl_preprocessed is not None else None
+            join(nnssl_preprocessed, self.plan.dataset_name)
+            if nnssl_preprocessed is not None
+            else None
         )
         self.output_folder_base = (
             join(
                 nnssl_results,
                 self.plan.dataset_name,
-                self.__class__.__name__ + "__" + self.plan.plans_name + "__" + configuration_name,
+                self.__class__.__name__
+                + "__"
+                + self.plan.plans_name
+                + "__"
+                + configuration_name,
             )
             if nnssl_results is not None
             else None
         )
-        self.adaptation_json_plan = join(self.output_folder_base, "adaptation_plan.json")
+        self.adaptation_json_plan = join(
+            self.output_folder_base, "adaptation_plan.json"
+        )
         self.output_folder = join(self.output_folder_base, f"fold_{fold}")
 
         self.preprocessed_dataset_folder = join(
@@ -169,7 +199,9 @@ class AbstractBaseTrainer(ABC):
 
         ### Dealing with labels/regions
         self.num_input_channels = 1  # -> self.initialize()
-        self.num_output_channels = 1  # Assign later depending on the ssl training scheme.
+        self.num_output_channels = (
+            1  # Assign later depending on the ssl training scheme.
+        )
         self.network = None  # -> self._get_network()
         self.optimizer = self.lr_scheduler = None  # -> self.initialize
         self.grad_scaler = GradScaler() if self.device.type == "cuda" else None
@@ -185,7 +217,14 @@ class AbstractBaseTrainer(ABC):
         self.log_file = join(
             self.output_folder,
             "training_log_%d_%d_%d_%02.0d_%02.0d_%02.0d.txt"
-            % (timestamp.year, timestamp.month, timestamp.day, timestamp.hour, timestamp.minute, timestamp.second),
+            % (
+                timestamp.year,
+                timestamp.month,
+                timestamp.day,
+                timestamp.hour,
+                timestamp.minute,
+                timestamp.second,
+            ),
         )
         self.logger = nnSSLLogger()
 
@@ -203,7 +242,9 @@ class AbstractBaseTrainer(ABC):
         self.was_initialized = False
 
         self.recommended_downstream_patchsize = (160, 160, 160)
-        self.exit_training_flag = False  # This is a signal flag that can be raised to exit gracefully
+        self.exit_training_flag = (
+            False  # This is a signal flag that can be raised to exit gracefully
+        )
 
         signal.signal(signal.SIGUSR1, self.exit_training)
         self.print_to_log_file(
@@ -220,7 +261,9 @@ class AbstractBaseTrainer(ABC):
     def _set_batch_size(self):
         if not self.is_ddp:
             # set batch size to what the plan says, leave oversample untouched
-            logger.info(f"Not using DDP. Setting batch size for single gpu to {self.total_batch_size}.")
+            logger.info(
+                f"Not using DDP. Setting batch size for single gpu to {self.total_batch_size}."
+            )
             self.batch_size = self.total_batch_size
         else:
             # batch size is distributed over DDP workers and we need to change oversample_percent for each worker
@@ -234,7 +277,8 @@ class AbstractBaseTrainer(ABC):
 
             global_batch_size = self.total_batch_size
             assert global_batch_size >= world_size, (
-                "Cannot run DDP if the batch size is smaller than the number of " "GPUs... Duh."
+                "Cannot run DDP if the batch size is smaller than the number of "
+                "GPUs... Duh."
             )
 
             assert (
@@ -245,7 +289,9 @@ class AbstractBaseTrainer(ABC):
 
             for rank in range(world_size):
                 if (rank + 1) * batch_size_per_GPU > global_batch_size:
-                    batch_size = batch_size_per_GPU - ((rank + 1) * batch_size_per_GPU - global_batch_size)
+                    batch_size = batch_size_per_GPU - (
+                        (rank + 1) * batch_size_per_GPU - global_batch_size
+                    )
                 else:
                     batch_size = batch_size_per_GPU
 
@@ -265,7 +311,9 @@ class AbstractBaseTrainer(ABC):
             return [AbstractBaseTrainer._convert_numpy(v) for v in obj]
         elif isinstance(obj, tuple):
             return tuple(AbstractBaseTrainer._convert_numpy(v) for v in obj)
-        elif isinstance(obj, np.generic):  # NumPy scalar (e.g., np.float32, np.int64, etc.)
+        elif isinstance(
+            obj, np.generic
+        ):  # NumPy scalar (e.g., np.float32, np.int64, etc.)
             return obj.item()  # Convert to native Python type
         elif isinstance(obj, np.ndarray):
             return torch.from_numpy(obj)
@@ -311,16 +359,22 @@ class AbstractBaseTrainer(ABC):
         return
 
     @staticmethod
-    def verify_adaptation_plans(adaptation_plan_dict: dict, configuration: str, state_dict: dict):
+    def verify_adaptation_plans(
+        adaptation_plan_dict: dict, configuration: str, state_dict: dict
+    ):
         # ------------- Simulate re-creating the architecture downstream ------------- #
         # Pre-training architecture checkpoint
         #   Has the `key_to_encoder` and `key_to_stem` attributes
         pre_train_statedict = state_dict
         adapt_plan = AdaptationPlan.from_dict(adaptation_plan_dict)
         # Downstream Architecture derived from Pre-taining adaptation plan
-        pretrain_config_plan_copy = deepcopy(adapt_plan.pretrain_plan.configurations[configuration])
+        pretrain_config_plan_copy = deepcopy(
+            adapt_plan.pretrain_plan.configurations[configuration]
+        )
         # Override the patch size to match the input patch size the model received during pre-training
-        if adapt_plan.architecture_plans.arch_class_name in get_args(DYN_ARCHITECTURE_PRESETS):
+        if adapt_plan.architecture_plans.arch_class_name in get_args(
+            DYN_ARCHITECTURE_PRESETS
+        ):
             downstream_arch = get_network_from_plans(
                 adapt_plan.architecture_plans.arch_class_name,
                 arch_kwargs=asdict(adapt_plan.architecture_plans.arch_kwargs),
@@ -342,11 +396,18 @@ class AbstractBaseTrainer(ABC):
                 arch_kwargs=None,
             )
         # ------------------------- Simulate explicit loading ------------------------ #
-        AbstractBaseTrainer._test_load_weight(downstream_arch, pre_train_statedict, adapt_plan)
+        AbstractBaseTrainer._test_load_weight(
+            downstream_arch, pre_train_statedict, adapt_plan
+        )
 
     @abstractmethod
     def build_architecture_and_adaptation_plan(
-        self, config_plan: ConfigurationPlan, num_input_channels: int, num_output_channels: int, *args, **kwargs
+        self,
+        config_plan: ConfigurationPlan,
+        num_input_channels: int,
+        num_output_channels: int,
+        *args,
+        **kwargs,
     ) -> tuple[torch.nn.Module, AdaptationPlan]:
         """
         Define the architecture and provide details on how to adapt the pre-trained model to downstream applications.
@@ -377,14 +438,18 @@ class AbstractBaseTrainer(ABC):
             self._set_batch_size()
             self.network: nn.Module
             self.adaptation_plan: AdaptationPlan
-            self.network, self.adaptation_plan = self.build_architecture_and_adaptation_plan(
-                self.config_plan, self.num_input_channels, self.num_output_channels
+            self.network, self.adaptation_plan = (
+                self.build_architecture_and_adaptation_plan(
+                    self.config_plan, self.num_input_channels, self.num_output_channels
+                )
             )
             save_json(self.adaptation_plan.serialize(), self.adaptation_json_plan)
             self.network.to(self.device)
 
             self.verify_adaptation_plans(
-                self.adaptation_plan.serialize(), self.configuration_name, self.network.state_dict()
+                self.adaptation_plan.serialize(),
+                self.configuration_name,
+                self.network.state_dict(),
             )
             # compile network for free speedup
             if self._do_i_compile():
@@ -394,8 +459,14 @@ class AbstractBaseTrainer(ABC):
             self.optimizer, self.lr_scheduler = self.configure_optimizers()
             # if ddp, wrap in DDP wrapper
             if self.is_ddp:
-                self.network = torch.nn.SyncBatchNorm.convert_sync_batchnorm(self.network)
-                self.network = DDP(self.network, device_ids=[self.local_rank], find_unused_parameters=True)
+                self.network = torch.nn.SyncBatchNorm.convert_sync_batchnorm(
+                    self.network
+                )
+                self.network = DDP(
+                    self.network,
+                    device_ids=[self.local_rank],
+                    find_unused_parameters=True,
+                )
 
             self.loss = self.build_loss()
             self.was_initialized = True
@@ -406,7 +477,9 @@ class AbstractBaseTrainer(ABC):
             )
 
     def exit_training(self, *args, **kwargs):
-        self.print_to_log_file("Received exit signal. Terminating after finishing epoch.")
+        self.print_to_log_file(
+            "Received exit signal. Terminating after finishing epoch."
+        )
         self.exit_training_flag = True
 
     def run_training(self, using_wandb: bool = False):
@@ -422,7 +495,14 @@ class AbstractBaseTrainer(ABC):
                 for batch_id in tqdm(
                     range(self.num_iterations_per_epoch),
                     desc=f"Epoch {epoch}",
-                    disable=True if (("LSF_JOBID" in os.environ) or ("SLURM_JOB_ID" in os.environ)) else False,
+                    disable=(
+                        True
+                        if (
+                            ("LSF_JOBID" in os.environ)
+                            or ("SLURM_JOB_ID" in os.environ)
+                        )
+                        else False
+                    ),
                 ):
                     step_metrics = self.train_step(next(self.dataloader_train))
                     train_outputs.append(step_metrics)
@@ -432,10 +512,13 @@ class AbstractBaseTrainer(ABC):
                             to_log_metrics = {
                                 f"train/{k}": v
                                 for k, v in step_metrics.items()
-                                if not k.startswith("train/") and k not in ["epoch", "step"]
+                                if not k.startswith("train/")
+                                and k not in ["epoch", "step"]
                             }
                             to_log_metrics["epoch"] = epoch
-                            to_log_metrics["step"] = batch_id + epoch * self.num_iterations_per_epoch
+                            to_log_metrics["step"] = (
+                                batch_id + epoch * self.num_iterations_per_epoch
+                            )
                             wandb.log(to_log_metrics)
 
                 self.on_train_epoch_end(train_outputs)
@@ -444,7 +527,9 @@ class AbstractBaseTrainer(ABC):
                     self.on_validation_epoch_start()
                     val_outputs = []
                     for batch_id in range(self.num_val_iterations_per_epoch):
-                        val_outputs.append(self.validation_step(next(self.dataloader_val)))
+                        val_outputs.append(
+                            self.validation_step(next(self.dataloader_val))
+                        )
                     self.on_validation_epoch_end(val_outputs, using_wandb)
 
                 if self.exit_training_flag:
@@ -482,7 +567,10 @@ class AbstractBaseTrainer(ABC):
                         f.write("\n")
                     successful = True
                 except IOError:
-                    print(f"{datetime.fromtimestamp(timestamp)}: failed to log: ", sys.exc_info())
+                    print(
+                        f"{datetime.fromtimestamp(timestamp)}: failed to log: ",
+                        sys.exc_info(),
+                    )
                     # sleep(0.5)
                     ctr += 1
             if also_print_to_console:
@@ -499,7 +587,12 @@ class AbstractBaseTrainer(ABC):
                 "\n",
                 add_timestamp=False,
             )
-            self.print_to_log_file("These are the global plan.json settings:\n", dct, "\n", add_timestamp=False)
+            self.print_to_log_file(
+                "These are the global plan.json settings:\n",
+                dct,
+                "\n",
+                add_timestamp=False,
+            )
 
     def configure_optimizers(self):
         optimizer = torch.optim.SGD(
@@ -512,13 +605,17 @@ class AbstractBaseTrainer(ABC):
         lr_scheduler = PolyLRScheduler(optimizer, self.initial_lr, self.num_epochs)
         return optimizer, lr_scheduler
 
-    def get_existing_images(self, dataset: nnSSLDatasetBlosc2, n_processes: int = 12) -> dict[str, dict[str, bool]]:
+    def get_existing_images(
+        self, dataset: nnSSLDatasetBlosc2, n_processes: int = 12
+    ) -> dict[str, dict[str, bool]]:
         # --------------------------- Remove broken images --------------------------- #
         img_dataset = dataset.image_dataset
         identifiers = dataset.image_identifiers
         #  dataset_dir: str, image_dataset: dict[str, IndependentImage],
         file_exist_check = partial(
-            dataset.verify_file_exists, dataset_dir=dataset.dataset_dir, image_dataset=img_dataset
+            dataset.verify_file_exists,
+            dataset_dir=dataset.dataset_dir,
+            image_dataset=img_dataset,
         )
         n_processes = 1
         if n_processes > 1:
@@ -528,18 +625,30 @@ class AbstractBaseTrainer(ABC):
             valid_images = []
             for cnt, i in tqdm(
                 enumerate(identifiers),
-                disable=True if (("LSF_JOBID" in os.environ) or ("SLURM_JOB_ID" in os.environ)) else False,
+                disable=(
+                    True
+                    if (("LSF_JOBID" in os.environ) or ("SLURM_JOB_ID" in os.environ))
+                    else False
+                ),
             ):
                 if cnt + 1 % 10000 == 0:  # print every 10k images
                     if self.local_rank == 0:
-                        self.print_to_log_file(f"Checking image {cnt+1} of {len(identifiers)}")
+                        self.print_to_log_file(
+                            f"Checking image {cnt+1} of {len(identifiers)}"
+                        )
                         logger.info(f"Checking image {cnt+1} of {len(identifiers)}")
-                valid_images.append(dataset.verify_file_exists(i, dataset.dataset_dir, img_dataset))
+                valid_images.append(
+                    dataset.verify_file_exists(i, dataset.dataset_dir, img_dataset)
+                )
 
         exist_status = {}
         for img_id, valid in zip(identifiers, valid_images):
             # dataset.image_identifiers.remove(img_id)
-            exist_status[img_id] = {"image_pkl": valid[0], "anon": valid[1], "anat": valid[2]}
+            exist_status[img_id] = {
+                "image_pkl": valid[0],
+                "anon": valid[1],
+                "anat": valid[2],
+            }
 
         return exist_status
 
@@ -550,13 +659,20 @@ class AbstractBaseTrainer(ABC):
         # load the datasets for training and validation. Note that we always draw random samples so we really don't
         # care about distributing training cases across GPUs.
         collection = Collection.from_dict(self.pretrain_json)
-        dataset_tr = nnSSLDatasetBlosc2(self.preprocessed_dataset_folder, collection, tr_subjects, self.iimg_filters)
+        dataset_tr = nnSSLDatasetBlosc2(
+            self.preprocessed_dataset_folder, collection, tr_subjects, self.iimg_filters
+        )
         dataset_val = nnSSLDatasetBlosc2(
-            self.preprocessed_dataset_folder, collection, val_subjects, self.iimg_filters
+            self.preprocessed_dataset_folder,
+            collection,
+            val_subjects,
+            self.iimg_filters,
         )
 
         logger.info(f"Train dataset contains {len(dataset_tr.image_dataset)} images.")
-        logger.info(f"Validation dataset contains {len(dataset_val.image_dataset)} images.")
+        logger.info(
+            f"Validation dataset contains {len(dataset_val.image_dataset)} images."
+        )
 
         # ---------------------- Check which images are existing --------------------- #
         # logger.info("Checking which images are existing...")
@@ -667,7 +783,9 @@ class AbstractBaseTrainer(ABC):
             threshold = 20
             nans = sum([1 if np.isnan(l["loss"]) else 0 for l in losses])
             if nans > threshold:
-                raise RuntimeError(f"More than {threshold} NaN's detected in loss. Aborting.")
+                raise RuntimeError(
+                    f"More than {threshold} NaN's detected in loss. Aborting."
+                )
 
     def get_plain_dataloaders(self, initial_patch_size: Tuple[int, ...]):
         dataset_tr, dataset_val = self.get_tr_and_val_datasets()
@@ -691,7 +809,9 @@ class AbstractBaseTrainer(ABC):
         return dl_tr, dl_val
 
     def get_foreground_dataloaders(
-        self, initial_patch_size: Tuple[int, ...], oversample_foreground_percent: float = 1.0
+        self,
+        initial_patch_size: Tuple[int, ...],
+        oversample_foreground_percent: float = 1.0,
     ):
         dataset_tr, dataset_val = self.get_tr_and_val_datasets()
 
@@ -751,7 +871,11 @@ class AbstractBaseTrainer(ABC):
         # Guarantee to only use data that is readable and not inf or nan
 
         # copy plans and dataset.json so that they can be used for restoring everything we need for inference
-        save_json(self.plan.serialize(), join(self.output_folder_base, "plans.json"), sort_keys=False)
+        save_json(
+            self.plan.serialize(),
+            join(self.output_folder_base, "plans.json"),
+            sort_keys=False,
+        )
 
         # self._save_debug_information()
 
@@ -763,7 +887,9 @@ class AbstractBaseTrainer(ABC):
         self.current_epoch += 1
 
         # now we can delete latest
-        if self.local_rank == 0 and isfile(join(self.output_folder, "checkpoint_latest.pth")):
+        if self.local_rank == 0 and isfile(
+            join(self.output_folder, "checkpoint_latest.pth")
+        ):
             os.remove(join(self.output_folder, "checkpoint_latest.pth"))
 
         # shut down dataloaders
@@ -792,7 +918,9 @@ class AbstractBaseTrainer(ABC):
 
         self.logger.log("train_losses", loss_here, self.current_epoch)
 
-    def on_validation_epoch_end(self, val_outputs: List[dict], using_wandb: bool = False):
+    def on_validation_epoch_end(
+        self, val_outputs: List[dict], using_wandb: bool = False
+    ):
         outputs_collated = collate_outputs(val_outputs)
 
         if self.is_ddp:
@@ -807,8 +935,8 @@ class AbstractBaseTrainer(ABC):
                 {
                     "val/loss": loss_here,
                     "epoch": self.current_epoch,
-                    "step": self.current_epoch * self.num_iterations_per_epoch
-                 }
+                    "step": self.current_epoch * self.num_iterations_per_epoch,
+                }
             )
         self.logger.log("val_losses", loss_here, self.current_epoch)
 
@@ -817,7 +945,9 @@ class AbstractBaseTrainer(ABC):
         self.lr_scheduler.step(self.current_epoch)
         self.print_to_log_file("")
         self.print_to_log_file(f"Epoch {self.current_epoch}")
-        self.print_to_log_file(f"Current learning rate: {np.round(self.optimizer.param_groups[0]['lr'], decimals=5)}")
+        self.print_to_log_file(
+            f"Current learning rate: {np.round(self.optimizer.param_groups[0]['lr'], decimals=5)}"
+        )
         # lrs are the same for all workers so we don't need to gather them in case of DDP training
         self.logger.log("lrs", self.optimizer.param_groups[0]["lr"], self.current_epoch)
 
@@ -826,7 +956,7 @@ class AbstractBaseTrainer(ABC):
                 {
                     "train/lr": self.optimizer.param_groups[0]["lr"],
                     "epoch": self.current_epoch,
-                    "step": self.current_epoch * self.num_iterations_per_epoch
+                    "step": self.current_epoch * self.num_iterations_per_epoch,
                 }
             )
 
@@ -840,9 +970,13 @@ class AbstractBaseTrainer(ABC):
         self.logger.log("epoch_end_timestamps", time(), self.current_epoch)
 
         self.print_to_log_file(
-            "train_loss", np.round(self.logger.my_fantastic_logging["train_losses"][-1], decimals=4)
+            "train_loss",
+            np.round(self.logger.my_fantastic_logging["train_losses"][-1], decimals=4),
         )
-        self.print_to_log_file("val_loss", np.round(self.logger.my_fantastic_logging["val_losses"][-1], decimals=4))
+        self.print_to_log_file(
+            "val_loss",
+            np.round(self.logger.my_fantastic_logging["val_losses"][-1], decimals=4),
+        )
         self.print_to_log_file(
             f"Epoch time: {np.round(self.logger.my_fantastic_logging['epoch_end_timestamps'][-1] - self.logger.my_fantastic_logging['epoch_start_timestamps'][-1], decimals=2)} s"
         )
@@ -850,9 +984,14 @@ class AbstractBaseTrainer(ABC):
         self.save_checkpoint(join(self.output_folder, "checkpoint_latest.pth"))
 
         # handle 'best' checkpointing. val_loss smaller than best_ema
-        if self._best_ema is None or self.logger.my_fantastic_logging["val_losses"][-1] < self._best_ema:
+        if (
+            self._best_ema is None
+            or self.logger.my_fantastic_logging["val_losses"][-1] < self._best_ema
+        ):
             self._best_ema = self.logger.my_fantastic_logging["val_losses"][-1]
-            self.print_to_log_file(f"Yayy! New best val loss: {np.round(self._best_ema, decimals=4)}")
+            self.print_to_log_file(
+                f"Yayy! New best val loss: {np.round(self._best_ema, decimals=4)}"
+            )
             self.save_checkpoint(join(self.output_folder, "checkpoint_best.pth"))
 
         if self.local_rank == 0:
@@ -878,7 +1017,11 @@ class AbstractBaseTrainer(ABC):
                 checkpoint = {
                     "network_weights": mod.state_dict(),
                     "optimizer_state": self.optimizer.state_dict(),
-                    "grad_scaler_state": self.grad_scaler.state_dict() if self.grad_scaler is not None else None,
+                    "grad_scaler_state": (
+                        self.grad_scaler.state_dict()
+                        if self.grad_scaler is not None
+                        else None
+                    ),
                     "logging": self.logger.get_checkpoint(),
                     "_best_ema": self._best_ema,
                     "current_epoch": self.current_epoch + 1,
@@ -889,7 +1032,9 @@ class AbstractBaseTrainer(ABC):
                 checkpoint = self._convert_numpy(checkpoint)
                 torch.save(checkpoint, filename)
             else:
-                self.print_to_log_file("No checkpoint written, checkpointing is disabled")
+                self.print_to_log_file(
+                    "No checkpoint written, checkpointing is disabled"
+                )
 
     def load_checkpoint(self, filename_or_checkpoint: Union[dict, str]) -> None:
         if not self.was_initialized:
@@ -902,7 +1047,9 @@ class AbstractBaseTrainer(ABC):
         new_state_dict = {}
         for k, value in checkpoint["network_weights"].items():
             key = k
-            if key not in self.network.state_dict().keys() and key.startswith("module."):
+            if key not in self.network.state_dict().keys() and key.startswith(
+                "module."
+            ):
                 key = key[7:]
             new_state_dict[key] = value
 
@@ -932,7 +1079,9 @@ class AbstractBaseTrainer(ABC):
                 self.grad_scaler.load_state_dict(checkpoint["grad_scaler_state"])
 
     def perform_actual_validation(self, save_probabilities: bool = False):
-        print("Actual Validation is trainer specific and needs to be written here. To be implemented late!")
+        print(
+            "Actual Validation is trainer specific and needs to be written here. To be implemented late!"
+        )
 
     def _do_i_compile(self):
         return ("nnUNet_compile" in os.environ.keys()) and (
@@ -980,12 +1129,16 @@ class AbstractBaseTrainer(ABC):
             save_json(dct, join(self.output_folder, "debug.json"))
 
     @staticmethod
-    def remove_duplicates(duplicate_image_names: list[str], dataset: nnSSLDatasetBlosc2):
+    def remove_duplicates(
+        duplicate_image_names: list[str], dataset: nnSSLDatasetBlosc2
+    ):
         pre_removal_len = len(dataset.image_identifiers)
         # Move to set to make this fast
         duplicate_image_set = set(duplicate_image_names)
         dataset.image_dataset = {
-            k: v for k, v in dataset.image_dataset.items() if v.image_name not in duplicate_image_set
+            k: v
+            for k, v in dataset.image_dataset.items()
+            if v.image_name not in duplicate_image_set
         }
         dataset.image_identifiers = list(dataset.image_dataset.keys())
         post_removal_len = len(dataset.image_identifiers)
@@ -994,13 +1147,17 @@ class AbstractBaseTrainer(ABC):
         return removed_images
 
     @staticmethod
-    def keep_valid(valid_image_names: list[str], dataset: nnSSLDatasetBlosc2, n_processes=24):
+    def keep_valid(
+        valid_image_names: list[str], dataset: nnSSLDatasetBlosc2, n_processes=24
+    ):
 
         # --------------------------- Remove broken images --------------------------- #
         pre_removal_len = len(dataset.image_identifiers)
         valid_image_names_set = set(valid_image_names)
         dataset.image_dataset = {
-            k: v for k, v in list(dataset.image_dataset.items()) if v.get_unique_id() in valid_image_names_set
+            k: v
+            for k, v in list(dataset.image_dataset.items())
+            if v.get_unique_id() in valid_image_names_set
         }
         dataset.image_identifiers = list(dataset.image_dataset.keys())
         post_removal_len = len(dataset.image_identifiers)
@@ -1027,7 +1184,9 @@ class AbstractBaseTrainer(ABC):
         splits_file = join(self.preprocessed_dataset_folder_base, splits_file_name)
         if not isfile(splits_file):
             self.print_to_log_file("Creating new train-val split...")
-            subject_identifiers = get_subject_identifiers(self.preprocessed_dataset_folder)
+            subject_identifiers = get_subject_identifiers(
+                self.preprocessed_dataset_folder
+            )
             assert len(subject_identifiers) != 0, "No subjects found. Aborting"
             subject_identifiers = sorted(subject_identifiers)
             n_val_subjects = min(200, int(len(subject_identifiers) / 100))

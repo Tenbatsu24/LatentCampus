@@ -11,7 +11,9 @@ from nnssl.data.nnsslFilter.modality_filter import ModalityFilter
 
 from nnssl.training.nnsslTrainer.AbstractTrainer import AbstractBaseTrainer
 from nnssl.utilities.default_n_proc_DA import get_allowed_n_proc_DA
-from batchgenerators.dataloading.single_threaded_augmenter import SingleThreadedAugmenter
+from batchgenerators.dataloading.single_threaded_augmenter import (
+    SingleThreadedAugmenter,
+)
 from nnssl.ssl_data.limited_len_wrapper import LimitedLenWrapper
 from torch import autocast
 from nnssl.utilities.helpers import dummy_context
@@ -31,7 +33,9 @@ class ModelGenesisTrainer(AbstractBaseTrainer):
         pretrain_json: dict,
         device: torch.device,
     ):
-        super(ModelGenesisTrainer, self).__init__(plan, configuration_name, fold, pretrain_json, device)
+        super(ModelGenesisTrainer, self).__init__(
+            plan, configuration_name, fold, pretrain_json, device
+        )
         self.config_plan.patch_size = (160, 160, 160)
 
     def build_loss(self):
@@ -45,7 +49,10 @@ class ModelGenesisTrainer(AbstractBaseTrainer):
 
     @override
     def build_architecture_and_adaptation_plan(
-        self, config_plan: ConfigurationPlan, num_input_channels: int, num_output_channels: int
+        self,
+        config_plan: ConfigurationPlan,
+        num_input_channels: int,
+        num_output_channels: int,
     ) -> nn.Module:
         network = get_network_by_name(
             config_plan,
@@ -60,14 +67,18 @@ class ModelGenesisTrainer(AbstractBaseTrainer):
             pretrain_num_input_channels=1,
             key_to_encoder="encoder.stages",
             key_to_stem="encoder.stem",
-            keys_to_in_proj=("encoder.stem.convs.0.conv", "encoder.stem.convs.0.all_modules.0"),
+            keys_to_in_proj=(
+                "encoder.stem.convs.0.conv",
+                "encoder.stem.convs.0.all_modules.0",
+            ),
         )
         return network, adapt_plan
 
     def get_dataloaders(self):
         """
         Dataloader creation is very different depending on the use-case of training.
-        This method has to be implemneted for other use-cases aside from MAE more specifically."""
+        This method has to be implemneted for other use-cases aside from MAE more specifically.
+        """
         # we use the patch size to determine whether we need 2D or 3D dataloaders. We also use it to determine whether
         # we need to use dummy 2D augmentation (in case of 3D training) and what our initial patch size should be
         patch_size = self.config_plan.patch_size
@@ -115,7 +126,11 @@ class ModelGenesisTrainer(AbstractBaseTrainer):
         # If the device_type is 'cpu' then it's slow as heck and needs to be disabled.
         # If the device_type is 'mps' then it will complain that mps is not implemented, even if enabled=False is set. Whyyyyyyy. (this is why we don't make use of enabled=False)
         # So autocast will only be active if we have a cuda device.
-        with autocast(self.device.type, enabled=True) if self.device.type == "cuda" else dummy_context():
+        with (
+            autocast(self.device.type, enabled=True)
+            if self.device.type == "cuda"
+            else dummy_context()
+        ):
             output = self.network(in_data)
             # del data
             l = self.loss(target, output)
@@ -139,7 +154,11 @@ class ModelGenesisTrainer(AbstractBaseTrainer):
         target = target.to(self.device, non_blocking=True)
 
         with torch.no_grad():
-            with autocast(self.device.type, enabled=True) if self.device.type == "cuda" else dummy_context():
+            with (
+                autocast(self.device.type, enabled=True)
+                if self.device.type == "cuda"
+                else dummy_context()
+            ):
                 output = self.network(in_data)
                 # del data
                 l = self.loss(target, output)
@@ -181,7 +200,8 @@ class ModelGenesisTrainer_ANAT(ModelGenesisTrainer):
     def get_dataloaders(self):
         """
         Dataloader creation is very different depending on the use-case of training.
-        This method has to be implemneted for other use-cases aside from MAE more specifically."""
+        This method has to be implemneted for other use-cases aside from MAE more specifically.
+        """
         # we use the patch size to determine whether we need 2D or 3D dataloaders. We also use it to determine whether
         # we need to use dummy 2D augmentation (in case of 3D training) and what our initial patch size should be
         patch_size = self.config_plan.patch_size
@@ -235,7 +255,11 @@ class ModelGenesisTrainer_ANON(ModelGenesisTrainer):
         loss_mask = 1 - anon
 
         self.optimizer.zero_grad(set_to_none=True)
-        with autocast(self.device.type, enabled=True) if self.device.type == "cuda" else dummy_context():
+        with (
+            autocast(self.device.type, enabled=True)
+            if self.device.type == "cuda"
+            else dummy_context()
+        ):
             output = self.network(in_data)
             l = self.loss(output, target, loss_mask)
 
@@ -262,7 +286,11 @@ class ModelGenesisTrainer_ANON(ModelGenesisTrainer):
         loss_mask = 1 - anon
 
         with torch.no_grad():
-            with autocast(self.device.type, enabled=True) if self.device.type == "cuda" else dummy_context():
+            with (
+                autocast(self.device.type, enabled=True)
+                if self.device.type == "cuda"
+                else dummy_context()
+            ):
                 output = self.network(in_data)
                 l = self.loss(output, target, loss_mask)
 
@@ -313,4 +341,6 @@ class ModelGenesisTrainer_ANAT_ANON_BS8_T1w_T2w_FLAIR(ModelGenesisTrainer_ANAT_A
         plan.configurations[configuration_name].patch_size = (160, 160, 160)
         super().__init__(plan, configuration_name, fold, pretrain_json, device)
         self.total_batch_size = 8
-        self.iimg_filters.append(ModalityFilter(valid_modalities=["T1w", "T2w", "FLAIR"]))
+        self.iimg_filters.append(
+            ModalityFilter(valid_modalities=["T1w", "T2w", "FLAIR"])
+        )

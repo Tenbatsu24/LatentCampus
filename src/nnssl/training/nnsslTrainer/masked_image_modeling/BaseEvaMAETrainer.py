@@ -8,8 +8,13 @@ from nnssl.architectures.evaMAE_module import EvaMAE
 from torch import autocast
 from nnssl.utilities.helpers import dummy_context
 from nnssl.experiment_planning.experiment_planners.plan import Plan
-from nnssl.training.nnsslTrainer.masked_image_modeling.BaseMAETrainer import BaseMAETrainer
-from nnssl.training.lr_scheduler.warmup import Lin_incr_LRScheduler, PolyLRScheduler_offset
+from nnssl.training.nnsslTrainer.masked_image_modeling.BaseMAETrainer import (
+    BaseMAETrainer,
+)
+from nnssl.training.lr_scheduler.warmup import (
+    Lin_incr_LRScheduler,
+    PolyLRScheduler_offset,
+)
 from torch.nn.parallel import DistributedDataParallel as DDP
 from nnssl.utilities.helpers import empty_cache
 from batchgenerators.utilities.file_and_folder_operations import save_json
@@ -71,10 +76,19 @@ class BaseEvaMAETrainer(BaseMAETrainer):
         if stage == "warmup_all":
             self.print_to_log_file("train whole net, warmup")
             optimizer = torch.optim.AdamW(
-                params, self.initial_lr, weight_decay=self.weight_decay, amsgrad=False, betas=(0.9, 0.98), fused=True
+                params,
+                self.initial_lr,
+                weight_decay=self.weight_decay,
+                amsgrad=False,
+                betas=(0.9, 0.98),
+                fused=True,
             )
-            lr_scheduler = Lin_incr_LRScheduler(optimizer, self.initial_lr, self.warmup_duration_whole_net)
-            self.print_to_log_file(f"Initialized warmup_all optimizer and lr_scheduler at epoch {self.current_epoch}")
+            lr_scheduler = Lin_incr_LRScheduler(
+                optimizer, self.initial_lr, self.warmup_duration_whole_net
+            )
+            self.print_to_log_file(
+                f"Initialized warmup_all optimizer and lr_scheduler at epoch {self.current_epoch}"
+            )
         else:
             self.print_to_log_file("train whole net, default schedule")
             if self.training_stage == "warmup_all":
@@ -91,9 +105,14 @@ class BaseEvaMAETrainer(BaseMAETrainer):
                     fused=True,
                 )
             lr_scheduler = PolyLRScheduler_offset(
-                optimizer, self.initial_lr, self.num_epochs, self.warmup_duration_whole_net
+                optimizer,
+                self.initial_lr,
+                self.num_epochs,
+                self.warmup_duration_whole_net,
             )
-            self.print_to_log_file(f"Initialized train optimizer and lr_scheduler at epoch {self.current_epoch}")
+            self.print_to_log_file(
+                f"Initialized train optimizer and lr_scheduler at epoch {self.current_epoch}"
+            )
         self.training_stage = stage
         empty_cache(self.device)
         return optimizer, lr_scheduler
@@ -108,7 +127,9 @@ class BaseEvaMAETrainer(BaseMAETrainer):
 
     @staticmethod
     def create_mask(
-        keep_indices: torch.Tensor, image_size: Tuple[int, int, int], patch_size: Tuple[int, int, int]
+        keep_indices: torch.Tensor,
+        image_size: Tuple[int, int, int],
+        patch_size: Tuple[int, int, int],
     ) -> torch.Tensor:
         """
         Create a mask tensor (1 for unmasked, 0 for masked) based on keep_indices.
@@ -140,7 +161,9 @@ class BaseEvaMAETrainer(BaseMAETrainer):
         # Reshape to patch grid and expand to full image size
         mask = flat_mask.view(B, num_patches_d, num_patches_h, num_patches_w)
         mask = (
-            mask.repeat_interleave(D_patch, dim=1).repeat_interleave(H_patch, dim=2).repeat_interleave(W_patch, dim=3)
+            mask.repeat_interleave(D_patch, dim=1)
+            .repeat_interleave(H_patch, dim=2)
+            .repeat_interleave(W_patch, dim=3)
         )
         mask = mask.unsqueeze(1)  # Add channel dimension (B, 1, D, H, W)
         return mask
@@ -192,10 +215,16 @@ class BaseEvaMAETrainer(BaseMAETrainer):
         self.optimizer.zero_grad(set_to_none=True)
 
         # Autocast for CUDA device
-        with autocast(self.device.type, enabled=True) if self.device.type == "cuda" else dummy_context():
+        with (
+            autocast(self.device.type, enabled=True)
+            if self.device.type == "cuda"
+            else dummy_context()
+        ):
             # Forward pass with PatchDropout
             output, keep_indices = self.network(data)
-            mask = self.create_mask(keep_indices, self.config_plan.patch_size, self.vit_patch_size)
+            mask = self.create_mask(
+                keep_indices, self.config_plan.patch_size, self.vit_patch_size
+            )
             # Calculate loss considering kept patches
             l = self.loss(output, data, mask)
 
@@ -218,10 +247,16 @@ class BaseEvaMAETrainer(BaseMAETrainer):
         data = data.to(self.device, non_blocking=True)
 
         # Autocast for CUDA device
-        with autocast(self.device.type, enabled=True) if self.device.type == "cuda" else dummy_context():
+        with (
+            autocast(self.device.type, enabled=True)
+            if self.device.type == "cuda"
+            else dummy_context()
+        ):
             # Forward pass with PatchDropout
             output, keep_indices = self.network(data)
-            mask = self.create_mask(keep_indices, self.config_plan.patch_size, self.vit_patch_size)
+            mask = self.create_mask(
+                keep_indices, self.config_plan.patch_size, self.vit_patch_size
+            )
             # Calculate loss considering kept patches
             l = self.loss(output, data, mask)
 
@@ -238,7 +273,9 @@ class BaseEvaMAETrainer(BaseMAETrainer):
         new_state_dict = {}
         for k, value in checkpoint["network_weights"].items():
             key = k
-            if key not in self.network.state_dict().keys() and key.startswith("module."):
+            if key not in self.network.state_dict().keys() and key.startswith(
+                "module."
+            ):
                 key = key[7:]
             new_state_dict[key] = value
 
@@ -303,14 +340,15 @@ class BaseEvaMAETrainer_test(BaseEvaMAETrainer):
         self.total_batch_size = 2
         self.num_epochs = 2
 
+
 class BaseEvaMAETrainer_BS8_192ps_4000ep(BaseEvaMAETrainer):
     def __init__(
-            self,
-            plan: Plan,
-            configuration_name: str,
-            fold: int,
-            pretrain_json: dict,
-            device: torch.device = torch.device("cuda"),
+        self,
+        plan: Plan,
+        configuration_name: str,
+        fold: int,
+        pretrain_json: dict,
+        device: torch.device = torch.device("cuda"),
     ):
         super().__init__(plan, configuration_name, fold, pretrain_json, device)
         self.config_plan.patch_size = (192, 192, 192)

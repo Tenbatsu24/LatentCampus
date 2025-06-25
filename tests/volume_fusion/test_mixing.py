@@ -12,7 +12,9 @@ from nnssl.ssl_data.dataloading.volume_fusion_transform import (
 def get_mixing_images(
     n_batch: int = 2, n_channels: int = 3, xyz_size: tuple[int, int, int] = (8, 8, 8)
 ) -> tuple[np.ndarray, np.ndarray]:
-    foreground_images = np.full(tuple([n_batch, n_channels, *xyz_size]), fill_value=0.25)
+    foreground_images = np.full(
+        tuple([n_batch, n_channels, *xyz_size]), fill_value=0.25
+    )
     background_images = np.full(tuple([n_batch, n_channels, *xyz_size]), fill_value=0.5)
     return foreground_images, background_images
 
@@ -37,7 +39,9 @@ def test_mix_image_50_50_mix():
     foreground_images = np.full((2, 3, 8, 8, 8), fill_value=0.25)
     background_images = np.full((2, 3, 8, 8, 8), fill_value=0.5)
     mixing_coefficient = np.full_like(foreground_images, fill_value=0.5)
-    mixed_images = _mix_image(foreground_images, background_images, mixing_coefficient=mixing_coefficient)
+    mixed_images = _mix_image(
+        foreground_images, background_images, mixing_coefficient=mixing_coefficient
+    )
     assert np.allclose(mixed_images, np.full_like(mixed_images, fill_value=0.375))
 
 
@@ -48,7 +52,9 @@ def test_mix_image_either_or():
     random = np.random.random((2, 3, 8, 8, 8))
     mixing_coefficient = np.where(random < 0.5, 0, 1)
 
-    mixed_images = _mix_image(foreground_images, background_images, mixing_coefficient=mixing_coefficient)
+    mixed_images = _mix_image(
+        foreground_images, background_images, mixing_coefficient=mixing_coefficient
+    )
     expected_values = set([0.25, 0.5])
     found_values = set(np.unique(mixed_images))
     assert expected_values == found_values
@@ -64,14 +70,18 @@ def test_mix_image_either_or_0_05_10():
     for i in range(len(alphas)):
         mixing_coefficients[class_ids == i] = alphas[i]
 
-    mixed_images = _mix_image(foreground_images, background_images, mixing_coefficient=mixing_coefficients)
+    mixed_images = _mix_image(
+        foreground_images, background_images, mixing_coefficient=mixing_coefficients
+    )
     expected_values = set([0, 0.5, 1.0])
     found_values = set(np.unique(mixed_images))
     assert expected_values == found_values
 
 
 def test_get_mixing_images():
-    foreground_images, background_images = get_mixing_images(n_batch=2, n_channels=3, xyz_size=(8, 8, 8))
+    foreground_images, background_images = get_mixing_images(
+        n_batch=2, n_channels=3, xyz_size=(8, 8, 8)
+    )
     assert foreground_images.shape == (2, 3, 8, 8, 8)
     assert background_images.shape == (2, 3, 8, 8, 8)
     assert np.allclose(foreground_images, np.full((2, 3, 8, 8, 8), fill_value=0.25))
@@ -93,7 +103,9 @@ def test_half_half_alpha():
 def test_bounding_boxes_varying_sizes_and_aspects():
     # Use extreme aspect ratios and sizes
     vf_subpatch_size = ((1, 8), (1, 8), (1, 8))  # Minimal to maximal in each dimension
-    xs, ys, zs, x_starts, y_starts, z_starts = _get_bboxes_within_image_bounds(10, (8, 8, 8), vf_subpatch_size)
+    xs, ys, zs, x_starts, y_starts, z_starts = _get_bboxes_within_image_bounds(
+        10, (8, 8, 8), vf_subpatch_size
+    )
     # Check that all generated sizes and starts are within the valid range
     assert np.all(xs <= 8) and np.all(x_starts + xs <= 8)
     assert np.all(ys <= 8) and np.all(y_starts + ys <= 8)
@@ -102,10 +114,19 @@ def test_bounding_boxes_varying_sizes_and_aspects():
 
 def test_overlapping_bboxes():
     image = np.zeros((1, 8, 8, 8))
-    xs, ys, zs, x_starts, y_starts, z_starts = ([4, 5], [4, 5], [4, 5], [0, 3], [0, 3], [0, 3])
+    xs, ys, zs, x_starts, y_starts, z_starts = (
+        [4, 5],
+        [4, 5],
+        [4, 5],
+        [0, 3],
+        [0, 3],
+        [0, 3],
+    )
     values = [1, 2]
     image = _overlay_bbox(image, values, xs, ys, zs, x_starts, y_starts, z_starts)
-    assert np.all(image[3:8, 3:8, 3:8] == 2)  # Assert that the second bbox overwrote the first
+    assert np.all(
+        image[3:8, 3:8, 3:8] == 2
+    )  # Assert that the second bbox overwrote the first
 
 
 def test_bbox_edge_cases():
@@ -120,11 +141,19 @@ def test_bbox_edge_cases():
 def test_full_transform_integration():
     # This would simulate the full workflow using a mock data dictionary
     transform = VolumeFusionTransform(
-        vf_mixing_coefficients=[0, 0.5, 1], vf_subpatch_count=(10, 20), vf_subpatch_size=((1, 8), (1, 8), (1, 8))
+        vf_mixing_coefficients=[0, 0.5, 1],
+        vf_subpatch_count=(10, 20),
+        vf_subpatch_size=((1, 8), (1, 8), (1, 8)),
     )
     data = np.random.rand(4, 3, 8, 8, 8)  # Create some dummy data
     data_dict = {"data": data}
     result = transform(**data_dict)
     assert "input" in result and "target" in result
     assert result["input"].shape == (2, 3, 8, 8, 8)  # Ensure shapes are maintained
-    assert result["target"].shape == (2, 1, 8, 8, 8)  # Masks should match the expected shape
+    assert result["target"].shape == (
+        2,
+        1,
+        8,
+        8,
+        8,
+    )  # Masks should match the expected shape
