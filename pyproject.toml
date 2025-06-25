@@ -1,0 +1,89 @@
+[project]
+name = "nnssl"
+version = "0.1"
+requires-python = ">=3.10"
+description = "nnSSL is a framework for self-supervised pre-training 3D medical images easily integrateable with the nnU-Net framework."
+readme = "readme.md"
+license = { file = "LICENSE" }
+authors = [
+    { name = "Tassilo Wald", email = "tassilo.wald@dkfz-heidelberg.de"},
+    { name = "Helmholtz Imaging & German Cancer Research Center (DKFZ)" }
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Healthcare Industry",
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: Apache Software License",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Scientific/Engineering :: Image Recognition",
+    "Topic :: Scientific/Engineering :: Medical Science Apps.",
+]
+keywords = [
+    'deep learning',
+    'image segmentation',
+    'semantic segmentation',
+    'medical image analysis',
+    'medical image segmentation',
+    'nnSSL',
+    'self supervised learning'
+]
+dependencies = [
+    "torch>=2.0.0",
+    "acvl-utils>=0.2",
+    "dynamic-network-architectures @ git+https://github.com/TaWald/dynamic-network-architectures@main",
+    "tqdm",
+    "dicom2nifti",
+    "scipy",
+    "batchgenerators>=0.25",
+    "numpy",
+    "scikit-learn",
+    "scikit-image>=0.19.3",
+    "SimpleITK>=2.2.1",
+    "pandas",
+    "graphviz",
+    'tifffile',
+    'requests',
+    "nibabel",
+    "matplotlib",
+    "seaborn",
+    "imagecodecs",
+    "yacs",
+    "einops",
+    "loguru",
+    "timm",
+    "lightning-bolts",
+    "pytest",
+    "blosc2>=3.0.0b1",
+    "deprecated",
+    "pytorch-msssim",
+    "lpips",
+    "wandb",
+    "torchio",
+]
+
+[project.urls]
+homepage = "https://git.dkfz.de/mic/personal/group2/tassilow/nnssl"
+repository = "https://git.dkfz.de/mic/personal/group2/tassilow/nnssl"
+
+[project.scripts]
+nnssl_plan_and_preprocess = "nnssl.experiment_planning.plan_and_preprocess_entrypoints:plan_and_preprocess_entry"
+nnssl_convert_openmind = "nnssl.dataset_conversion.Dataset001_OpenMind:main"
+nnssl_extract_fingerprint = "nnssl.experiment_planning.plan_and_preprocess_entrypoints:extract_fingerprint_entry"
+nnssl_plan_experiment = "nnssl.experiment_planning.plan_and_preprocess_entrypoints:plan_experiment_entry"
+nnssl_preprocess = "nnssl.experiment_planning.plan_and_preprocess_entrypoints:preprocess_entry"
+nnssl_train = "nnssl.run.run_training:run_training_entry"
+nnssl_train_wandb = "nnssl.run.run_training_wandb:run_training_entry"
+
+[project.optional-dependencies]
+dev = [
+    "black",
+    "ruff",
+    "pre-commit"
+]
+
+[tool.codespell]
+skip = '.git,*.pdf,*.svg'
+#
+# ignore-words-list = ''
