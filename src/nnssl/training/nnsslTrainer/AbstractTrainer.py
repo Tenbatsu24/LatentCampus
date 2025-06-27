@@ -749,8 +749,13 @@ class AbstractBaseTrainer(ABC):
         # ----------------------- Validation data augmentations ---------------------- #
         val_transforms = self.get_validation_transforms()
 
-        dl_tr, dl_val = self.get_plain_dataloaders(initial_patch_size)
+        return self.make_generators(initial_patch_size, tr_transforms, val_transforms)
 
+    def make_generators(self, initial_patch_size, tr_transforms, val_transforms):
+        dl_tr, dl_val = self.get_plain_dataloaders(initial_patch_size)
+        return self.handle_multi_threaded_generators(dl_tr, dl_val, tr_transforms, val_transforms)
+
+    def handle_multi_threaded_generators(self, dl_tr, dl_val, tr_transforms, val_transforms):
         allowed_num_processes = get_allowed_n_proc_DA()
         if allowed_num_processes == 0:
             mt_gen_train = SingleThreadedAugmenter(dl_tr, tr_transforms)

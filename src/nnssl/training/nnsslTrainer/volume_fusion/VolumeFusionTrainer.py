@@ -295,32 +295,7 @@ class VolumeFusionTrainer(AbstractBaseTrainer):
         dl_tr, dl_val = self.get_centercrop_dataloaders_with_doubled_batch_size()
         # dl_tr, dl_val = self.get_plain_dataloaders(patch_size)
 
-        allowed_num_processes = get_allowed_n_proc_DA()
-        if allowed_num_processes == 0:
-            mt_gen_train = SingleThreadedAugmenter(dl_tr, tr_transforms)
-            mt_gen_val = SingleThreadedAugmenter(dl_val, val_transforms)
-        else:
-            mt_gen_train = LimitedLenWrapper(
-                self.num_iterations_per_epoch,
-                data_loader=dl_tr,
-                transform=tr_transforms,
-                num_processes=allowed_num_processes,
-                num_cached=6,
-                seeds=None,
-                pin_memory=self.device.type == "cuda",
-                wait_time=0.02,
-            )
-            mt_gen_val = LimitedLenWrapper(
-                self.num_val_iterations_per_epoch,
-                data_loader=dl_val,
-                transform=val_transforms,
-                num_processes=max(1, allowed_num_processes // 2),
-                num_cached=3,
-                seeds=None,
-                pin_memory=self.device.type == "cuda",
-                wait_time=0.02,
-            )
-        return mt_gen_train, mt_gen_val
+        return self.handle_multi_threaded_generators(dl_tr, dl_val, tr_transforms, val_transforms)
 
     def get_training_transforms(
         self,

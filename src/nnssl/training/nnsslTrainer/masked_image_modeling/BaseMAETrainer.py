@@ -205,34 +205,7 @@ class BaseMAETrainer(AbstractBaseTrainer):
         # ----------------------- Validation data augmentations ---------------------- #
         val_transforms = self.get_validation_transforms()
 
-        dl_tr, dl_val = self.get_plain_dataloaders(initial_patch_size)
-
-        allowed_num_processes = get_allowed_n_proc_DA()
-        if allowed_num_processes == 0:
-            mt_gen_train = SingleThreadedAugmenter(dl_tr, tr_transforms)
-            mt_gen_val = SingleThreadedAugmenter(dl_val, val_transforms)
-        else:
-            mt_gen_train = LimitedLenWrapper(
-                self.num_iterations_per_epoch,
-                data_loader=dl_tr,
-                transform=tr_transforms,
-                num_processes=allowed_num_processes,
-                num_cached=6,
-                seeds=None,
-                pin_memory=self.device.type == "cuda",
-                wait_time=0.02,
-            )
-            mt_gen_val = LimitedLenWrapper(
-                self.num_val_iterations_per_epoch,
-                data_loader=dl_val,
-                transform=val_transforms,
-                num_processes=max(1, allowed_num_processes // 2),
-                num_cached=3,
-                seeds=None,
-                pin_memory=self.device.type == "cuda",
-                wait_time=0.02,
-            )
-        return mt_gen_train, mt_gen_val
+        return self.make_generators(initial_patch_size, tr_transforms, val_transforms)
 
     def train_step(self, batch: dict) -> dict:
         data = batch["data"]
@@ -316,18 +289,6 @@ class BaseMAETrainer(AbstractBaseTrainer):
             l = self.loss(output, data, mask)
 
         return {"loss": l.detach().cpu().numpy()}
-
-    @deprecated
-    @staticmethod
-    def rescale_images(
-        img_arr: torch.Tensor,
-        recon_arr: torch.Tensor,
-        full_img_min: float,
-        full_img_max: float,
-    ) -> np.ndarray:
-        img_arr = (img_arr - full_img_min) / (full_img_max - full_img_min)
-        rec_arr = (recon_arr - full_img_min) / (full_img_max - full_img_min)
-        return img_arr, rec_arr
 
     def log_img_volume(
         self,
@@ -535,32 +496,7 @@ class BaseMAETrainer_ANAT(BaseMAETrainer):
 
         dl_tr, dl_val = self.get_foreground_dataloaders(initial_patch_size)
 
-        allowed_num_processes = get_allowed_n_proc_DA()
-        if allowed_num_processes == 0:
-            mt_gen_train = SingleThreadedAugmenter(dl_tr, tr_transforms)
-            mt_gen_val = SingleThreadedAugmenter(dl_val, val_transforms)
-        else:
-            mt_gen_train = LimitedLenWrapper(
-                self.num_iterations_per_epoch,
-                data_loader=dl_tr,
-                transform=tr_transforms,
-                num_processes=allowed_num_processes,
-                num_cached=6,
-                seeds=None,
-                pin_memory=self.device.type == "cuda",
-                wait_time=0.02,
-            )
-            mt_gen_val = LimitedLenWrapper(
-                self.num_val_iterations_per_epoch,
-                data_loader=dl_val,
-                transform=val_transforms,
-                num_processes=max(1, allowed_num_processes // 2),
-                num_cached=3,
-                seeds=None,
-                pin_memory=self.device.type == "cuda",
-                wait_time=0.02,
-            )
-        return mt_gen_train, mt_gen_val
+        return self.handle_multi_threaded_generators(dl_tr, dl_val, tr_transforms, val_transforms)
 
 
 class BaseMAETrainer_ANON(BaseMAETrainer):
