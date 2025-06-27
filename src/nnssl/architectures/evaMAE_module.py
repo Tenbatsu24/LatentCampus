@@ -186,8 +186,9 @@ if __name__ == "__main__":
         patch_embed_size=patch_embed_size,
         output_channels=3,
         input_shape=input_shape,
-        eva_depth=6,
-        eva_numheads=8,
+        decoder_eva_depth=6,
+        decoder_eva_numheads=8,
+        patch_drop_rate=0.7,
     )
 
     # Random input tensor

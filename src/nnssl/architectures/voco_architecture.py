@@ -1,5 +1,4 @@
 import torch
-from nnssl.experiment_planning.experiment_planners.plan import ConfigurationPlan
 from torch import nn
 
 

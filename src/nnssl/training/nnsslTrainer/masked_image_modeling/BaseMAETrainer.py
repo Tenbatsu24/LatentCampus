@@ -149,7 +149,9 @@ class BaseMAETrainer(AbstractBaseTrainer):
         config_plan: ConfigurationPlan,
         num_input_channels: int,
         num_output_channels: int,
-    ) -> nn.Module:
+        *args,
+        **kwargs,
+    ) -> Tuple[nn.Module, AdaptationPlan]:
         # ---------------------------- Create architecture --------------------------- #
         architecture = get_network_by_name(
             config_plan,
@@ -158,6 +160,10 @@ class BaseMAETrainer(AbstractBaseTrainer):
             num_output_channels,
         )
         # --------------------- Build associated adaptation plan --------------------- #
+        adapt_plan = self.save_adaption_plan(num_input_channels)
+        return architecture, adapt_plan
+
+    def save_adaption_plan(self, num_input_channels):
         arch_plans = ArchitecturePlans(arch_class_name="ResEncL")
         adapt_plan = AdaptationPlan(
             architecture_plans=arch_plans,
@@ -172,7 +178,7 @@ class BaseMAETrainer(AbstractBaseTrainer):
             ),
         )
         save_json(adapt_plan.serialize(), self.adaptation_json_plan)
-        return architecture, adapt_plan
+        return adapt_plan
 
     def get_dataloaders(self):
         """
