@@ -184,7 +184,9 @@ class ModelGenesisTrainer_ANAT(ModelGenesisTrainer):
 
         dl_tr, dl_val = self.get_foreground_dataloaders(initial_patch_size=patch_size)
 
-        return self.handle_multi_threaded_generators(dl_tr, dl_val, tr_transforms, val_transforms)
+        return self.handle_multi_threaded_generators(
+            dl_tr, dl_val, tr_transforms, val_transforms
+        )
 
 
 class ModelGenesisTrainer_ANON(ModelGenesisTrainer):

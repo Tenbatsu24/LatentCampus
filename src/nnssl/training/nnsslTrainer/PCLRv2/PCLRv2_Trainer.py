@@ -101,7 +101,9 @@ class PCRLv2Trainer(AbstractBaseTrainer):
         tr_transforms = self.get_training_transforms()
         val_transforms = self.get_validation_transforms()
 
-        return self.make_generators(self.config_plan.patch_size, tr_transforms, val_transforms)
+        return self.make_generators(
+            self.config_plan.patch_size, tr_transforms, val_transforms
+        )
 
     @override
     def train_step(self, batch: dict) -> dict:

@@ -496,7 +496,9 @@ class BaseMAETrainer_ANAT(BaseMAETrainer):
 
         dl_tr, dl_val = self.get_foreground_dataloaders(initial_patch_size)
 
-        return self.handle_multi_threaded_generators(dl_tr, dl_val, tr_transforms, val_transforms)
+        return self.handle_multi_threaded_generators(
+            dl_tr, dl_val, tr_transforms, val_transforms
+        )
 
 
 class BaseMAETrainer_ANON(BaseMAETrainer):

@@ -89,7 +89,9 @@ class SwinUNETRTrainer(AbstractBaseTrainer):
         tr_transforms = self.get_training_transforms()
         val_transforms = self.get_validation_transforms()
 
-        return self.make_generators(self.config_plan.patch_size, tr_transforms, val_transforms)
+        return self.make_generators(
+            self.config_plan.patch_size, tr_transforms, val_transforms
+        )
 
     # @override
     # def configure_optimizers(self):

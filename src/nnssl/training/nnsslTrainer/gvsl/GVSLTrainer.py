@@ -76,7 +76,9 @@ class GVSLTrainer(AbstractBaseTrainer):
 
         dl_tr, dl_val = self.get_centercrop_dataloaders_with_doubled_batch_size()
 
-        return self.handle_multi_threaded_generators(dl_tr, dl_val, tr_transforms, val_transforms)
+        return self.handle_multi_threaded_generators(
+            dl_tr, dl_val, tr_transforms, val_transforms
+        )
 
     def get_centercrop_dataloaders_with_doubled_batch_size(self):
         dataset_tr, dataset_val = self.get_tr_and_val_datasets()

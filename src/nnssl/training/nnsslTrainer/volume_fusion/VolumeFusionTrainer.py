@@ -295,7 +295,9 @@ class VolumeFusionTrainer(AbstractBaseTrainer):
         dl_tr, dl_val = self.get_centercrop_dataloaders_with_doubled_batch_size()
         # dl_tr, dl_val = self.get_plain_dataloaders(patch_size)
 
-        return self.handle_multi_threaded_generators(dl_tr, dl_val, tr_transforms, val_transforms)
+        return self.handle_multi_threaded_generators(
+            dl_tr, dl_val, tr_transforms, val_transforms
+        )
 
     def get_training_transforms(
         self,
