@@ -2,6 +2,7 @@ from typing import Literal
 from functools import lru_cache
 
 import torch
+import torch.nn.functional as F
 
 
 class LogCoshError(torch.nn.Module):
@@ -69,11 +70,12 @@ def get_neg_pairs(
 
 class KVConsisConLoss(torch.nn.Module):
 
-    def __init__(self, p=2, epsilon=0.1):
+    def __init__(self, device, p=2, epsilon=0.1, out_size=7, sampling_ratio=2):
         """
         Initialize the KVConsisConLoss with the given parameters.
 
         Args:
+            device (torch.device): The device to run the loss on.
             p (int): The norm degree for the consistency loss.
             epsilon (float): A small value to avoid division by zero.
         """
@@ -82,20 +84,26 @@ class KVConsisConLoss(torch.nn.Module):
         self.epsilon = epsilon
 
         self.mae_loss = LogCoshError(reduction="none")
-        self.resampling_grid_size = (7, 7, 7)  # Default grid size for resampling
 
         # create a grid for resampling later
-        self.resampling_grid = torch.meshgrid(
-            torch.linspace(0, 1, self.resampling_grid_size[0]),
-            torch.linspace(0, 1, self.resampling_grid_size[1]),
-            torch.linspace(0, 1, self.resampling_grid_size[2]),
-            indexing="ij",
-        )
+        # ── determine output resolution ──────────────────────────────────────────────
+        if isinstance(out_size, int):
+            D_out = H_out = W_out = out_size
+        else:
+            D_out, H_out, W_out = out_size
+        self.D_out, self.H_out, self.W_out = D_out, H_out, W_out
+
+        # ── build a base grid in [-1, 1] ────────────────────────────────────────────
+        z_lin = torch.linspace(-1, 1, sampling_ratio * D_out, device=device)
+        y_lin = torch.linspace(-1, 1, sampling_ratio * H_out, device=device)
+        x_lin = torch.linspace(-1, 1, sampling_ratio * W_out, device=device)
+        zz, yy, xx = torch.meshgrid(z_lin, y_lin, x_lin, indexing='ij')  # (D_out, H_out, W_out)
+        self.base_grid = torch.stack((xx, yy, zz), dim=-1).unsqueeze(0)  # (1, D_out, H_out, W_out, 3)
 
     def align_views(self,
         latents: torch.Tensor,
         rel_bboxes: torch.Tensor,
-    ) -> tuple[torch.Tensor, torch.Tensor]:
+    ) -> torch.Tensor:
         """
         Aligns the latents based on the relative bounding boxes.
 
@@ -107,11 +115,36 @@ class KVConsisConLoss(torch.nn.Module):
         Returns:
             tuple[torch.Tensor, torch.Tensor]: Aligned latents and bounding boxes.
         """
-        b, c, x_p, y_p, z_p = latents.shape
-        rel_bboxes = 2 * (rel_bboxes - 0.5)  # Convert to [-1, 1] range
-        rel_bboxes = rel_bboxes.view(b, 2, 3)  # Reshape to [b, 2, 3] for easier indexing
-        aligned_latents = torch.empty(b, c, *self.resampling_grid_size, device=latents.device)
-        pass
+        B = latents.shape[0]
+
+        # ── prepare per‑sample scale & shift ───────────────────────────────────────
+        x1, y1, z1, x2, y2, z2 = rel_bboxes.unbind(dim=-1)  # each (B,)
+        # centre in [0,1], size in [0,1]
+        cx, cy, cz = (x1 + x2) * 0.5, (y1 + y2) * 0.5, (z1 + z2) * 0.5
+        sx, sy, sz = (x2 - x1), (y2 - y1), (z2 - z1)
+
+        # convert to shift / scale for [-1,1] space
+        shift = torch.stack((2 * cx - 1, 2 * cy - 1, 2 * cz - 1), dim=-1)  # (B, 3)
+        scale = torch.stack((sx, sy, sz), dim=-1)  # (B, 3)
+
+        shift = shift.view(B, 1, 1, 1, 3)
+        scale = scale.view(B, 1, 1, 1, 3)
+
+        # ── produce the sampling grid ───────────────────────────────────────────────
+        sampling_grid = self.base_grid * scale + shift  # (B, D_out, H_out, W_out, 3)
+
+        # ── trilinear ROI‑align via grid_sample ────────────────────────────────────
+        aligned_latents = F.grid_sample(
+            latents, sampling_grid,
+            mode="bilinear",  # when 5d input, "bilinear" is equivalent to "trilinear" internally
+            padding_mode="border",
+            align_corners=True,
+        )
+
+        # adaptive pool to the ouput size
+        aligned_latents = F.adaptive_avg_pool3d(aligned_latents, (self.D_out, self.H_out, self.W_out))
+
+        return aligned_latents
 
     def forward(
         self,
@@ -142,10 +175,16 @@ class KVConsisConLoss(torch.nn.Module):
 
         # chunk the latents and compute the consistency loss
         pred_latents = model_output["latents"]
-        b = pred_latents.shape[0] // 2
 
         tgt_latents = target["latents"]
-        tgt_latents = tgt_latents.roll(b, 0)  # swap the latents
+
+        # if latents is 5d tensor, i.e. [b, c, x_p, y_p, z_p], we need to align them for better consistency
+        if pred_latents.ndim == 5:
+            pred_latents = self.align_views(pred_latents, rel_bboxes)
+            tgt_latents = self.align_views(tgt_latents, rel_bboxes)
+
+        b = pred_latents.shape[0] // 2
+        tgt_latents = tgt_latents.roll(b, 0)  # swap the latents. the num_views is hardcoded to 2 for this method
 
         attraction_term = torch.norm(pred_latents - tgt_latents, p=self.p, dim=1)
         attraction_term = torch.mean(attraction_term)

@@ -1,6 +1,7 @@
 from typing import Tuple
 
 import torch.nn as nn
+from dynamic_network_architectures.building_blocks.eva import Eva
 
 from einops import rearrange
 from torch.nn.utils import weight_norm
@@ -184,6 +185,24 @@ class ConsisEvaMAE(EvaMAE):
         if not self.use_decoder:
             raise ValueError("ConsisEvaMAE requires a decoder to be used.")
 
+        self.feature_decoder = Eva(
+            embed_dim=embed_dim,
+            depth=1,  # eva_depth,
+            num_heads=16,  # eva_numheads,
+            ref_feat_shape=tuple(
+                [i // ds for i, ds in zip(input_shape, patch_embed_size)]
+            ),
+            num_reg_tokens=kwargs.get("num_register_tokens", 0),
+            use_rot_pos_emb=kwargs.get("use_rot_pos_emb", True),
+            use_abs_pos_emb=kwargs.get("use_abs_pos_emb", True),
+            mlp_ratio=kwargs.get("mlp_ratio", 4 * 2 / 3),
+            drop_path_rate=kwargs.get("drop_path_rate", 0),
+            patch_drop_rate=0,  # No drop in the decoder
+            proj_drop_rate=kwargs.get("proj_drop_rate", 0.0),
+            attn_drop_rate=kwargs.get("attn_drop_rate", 0.0),
+            init_values=kwargs.get("init_values", 0.1),
+            scale_attn_inner=kwargs.get("scale_attn_inner", False),
+        )
         self.projector = ProjectionHead(
             in_dim=embed_dim,
             out_dim=None,
@@ -201,7 +220,8 @@ class ConsisEvaMAE(EvaMAE):
         # Restore full sequence with mask tokens
         num_patches = w * h * d
         restored_x = self.restore_full_sequence(encoded, keep_indices, num_patches)
-        projection = self.projector(restored_x)["proj"]
+        features_decoded, _ = self.feature_decoder(restored_x)
+        projection = self.projector(features_decoded)["proj"]
 
         # Reshape restored sequence to match original patch shape
         projection = rearrange(
@@ -226,6 +246,8 @@ if __name__ == "__main__":
     import torch
     import torch.nn as nn
 
+    _device = "cuda" if torch.cuda.is_available() else "cpu"
+
     # Toy example for testing
     input_shape = (64, 64, 64)
     patch_embed_size = (8, 8, 8)
@@ -238,10 +260,10 @@ if __name__ == "__main__":
         decoder_eva_depth=6,
         decoder_eva_numheads=8,
         patch_drop_rate=0.7,
-    )
+    ).to(_device)
 
     # Random input tensor
-    x = torch.rand((2, 1, *input_shape))  # Batch size 2
+    x = torch.rand((2, 1, *input_shape), device=_device)  # Batch size 2
 
     # Forward pass
     output = model(x)
@@ -257,8 +279,8 @@ if __name__ == "__main__":
         num_classes=1,
         deep_supervision=False,
         only_last_stage_as_latent=True,
-    )
-    x = torch.rand((2, 1, *input_shape))  # Batch size 2
+    ).to(_device)
+    x = torch.rand((2, 1, *input_shape), device=_device)  # Batch size 2
     output = model(x)
     print("Input shape:", x.shape)
     print(
