@@ -51,8 +51,10 @@ def make_overlapping_crops_w_bbox(
             np.random.randint(0, Y - patch_size[1] + 1),
             np.random.randint(0, Z - patch_size[2] + 1),
         ]
-        x_offset_min = max(0, offset[0] - overlap[0])
-        x_offset_max = min(X - patch_size[0], offset[0] + overlap[0])
+        x_offset_min = max(0, offset[0] - overlap[0])  # Ensure we don't go below 0
+        x_offset_max = min(
+            X - patch_size[0], offset[0] + overlap[0]
+        )  # Ensure we don't go above the max index
         y_offset_min = max(0, offset[1] - overlap[1])
         y_offset_max = min(Y - patch_size[1], offset[1] + overlap[1])
         z_offset_min = max(0, offset[2] - overlap[2])
@@ -60,19 +62,44 @@ def make_overlapping_crops_w_bbox(
 
         # Randomly choose start points for the two crops
         start1 = np.array(offset)
-        start2 = np.array(
-            [
-                np.random.randint(x_offset_min, x_offset_max + 1),
-                np.random.randint(y_offset_min, y_offset_max + 1),
-                np.random.randint(z_offset_min, z_offset_max + 1),
-            ]
-        )
-        print(f"Overlap: {overlap}, Start1: {start1}, Start2: {start2}")
-        print(
-            f"{np.prod(overlap)} / {np.prod(patch_size)} = {np.prod(overlap) / np.prod(patch_size)}"
-        )
+        found = False
+        counts = 0
+        while not found:
+            start2 = np.array(
+                [
+                    np.random.randint(x_offset_min, x_offset_max + 1),
+                    np.random.randint(y_offset_min, y_offset_max + 1),
+                    np.random.randint(z_offset_min, z_offset_max + 1),
+                ]
+            )
+            # Check if the volume of actual overlap is greater np.prod(overlap)
+            actual_ol = np.array(
+                [
+                    min(start1[0] + patch_size[0], start2[0] + patch_size[0])
+                    - max(start1[0], start2[0]),
+                    min(start1[1] + patch_size[1], start2[1] + patch_size[1])
+                    - max(start1[1], start2[1]),
+                    min(start1[2] + patch_size[2], start2[2] + patch_size[2])
+                    - max(start1[2], start2[2]),
+                ]
+            )
+            if (ol_ratio := np.prod(actual_ol / patch_size)) >= min_overlap:
+                overlap = actual_ol
+                found = True
+            else:
+                counts += 1
+
+            if counts == 20:
+                # return the same crop twice if we can't find a valid overlap
+                start2 = start1
 
         if debug:
+            print(
+                f"Overlap: {ol_ratio}, Ol_Frac: {actual_ol / patch_size}, Start1: {start1}, Start2: {start2}"
+            )
+            print(f"{np.prod(overlap)} / {np.prod(patch_size)} = {ol_ratio}")
+            print(f"Took {counts} attempts to find valid overlap.")
+
             import matplotlib.pyplot as plt
 
             # plot a 3d representation of the two crops by making a cuboid using the start points and patch size
@@ -94,9 +121,10 @@ def make_overlapping_crops_w_bbox(
                     patch_size[1],
                     patch_size[2],
                     color=color,
-                    alpha=0.5,
+                    alpha=0.3,
                     edgecolor="k",
                 )
+
             plt.show()
             exit(0)
 
@@ -126,29 +154,15 @@ def make_overlapping_crops_w_bbox(
             min(start1[d] + patch_size[d], start2[d] + patch_size[d]) for d in range(3)
         ]
 
-        # bbox in crop1 coords, relative and normalized
+        # bbox in crop1 coords, relative
         rel_start1 = [abs_overlap_start[d] - start1[d] for d in range(3)]
         rel_end1 = [abs_overlap_end[d] - start1[d] for d in range(3)]
-        bboxes1[i] = [
-            rel_start1[0] / px,
-            rel_start1[1] / py,
-            rel_start1[2] / pz,
-            rel_end1[0] / px,
-            rel_end1[1] / py,
-            rel_end1[2] / pz,
-        ]
+        bboxes1[i] = [*rel_start1, *rel_end1]  # x1, y1, z1  # x2, y2, z2
 
         # bbox in crop2 coords
         rel_start2 = [abs_overlap_start[d] - start2[d] for d in range(3)]
         rel_end2 = [abs_overlap_end[d] - start2[d] for d in range(3)]
-        bboxes2[i] = [
-            rel_start2[0] / px,
-            rel_start2[1] / py,
-            rel_start2[2] / pz,
-            rel_end2[0] / px,
-            rel_end2[1] / py,
-            rel_end2[2] / pz,
-        ]
+        bboxes2[i] = [*rel_start2, *rel_end2]  # x1, y1, z1  # x2, y2, z2
 
     return (crops_1, crops_2), (bboxes1, bboxes2)
 
@@ -166,8 +180,8 @@ if __name__ == "__main__":
 
     _batch = np.random.rand(_b, 1, _x, _y, _z).astype(np.float32)
     _patch_size = (_xp, _yp, _zp)
-    _min_ol = 0.2
-    _max_ol = 0.5
+    _min_ol = 0.4
+    _max_ol = 0.8
 
     (c1, c2), (bb1, bb2) = make_overlapping_crops_w_bbox(
         _batch, _patch_size, _min_ol, _max_ol, debug=True
@@ -189,13 +203,13 @@ if __name__ == "__main__":
 
             if _dim == 2:
                 _full_im = _c[_b_idx, 0, _xp // 2, :, :]
-                _bbox = _bb[_b_idx, [0, 1, 3, 4]] * _yp
+                _bbox = _bb[_b_idx, [0, 1, 3, 4]]
             elif _dim == 3:
                 _full_im = _c[_b_idx, 0, :, _yp // 2, :]
-                _bbox = _bb[_b_idx, [0, 2, 3, 5]] * _zp
+                _bbox = _bb[_b_idx, [0, 2, 3, 5]]
             else:
                 _full_im = _c[_b_idx, 0, :, :, _zp // 2]
-                _bbox = _bb[_b_idx, [1, 2, 4, 5]] * _xp
+                _bbox = _bb[_b_idx, [1, 2, 4, 5]]
             ax.imshow(np.zeros_like(_full_im), cmap="gray")
             ax.add_patch(
                 plt.Rectangle(
