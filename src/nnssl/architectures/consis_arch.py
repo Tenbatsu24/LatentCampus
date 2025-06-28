@@ -181,6 +181,9 @@ class ConsisEvaMAE(EvaMAE):
             **kwargs,
         )
 
+        if not self.use_decoder:
+            raise ValueError("ConsisEvaMAE requires a decoder to be used.")
+
         self.projector = ProjectionHead(
             in_dim=embed_dim,
             out_dim=None,
@@ -195,25 +198,24 @@ class ConsisEvaMAE(EvaMAE):
         # Encode using EVA (internally applies masking with patch_drop_rate)
         encoded, keep_indices = self.eva(x)
 
-        # Make projection
-        projection = self.projector(encoded)["proj"]
-
         # Restore full sequence with mask tokens
         num_patches = w * h * d
-        if self.use_decoder:
-            restored_x = self.restore_full_sequence(encoded, keep_indices, num_patches)
+        restored_x = self.restore_full_sequence(encoded, keep_indices, num_patches)
+        projection = self.projector(restored_x)["proj"]
 
-            # Decode with restored sequence and rope embeddings
-            decoded, _ = self.decoder(restored_x)
-        else:
-            decoded = encoded
+        # Reshape restored sequence to match original patch shape
+        projection = rearrange(
+            projection, "b (h w d) c -> b c w h d", h=w, w=h, d=d
+        )
+
+        # Decode with restored sequence and rope embeddings
+        decoded, _ = self.decoder(restored_x)
 
         # Project back to output shape
         decoded = rearrange(decoded, "b (h w d) c -> b c w h d", h=w, w=h, d=d)
         decoded = self.up_projection(decoded)
 
         return {
-            "patch_latent": encoded,
             "proj": projection,
             "recon": decoded,
             "keep_indices": keep_indices,
@@ -228,10 +230,10 @@ if __name__ == "__main__":
     input_shape = (64, 64, 64)
     patch_embed_size = (8, 8, 8)
     model = ConsisEvaMAE(
-        input_channels=3,
+        input_channels=1,
         embed_dim=192,
         patch_embed_size=patch_embed_size,
-        output_channels=3,
+        output_channels=1,
         input_shape=input_shape,
         decoder_eva_depth=6,
         decoder_eva_numheads=8,
@@ -239,7 +241,7 @@ if __name__ == "__main__":
     )
 
     # Random input tensor
-    x = torch.rand((2, 3, *input_shape))  # Batch size 2
+    x = torch.rand((2, 1, *input_shape))  # Batch size 2
 
     # Forward pass
     output = model(x)
@@ -247,8 +249,7 @@ if __name__ == "__main__":
     print(
         f"Output shape: {output['recon'].shape}, "
         f"Keep indices shape: {output['keep_indices'].shape}, "
-        f"Latent shape: {output['patch_latent'].shape}",
-        f"Projection shape: {output['proj'].shape}",
+        f"Latent shape: {output['proj'].shape}",
     )
 
     model = ConsisMAE(

@@ -82,13 +82,43 @@ class KVConsisConLoss(torch.nn.Module):
         self.epsilon = epsilon
 
         self.mae_loss = LogCoshError(reduction="none")
+        self.resampling_grid_size = (7, 7, 7)  # Default grid size for resampling
+
+        # create a grid for resampling later
+        self.resampling_grid = torch.meshgrid(
+            torch.linspace(0, 1, self.resampling_grid_size[0]),
+            torch.linspace(0, 1, self.resampling_grid_size[1]),
+            torch.linspace(0, 1, self.resampling_grid_size[2]),
+            indexing="ij",
+        )
+
+    def align_views(self,
+        latents: torch.Tensor,
+        rel_bboxes: torch.Tensor,
+    ) -> tuple[torch.Tensor, torch.Tensor]:
+        """
+        Aligns the latents based on the relative bounding boxes.
+
+        Args:
+            latents (torch.Tensor): The latent representations [b, c, x_p, y_p, z_p].
+            rel_bboxes (torch.Tensor): The relative bounding boxes. [b, 6] where each row is (x1, y1, z1, x2, y2, z2)
+                and the values are in the range [0, 1].
+
+        Returns:
+            tuple[torch.Tensor, torch.Tensor]: Aligned latents and bounding boxes.
+        """
+        b, c, x_p, y_p, z_p = latents.shape
+        rel_bboxes = 2 * (rel_bboxes - 0.5)  # Convert to [-1, 1] range
+        rel_bboxes = rel_bboxes.view(b, 2, 3)  # Reshape to [b, 2, 3] for easier indexing
+        aligned_latents = torch.empty(b, c, *self.resampling_grid_size, device=latents.device)
+        pass
 
     def forward(
         self,
         model_output: dict[str, torch.Tensor],
         target: dict[str, torch.Tensor],
         gt_recon: torch.Tensor,
-        abs_bboxes: torch.Tensor,
+        rel_bboxes: torch.Tensor,
         mask: torch.Tensor,
     ) -> dict[str, torch.Tensor]:
         """
