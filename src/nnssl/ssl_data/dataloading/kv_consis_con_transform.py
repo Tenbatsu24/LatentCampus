@@ -162,7 +162,9 @@ class KVConsisTransform(AbstractTransform):
 
             self.crop_augmentations: Compose = Compose([])  # do nothing if not training
 
-        self.to_tensor = NumpyToTensor(keys=["all_crops", "rel_bboxes"], cast_to="float")
+        self.to_tensor = NumpyToTensor(
+            keys=["all_crops", "rel_bboxes"], cast_to="float"
+        )
 
     def make_base_crop(self, data_dict):
         """
@@ -201,9 +203,9 @@ class KVConsisTransform(AbstractTransform):
         )
 
         crops = np.concatenate([crop_1, crop_2], axis=0)
-        rel_bboxes = np.concatenate([rel_bbox_1, rel_bbox_2], axis=0)
+        abs_bboxes = np.concatenate([rel_bbox_1, rel_bbox_2], axis=0)
 
-        return crops, rel_bboxes
+        return crops, abs_bboxes
 
     def __call__(self, **data_dict):
         base_crops = self.make_base_crop(data_dict)

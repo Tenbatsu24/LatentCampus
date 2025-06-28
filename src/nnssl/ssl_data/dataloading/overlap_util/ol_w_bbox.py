@@ -12,6 +12,7 @@ def random_overlap_tuple(ol: float):
     """
     ln_ol = np.log(ol)
     weights = np.random.dirichlet(np.ones(3))
+    # weights = np.ones(3) / 3  # uniform distribution for simplicity
     return tuple(np.exp(weights * ln_ol))
 
 

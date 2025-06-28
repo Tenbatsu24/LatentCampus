@@ -6,7 +6,6 @@ import torch
 import numpy as np
 
 from torch import autocast
-from torchvision.ops import roi_pool
 
 from nnssl.architectures.consis_arch import ConsisMAE
 from nnssl.ssl_data.configure_basic_dummyDA import (
@@ -35,6 +34,19 @@ class BaseKVConsisTrainer(BaseMAETrainer):
         self.initial_patch_size = (256, 256, 256)
         self.teacher = None
 
+    def build_loss(self):
+        """
+        Builds the loss function for the model.
+        This method is overridden to provide specific loss logic.
+        """
+        from nnssl.training.loss.kv_consis_con_loss import KVConsisConLoss
+
+        # Create the loss function
+        self.loss = KVConsisConLoss(
+            p=2,
+            epsilon=0.1,
+        )
+
     @override
     def build_architecture_and_adaptation_plan(
         self,
@@ -49,7 +61,7 @@ class BaseKVConsisTrainer(BaseMAETrainer):
             input_channels=num_input_channels,
             num_classes=num_output_channels,
             deep_supervision=False,
-            only_last_stage_as_latent=False
+            only_last_stage_as_latent=False,
         )
         # --------------------- Build associated adaptation plan --------------------- #
         # no changes to original mae since projector can be thrown away
@@ -140,10 +152,8 @@ class BaseKVConsisTrainer(BaseMAETrainer):
             for param in self.teacher.parameters():
                 param.requires_grad = False
 
-    def ema(self, teacher_model, student_model, mom=0.999, update_bn=True):
-        for p_s, p_t in zip(
-            student_model.parameters(), teacher_model.parameters()
-        ):
+    def ema(self, teacher_model, student_model, mom=0.995, update_bn=True):
+        for p_s, p_t in zip(student_model.parameters(), teacher_model.parameters()):
             p_t.data = mom * p_t.data + (1 - mom) * p_s.data
 
         if not update_bn:
@@ -203,7 +213,13 @@ class BaseKVConsisTrainer(BaseMAETrainer):
         ):
             output = self.network(masked_data)
             # del data
-            l = self.loss(output, data, mask)
+            l = self.loss(
+                student_output=output,
+                teacher_output=teacher_output,
+                gt_data=data,
+                rel_bboxes=bboxes,
+                mask=mask,
+            )
 
         if is_train:
             if self.grad_scaler is not None:

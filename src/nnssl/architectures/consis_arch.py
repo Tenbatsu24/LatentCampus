@@ -27,7 +27,12 @@ class ProjectionHead(nn.Module):
 
         self.out_dim = out_dim
         self.mlp = _build_mlp(
-            n_layers, in_dim, bottleneck_dim, hidden_dim=hidden_dim, use_bn=use_bn, bias=mlp_bias
+            n_layers,
+            in_dim,
+            bottleneck_dim,
+            hidden_dim=hidden_dim,
+            use_bn=use_bn,
+            bias=mlp_bias,
         )
         self.l2_normalize = l2_normalize
         self.apply(self._init_weights)
@@ -35,7 +40,9 @@ class ProjectionHead(nn.Module):
         if out_dim is None:
             self.last_layer = nn.Identity()
         else:
-            self.last_layer = weight_norm(nn.Linear(bottleneck_dim, out_dim, bias=False))
+            self.last_layer = weight_norm(
+                nn.Linear(bottleneck_dim, out_dim, bias=False)
+            )
             self.last_layer.weight_g.data.fill_(1)
 
     def _init_weights(self, m):
@@ -64,7 +71,9 @@ class ProjectionHead(nn.Module):
         }
 
 
-def _build_mlp(nlayers, in_dim, bottleneck_dim, hidden_dim=None, use_bn=False, bias=True):
+def _build_mlp(
+    nlayers, in_dim, bottleneck_dim, hidden_dim=None, use_bn=False, bias=True
+):
     if nlayers == 1:
         return nn.Linear(in_dim, bottleneck_dim, bias=bias)
     else:
@@ -138,13 +147,14 @@ class ConsisMAE(ResidualEncoderUNet):
             out_dim=None,
         )
 
-
     def forward(self, x):
         skips = self.encoder(x)
         decoded = self.decoder(skips)
         if self.only_last_stage_as_latent:
             skips = [skips[-1]]
-        latent = torch.concat([self.adaptive_pool(s) for s in reversed(skips)], dim=1).reshape(x.shape[0], -1)
+        latent = torch.concat(
+            [self.adaptive_pool(s) for s in reversed(skips)], dim=1
+        ).reshape(x.shape[0], -1)
         projection = self.projector(latent)
         return {
             "latent": latent,
@@ -161,14 +171,14 @@ class ConsisEvaMAE(EvaMAE):
         embed_dim: int,
         patch_embed_size: Tuple[int, ...],
         output_channels: int,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(
             input_channels=input_channels,
             embed_dim=embed_dim,
             patch_embed_size=patch_embed_size,
             output_channels=output_channels,
-            **kwargs
+            **kwargs,
         )
 
         self.projector = ProjectionHead(
@@ -203,11 +213,14 @@ class ConsisEvaMAE(EvaMAE):
         decoded = self.up_projection(decoded)
 
         return {
-            "patch_latent": encoded, "proj": projection, "recon": decoded, "keep_indices": keep_indices
+            "patch_latent": encoded,
+            "proj": projection,
+            "recon": decoded,
+            "keep_indices": keep_indices,
         }
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     import torch
     import torch.nn as nn
 
@@ -235,11 +248,14 @@ if __name__ == '__main__':
         f"Output shape: {output['recon'].shape}, "
         f"Keep indices shape: {output['keep_indices'].shape}, "
         f"Latent shape: {output['patch_latent'].shape}",
-        f"Projection shape: {output['proj'].shape}"
+        f"Projection shape: {output['proj'].shape}",
     )
 
     model = ConsisMAE(
-        input_channels=1, num_classes=1, deep_supervision=False, only_last_stage_as_latent=True
+        input_channels=1,
+        num_classes=1,
+        deep_supervision=False,
+        only_last_stage_as_latent=True,
     )
     x = torch.rand((2, 1, *input_shape))  # Batch size 2
     output = model(x)
@@ -247,5 +263,5 @@ if __name__ == '__main__':
     print(
         f"Output shape: {output['recon'].shape}, "
         f"Latent shape: {output['latent'].shape}",
-        f"Projection shape: {output['proj'].shape}"
+        f"Projection shape: {output['proj'].shape}",
     )  # Latent is a list of tensors
