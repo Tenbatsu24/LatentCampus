@@ -156,13 +156,13 @@ def make_overlapping_crops_w_bbox(
         ]
 
         # bbox in crop1 coords, relative
-        rel_start1 = [abs_overlap_start[d] - start1[d] for d in range(3)]
-        rel_end1 = [abs_overlap_end[d] - start1[d] for d in range(3)]
+        rel_start1 = [(abs_overlap_start[d] - start1[d]) / patch_size[d] for d in range(3)]
+        rel_end1 = [(abs_overlap_end[d] - start1[d]) / patch_size[d] for d in range(3)]
         bboxes1[i] = [*rel_start1, *rel_end1]  # x1, y1, z1  # x2, y2, z2
 
         # bbox in crop2 coords
-        rel_start2 = [abs_overlap_start[d] - start2[d] for d in range(3)]
-        rel_end2 = [abs_overlap_end[d] - start2[d] for d in range(3)]
+        rel_start2 = [(abs_overlap_start[d] - start2[d]) / patch_size[d] for d in range(3)]
+        rel_end2 = [(abs_overlap_end[d] - start2[d]) / patch_size[d] for d in range(3)]
         bboxes2[i] = [*rel_start2, *rel_end2]  # x1, y1, z1  # x2, y2, z2
 
     return (crops_1, crops_2), (bboxes1, bboxes2)
@@ -204,13 +204,13 @@ if __name__ == "__main__":
 
             if _dim == 2:
                 _full_im = _c[_b_idx, 0, _xp // 2, :, :]
-                _bbox = _bb[_b_idx, [0, 1, 3, 4]]
+                _bbox = _bb[_b_idx, [0, 1, 3, 4]] * _xp
             elif _dim == 3:
                 _full_im = _c[_b_idx, 0, :, _yp // 2, :]
-                _bbox = _bb[_b_idx, [0, 2, 3, 5]]
+                _bbox = _bb[_b_idx, [0, 2, 3, 5]] * _yp
             else:
                 _full_im = _c[_b_idx, 0, :, :, _zp // 2]
-                _bbox = _bb[_b_idx, [1, 2, 4, 5]]
+                _bbox = _bb[_b_idx, [1, 2, 4, 5]] * _zp
             ax.imshow(np.zeros_like(_full_im), cmap="gray")
             ax.add_patch(
                 plt.Rectangle(
