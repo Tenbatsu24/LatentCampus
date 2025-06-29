@@ -931,23 +931,24 @@ class AbstractBaseTrainer(ABC):
         self, val_outputs: List[dict], using_wandb: bool = False
     ):
         outputs_collated = collate_outputs(val_outputs)
+        reduced_outputs = {}
 
-        if self.is_ddp:
-            world_size = dist.get_world_size()
-            losses_val = [None for _ in range(world_size)]
-            dist.all_gather_object(losses_val, outputs_collated["loss"])
-            loss_here = np.vstack(losses_val).mean()
-        else:
-            loss_here = np.mean(outputs_collated["loss"])
+        for key, values in outputs_collated.items():
+            if self.is_ddp:
+                world_size = dist.get_world_size()
+                gathered = [None for _ in range(world_size)]
+                dist.all_gather_object(gathered, values)
+                reduced_outputs[key] = np.vstack(gathered).mean()
+            else:
+                reduced_outputs[key] = np.mean(values)
+
         if using_wandb and wandb.run is not None:
-            wandb.log(
-                {
-                    "val/loss": loss_here,
-                    "epoch": self.current_epoch,
-                    "step": self.current_epoch * self.num_iterations_per_epoch,
-                }
-            )
-        self.logger.log("val_losses", loss_here, self.current_epoch)
+            log_dict = {f"val/{k}": v for k, v in reduced_outputs.items()}
+            log_dict["epoch"] = self.current_epoch
+            log_dict["step"] = self.current_epoch * self.num_iterations_per_epoch
+            wandb.log(log_dict)
+
+        self.logger.log("val_losses", reduced_outputs.get("loss", None), self.current_epoch)
 
     def on_train_epoch_start(self, using_wandb: bool = False):
         self.network.train()
