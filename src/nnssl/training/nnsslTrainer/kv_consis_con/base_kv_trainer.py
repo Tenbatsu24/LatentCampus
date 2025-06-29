@@ -159,7 +159,7 @@ class BaseKVConsisTrainer(BaseMAETrainer):
                 param.requires_grad = False
         super().on_train_start()
 
-    def ema(self, teacher_model, student_model, mom=0.995, update_bn=True):
+    def ema(self, teacher_model, student_model, mom=0.995, update_bn=False):
         for p_s, p_t in zip(student_model.parameters(), teacher_model.parameters()):
             p_t.data = mom * p_t.data + (1 - mom) * p_s.data
 
@@ -244,7 +244,7 @@ class BaseKVConsisTrainer(BaseMAETrainer):
 
             # update the teacher network with momentum of 0.95
             with torch.no_grad():
-                self.ema(self.teacher, self.network, mom=0.999, update_bn=True)
+                self.ema(self.teacher, self.network, mom=0.995, update_bn=False)
 
         return {k: v.detach().cpu().numpy() for k, v in loss_dict.items()}
 

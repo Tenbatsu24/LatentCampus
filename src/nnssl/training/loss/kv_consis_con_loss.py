@@ -225,7 +225,7 @@ class KVConsisConLoss(torch.nn.Module):
 
 
 if __name__ == "__main__":
-    pairs = get_neg_pairs(8)
+    pairs = get_neg_pairs(2)
     print(pairs, len(pairs[0]), len(pairs[1]))
 
     _model_output = {
