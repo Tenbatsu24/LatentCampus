@@ -82,7 +82,7 @@ class BaseKVConsisEvaTrainer(BaseEvaMAETrainer):
             train="train",
             data_key="data",
             initial_patch_size=self.initial_patch_size,
-            patch_size=patch_size,
+            patch_size=self.config_plan.patch_size,
             do_dummy_2d_data_aug=do_dummy_2d_data_aug,
             order_resampling_data=order_resampling_data,
             order_resampling_seg=order_resampling_seg,
