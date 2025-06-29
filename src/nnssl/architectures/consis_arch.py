@@ -251,6 +251,8 @@ if __name__ == "__main__":
 
     import thop
 
+    from nnssl.architectures.architecture_registry import get_res_enc_l
+
     _device = "cuda" if torch.cuda.is_available() else "cpu"
 
     def measure_memory(model, input_tensor):
@@ -283,12 +285,17 @@ if __name__ == "__main__":
         only_last_stage_as_latent=True,
     ).to(_device)
     x = torch.rand((2, 1, *input_shape), device=_device)  # Batch size 2
-    output = model(x)
-    print("Input shape:", x.shape)
-    print(
-        f"Output shape: {output['recon'].shape}, "
-        f"Projection shape: {output['proj'].shape}",
-    )  # Latent is a list of tensors
+    if _device == "cuda":
+        measure_memory(model, x)
+    else:
+        measure_memory_cpu(model, x)
+    macs, params = thop.profile(
+        model,
+        inputs=(x,),
+    )
+    print(f"MACs: {macs / 1e9:.2f} G, Params: {params / 1e6:.2f} M")
+
+    model = get_res_enc_l(1, 1, deep_supervision=False).to(_device)
     if _device == "cuda":
         measure_memory(model, x)
     else:
