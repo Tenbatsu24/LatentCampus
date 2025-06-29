@@ -83,7 +83,8 @@ class KVConsisConLoss(torch.nn.Module):
         self.p = p
         self.epsilon = epsilon
 
-        self.mae_loss = LogCoshError(reduction="none")
+        self.log_cosh = LogCoshError(reduction="none")
+        self.mse_loss = torch.nn.HuberLoss(reduction="none")
 
         self.recon_key = "recon"
         self.proj_key = "proj"
@@ -181,8 +182,11 @@ class KVConsisConLoss(torch.nn.Module):
         # Compute the consistency loss
         eps = torch.finfo(model_output[self.recon_key].dtype).eps
 
-        recon_loss = self.mae_loss(model_output[self.recon_key], gt_recon)
-        recon_loss = torch.sum(recon_loss * mask) / (torch.sum(mask) + eps)
+        recon_loss_lc = self.log_cosh(model_output[self.recon_key], gt_recon)
+        recon_loss_lc = torch.sum(recon_loss_lc * mask) / (torch.sum(mask) + eps)
+
+        recon_loss_mse = self.mse_loss(model_output[self.recon_key], gt_recon)
+        recon_loss_mse = torch.sum(recon_loss_mse * mask) / (torch.sum(mask) + eps)
 
         # chunk the latents and compute the consistency loss
         pred_latents = model_output[self.proj_key]
@@ -199,28 +203,40 @@ class KVConsisConLoss(torch.nn.Module):
             b, 0
         )  # swap the latents. the num_views is hardcoded to 2 for this method
 
-        attraction_term = torch.norm(pred_latents - tgt_latents, p=self.p, dim=1)
-        attraction_term = torch.mean(attraction_term)
+        attraction_term_lp = torch.norm(pred_latents - tgt_latents, p=self.p, dim=1)
+        attraction_term_lp = torch.mean(attraction_term_lp)
+
+        attraction_term_cos = 2 - 2 * (pred_latents * tgt_latents)  # already normalized
+        attraction_term_cos = torch.mean(attraction_term_cos)  # mean over the batch
 
         neg_idxs_a, neg_idxs_b = get_neg_pairs(b)
         neg_idxs_a, neg_idxs_b = (
             torch.tensor(neg_idxs_a, device=pred_latents.device),
             torch.tensor(neg_idxs_b, device=pred_latents.device),
         )
-        repulsion_terms = torch.norm(
+        repulsion_terms_lp = torch.norm(
             pred_latents[neg_idxs_a] - tgt_latents[neg_idxs_b], p=self.p, dim=1
         )
-        repulsion_terms = torch.mean(repulsion_terms)
+        repulsion_terms_lp = torch.mean(repulsion_terms_lp)
 
-        contrastive_loss = attraction_term / (repulsion_terms + self.epsilon)
-        loss = recon_loss + contrastive_loss
+        repulsion_terms_cos = 2 - 2 * (pred_latents[neg_idxs_a] * tgt_latents[neg_idxs_b])
+        repulsion_terms_cos = torch.mean(repulsion_terms_cos)
+
+        contrastive_loss_lp = attraction_term_lp / (repulsion_terms_lp + self.epsilon)
+        contrastive_loss_cos = attraction_term_cos / (repulsion_terms_cos + self.epsilon)
+
+        loss = recon_loss_lc + recon_loss_mse + contrastive_loss_lp + contrastive_loss_cos
 
         return {
-            "loss": loss,  # average over the batch
-            "recon_loss": recon_loss,
-            "contrastive_loss": contrastive_loss,
-            "attraction_term": attraction_term,
-            "repulsion_terms": repulsion_terms,
+            "loss": loss,
+            "log_cosh": recon_loss_lc,
+            "huber": recon_loss_mse,
+            "cl_lp": contrastive_loss_lp,
+            "pos_lp": attraction_term_lp,
+            "neg_lp": repulsion_terms_lp,
+            "cl_cos": contrastive_loss_cos,
+            "pos_cos": attraction_term_cos,
+            "neg_cos": repulsion_terms_cos,
         }
 
 
