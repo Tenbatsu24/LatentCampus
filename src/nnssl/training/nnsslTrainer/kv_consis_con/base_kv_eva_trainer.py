@@ -106,8 +106,8 @@ class BaseKVConsisEvaTrainer(BaseEvaMAETrainer):
         if do_dummy_2d_data_aug:
             self.print_to_log_file("Using dummy 2D data augmentation")
 
-        if initial_patch_size < self.initial_patch_size:
-            self.initial_patch_size = initial_patch_size
+        self.initial_patch_size = initial_patch_size
+        self.print_to_log_file("Initial patch size: {}".format(initial_patch_size))
 
         # ------------------------ Training data augmentations ----------------------- #
         tr_transforms = self.get_training_transforms(
