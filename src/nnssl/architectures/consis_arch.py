@@ -159,7 +159,6 @@ class ConsisMAE(ResidualEncoderUNet):
         ).reshape(x.shape[0], -1)
         projection = self.projector(latent)
         return {
-            "latent": latent,
             "proj": projection["proj"],
             "recon": decoded,
         }
@@ -274,7 +273,6 @@ if __name__ == "__main__":
     print("Input shape:", x.shape)
     print(
         f"Output shape: {output['recon'].shape}, "
-        f"Latent shape: {output['latent'].shape}",
         f"Projection shape: {output['proj'].shape}",
     )  # Latent is a list of tensors
     if _device == "cuda":

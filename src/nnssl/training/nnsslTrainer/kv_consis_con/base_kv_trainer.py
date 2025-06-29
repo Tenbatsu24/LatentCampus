@@ -221,9 +221,9 @@ class BaseKVConsisTrainer(BaseMAETrainer):
                 output = self.network(masked_data)
                 # del data
                 loss_dict = self.loss(
-                    student_output=output,
-                    teacher_output=teacher_output,
-                    gt_data=data,
+                    model_output=output,
+                    target=teacher_output,
+                    gt_recon=data,
                     rel_bboxes=bboxes,
                     mask=mask,
                 )
