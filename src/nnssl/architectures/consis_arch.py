@@ -280,7 +280,7 @@ if __name__ == "__main__":
         input_channels=1,
         num_classes=1,
         deep_supervision=False,
-        only_last_stage_as_latent=False,
+        only_last_stage_as_latent=True,
     ).to(_device)
     x = torch.rand((2, 1, *input_shape), device=_device)  # Batch size 2
     output = model(x)
