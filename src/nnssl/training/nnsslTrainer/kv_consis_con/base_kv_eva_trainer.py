@@ -204,9 +204,9 @@ class BaseKVConsisEvaTrainer(BaseEvaMAETrainer):
         ):
             with torch.no_grad() if is_train else dummy_context():
                 # Forward pass with PatchDropout
-                output, keep_indices = self.network(data)
+                output = self.network(data)
                 mask = self.create_mask(
-                    keep_indices, self.config_plan.patch_size, self.vit_patch_size
+                    output["keep_indices"], self.config_plan.patch_size, self.vit_patch_size
                 )
 
                 # del data
