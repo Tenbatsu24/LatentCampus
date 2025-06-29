@@ -246,6 +246,9 @@ class ConsisEvaMAE(EvaMAE):
 
 
 if __name__ == "__main__":
+    import os
+    import psutil
+
     import thop
 
     _device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -258,6 +261,17 @@ if __name__ == "__main__":
         mem_peak = torch.cuda.max_memory_allocated() / (1024**2)  # in MB
         print(f"Current allocated memory: {mem_allocated:.2f} MB")
         print(f"Peak memory usage: {mem_peak:.2f} MB")
+
+
+    def measure_memory_cpu(model, input_tensor):
+        process = psutil.Process(os.getpid())
+        mem_before = process.memory_info().rss / (1024 ** 2)  # in MB
+        with torch.no_grad():
+            _ = model(input_tensor)
+        mem_after = process.memory_info().rss / (1024 ** 2)  # in MB
+        print(f"Memory before: {mem_before:.2f} MB")
+        print(f"Memory after: {mem_after:.2f} MB")
+        print(f"Memory used by forward pass: {mem_after - mem_before:.2f} MB")
 
     # Toy example for testing
     input_shape = (64, 64, 64)
@@ -277,6 +291,8 @@ if __name__ == "__main__":
     )  # Latent is a list of tensors
     if _device == "cuda":
         measure_memory(model, x)
+    else:
+        measure_memory_cpu(model, x)
     macs, params = thop.profile(
         model,
         inputs=(x,),
@@ -310,6 +326,8 @@ if __name__ == "__main__":
     )
     if _device == "cuda":
         measure_memory(model, x)
+    else:
+        measure_memory_cpu(model, x)
     macs, params = thop.profile(
         model,
         inputs=(x,),
