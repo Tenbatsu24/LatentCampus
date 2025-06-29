@@ -149,7 +149,9 @@ class BaseKVConsisTrainer(BaseMAETrainer):
             # create a deep copy of the network to use as a teacher
             self.teacher = copy.deepcopy(self.network)
             self.teacher = self.teacher.to(self.device)
-            self.teacher = self.teacher.eval()  # set the teacher to eval mode and not training
+            self.teacher = (
+                self.teacher.eval()
+            )  # set the teacher to eval mode and not training
             for param in self.teacher.parameters():
                 param.requires_grad = False
 
@@ -212,11 +214,7 @@ class BaseKVConsisTrainer(BaseMAETrainer):
             if self.device.type == "cuda"
             else dummy_context()
         ):
-            with (
-                torch.no_grad()
-                if not is_train
-                else dummy_context()
-            ):
+            with torch.no_grad() if not is_train else dummy_context():
                 output = self.network(masked_data)
                 # del data
                 loss_dict = self.loss(

@@ -93,7 +93,7 @@ def get_network_by_name(
     return model
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     import thop
     import torch
     import torch.nn as nn
@@ -104,8 +104,8 @@ if __name__ == '__main__':
         torch.cuda.reset_peak_memory_stats()
         with torch.no_grad():
             _ = model(input_tensor)
-        mem_allocated = torch.cuda.memory_allocated() / (1024 ** 2)  # in MB
-        mem_peak = torch.cuda.max_memory_allocated() / (1024 ** 2)  # in MB
+        mem_allocated = torch.cuda.memory_allocated() / (1024**2)  # in MB
+        mem_peak = torch.cuda.max_memory_allocated() / (1024**2)  # in MB
         print(f"Current allocated memory: {mem_allocated:.2f} MB")
         print(f"Peak memory usage: {mem_peak:.2f} MB")
 
@@ -125,6 +125,7 @@ if __name__ == '__main__':
     if _device == "cuda":
         measure_memory(model, x)
     macs, params = thop.profile(
-        model, inputs=(x,),
+        model,
+        inputs=(x,),
     )
     print(f"MACs: {macs / 1e9:.2f} G, Params: {params / 1e6:.2f} M")

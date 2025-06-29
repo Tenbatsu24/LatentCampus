@@ -100,10 +100,15 @@ class KVConsisConLoss(torch.nn.Module):
         z_lin = torch.linspace(-1, 1, sampling_ratio * D_out, device=device)
         y_lin = torch.linspace(-1, 1, sampling_ratio * H_out, device=device)
         x_lin = torch.linspace(-1, 1, sampling_ratio * W_out, device=device)
-        zz, yy, xx = torch.meshgrid(z_lin, y_lin, x_lin, indexing='ij')  # (D_out, H_out, W_out)
-        self.base_grid = torch.stack((xx, yy, zz), dim=-1).unsqueeze(0)  # (1, D_out, H_out, W_out, 3)
+        zz, yy, xx = torch.meshgrid(
+            z_lin, y_lin, x_lin, indexing="ij"
+        )  # (D_out, H_out, W_out)
+        self.base_grid = torch.stack((xx, yy, zz), dim=-1).unsqueeze(
+            0
+        )  # (1, D_out, H_out, W_out, 3)
 
-    def align_views(self,
+    def align_views(
+        self,
         latents: torch.Tensor,
         rel_bboxes: torch.Tensor,
     ) -> torch.Tensor:
@@ -138,14 +143,17 @@ class KVConsisConLoss(torch.nn.Module):
 
         # ── trilinear ROI‑align via grid_sample ────────────────────────────────────
         aligned_latents = F.grid_sample(
-            latents, sampling_grid,
+            latents,
+            sampling_grid,
             mode="bilinear",  # when 5d input, "bilinear" is equivalent to "trilinear" internally
             padding_mode="border",
             align_corners=True,
         )
 
         # adaptive pool to the ouput size
-        aligned_latents = F.adaptive_avg_pool3d(aligned_latents, (self.D_out, self.H_out, self.W_out))
+        aligned_latents = F.adaptive_avg_pool3d(
+            aligned_latents, (self.D_out, self.H_out, self.W_out)
+        )
 
         return aligned_latents
 
@@ -187,7 +195,9 @@ class KVConsisConLoss(torch.nn.Module):
             tgt_latents = self.align_views(tgt_latents, rel_bboxes)
 
         b = pred_latents.shape[0] // 2
-        tgt_latents = tgt_latents.roll(b, 0)  # swap the latents. the num_views is hardcoded to 2 for this method
+        tgt_latents = tgt_latents.roll(
+            b, 0
+        )  # swap the latents. the num_views is hardcoded to 2 for this method
 
         attraction_term = torch.norm(pred_latents - tgt_latents, p=self.p, dim=1)
         attraction_term = torch.mean(attraction_term)
@@ -228,7 +238,9 @@ if __name__ == "__main__":
         "proj": torch.randn(4, 256, 20, 20, 20, device="cuda"),
     }
 
-    _gt_recon = torch.randn(4, 1, 64, 64, 64, device="cuda")  # Ground truth reconstruction
+    _gt_recon = torch.randn(
+        4, 1, 64, 64, 64, device="cuda"
+    )  # Ground truth reconstruction
 
     _rel_bboxes = torch.tensor(
         [
@@ -239,7 +251,9 @@ if __name__ == "__main__":
         ],
         device="cuda",
     )  # Example relative bounding boxes
-    _mask = torch.randint(0, 2, (4, 1, 64, 64, 64), device="cuda")  # Random mask for the example
+    _mask = torch.randint(
+        0, 2, (4, 1, 64, 64, 64), device="cuda"
+    )  # Random mask for the example
 
     loss_fn = KVConsisConLoss(torch.device("cuda"), p=2, epsilon=0.1)
     _loss_output = loss_fn(

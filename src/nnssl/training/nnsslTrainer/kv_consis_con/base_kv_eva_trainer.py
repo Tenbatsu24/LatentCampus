@@ -11,8 +11,12 @@ from typing_extensions import override
 from nnssl.architectures.consis_arch import ConsisEvaMAE
 from nnssl.utilities.helpers import dummy_context
 from nnssl.ssl_data.dataloading.kv_consis_con_transform import KVConsisTransform
-from nnssl.training.nnsslTrainer.masked_image_modeling.BaseEvaMAETrainer import BaseEvaMAETrainer
-from nnssl.ssl_data.configure_basic_dummyDA import configure_rotation_dummyDA_mirroring_and_inital_patch_size
+from nnssl.training.nnsslTrainer.masked_image_modeling.BaseEvaMAETrainer import (
+    BaseEvaMAETrainer,
+)
+from nnssl.ssl_data.configure_basic_dummyDA import (
+    configure_rotation_dummyDA_mirroring_and_inital_patch_size,
+)
 
 
 class BaseKVConsisEvaTrainer(BaseEvaMAETrainer):
@@ -148,7 +152,9 @@ class BaseKVConsisEvaTrainer(BaseEvaMAETrainer):
             # create a deep copy of the network to use as a teacher
             self.teacher = copy.deepcopy(self.network)
             self.teacher = self.teacher.to(self.device)
-            self.teacher = self.teacher.eval()  # set the teacher to eval mode and not training
+            self.teacher = (
+                self.teacher.eval()
+            )  # set the teacher to eval mode and not training
             for param in self.teacher.parameters():
                 param.requires_grad = False
 
@@ -168,6 +174,7 @@ class BaseKVConsisEvaTrainer(BaseEvaMAETrainer):
                 m_t.running_var.data = (
                     mom * m_t.running_var.data + (1 - mom) * m_s.running_var.data
                 )
+
     def shared_step(self, batch: dict, is_train: bool = True) -> dict:
         """
         Shared step for both training and validation.
@@ -192,11 +199,7 @@ class BaseKVConsisEvaTrainer(BaseEvaMAETrainer):
             if self.device.type == "cuda"
             else dummy_context()
         ):
-            with (
-                torch.no_grad()
-                if is_train
-                else dummy_context()
-            ):
+            with torch.no_grad() if is_train else dummy_context():
                 # Forward pass with PatchDropout
                 output, keep_indices = self.network(data)
                 mask = self.create_mask(
@@ -217,12 +220,16 @@ class BaseKVConsisEvaTrainer(BaseEvaMAETrainer):
             if self.grad_scaler is not None:
                 self.grad_scaler.scale(l).backward()
                 self.grad_scaler.unscale_(self.optimizer)
-                torch.nn.utils.clip_grad_norm_(self.network.parameters(), self.grad_clip)
+                torch.nn.utils.clip_grad_norm_(
+                    self.network.parameters(), self.grad_clip
+                )
                 self.grad_scaler.step(self.optimizer)
                 self.grad_scaler.update()
             else:
                 l.backward()
-                torch.nn.utils.clip_grad_norm_(self.network.parameters(), self.grad_clip)
+                torch.nn.utils.clip_grad_norm_(
+                    self.network.parameters(), self.grad_clip
+                )
                 self.optimizer.step()
 
             # update the teacher network with momentum of 0.995
