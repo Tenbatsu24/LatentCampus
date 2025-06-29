@@ -32,6 +32,7 @@ class BaseKVConsisTrainer(BaseMAETrainer):
 
         # Default initial patch size, can be overridden in get_dataloaders
         self.initial_patch_size = (256, 256, 256)
+        self.total_batch_size = 8
         self.teacher = None
 
     def build_loss(self):
