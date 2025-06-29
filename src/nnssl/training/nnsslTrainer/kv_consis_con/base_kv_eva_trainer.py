@@ -35,6 +35,7 @@ class BaseKVConsisEvaTrainer(BaseEvaMAETrainer):
         self.initial_patch_size = (256, 256, 256)
         self.total_batch_size = 8
         self.teacher = None
+        self.config_plan.patch_size = (160, 160, 160)  # Default patch size for KV Consis Eva
 
     def build_loss(self):
         """
