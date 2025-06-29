@@ -91,3 +91,40 @@ def get_network_by_name(
                 "Cannot return encoder only for Primus architectures."
             )
     return model
+
+
+if __name__ == '__main__':
+    import thop
+    import torch
+    import torch.nn as nn
+
+    _device = "cuda" if torch.cuda.is_available() else "cpu"
+
+    def measure_memory(model, input_tensor):
+        torch.cuda.reset_peak_memory_stats()
+        with torch.no_grad():
+            _ = model(input_tensor)
+        mem_allocated = torch.cuda.memory_allocated() / (1024 ** 2)  # in MB
+        mem_peak = torch.cuda.max_memory_allocated() / (1024 ** 2)  # in MB
+        print(f"Current allocated memory: {mem_allocated:.2f} MB")
+        print(f"Peak memory usage: {mem_peak:.2f} MB")
+
+    # Toy example for testing
+    input_shape = (64, 64, 64)
+
+    model = get_res_enc_l(1, 1, deep_supervision=False).to(_device)
+
+    x = torch.rand((2, 1, *input_shape), device=_device)  # Batch size 2
+    # output = model(x)
+    # print("Input shape:", x.shape)
+    # print(
+    #     f"Output shape: {output['recon'].shape}, "
+    #     f"Latent shape: {output['latent'].shape}",
+    #     f"Projection shape: {output['proj'].shape}",
+    # )  # Latent is a list of tensors
+    if _device == "cuda":
+        measure_memory(model, x)
+    macs, params = thop.profile(
+        model, inputs=(x,),
+    )
+    print(f"MACs: {macs / 1e9:.2f} G, Params: {params / 1e6:.2f} M")

@@ -171,7 +171,7 @@ class BaseEvaMAETrainer(BaseMAETrainer):
     @override
     def build_architecture_and_adaptation_plan(
         self, config_plan, num_input_channels, num_output_channels
-    ) -> nn.Module:
+    ) -> Tuple[nn.Module, AdaptationPlan]:
         network = EvaMAE(
             input_channels=1,
             embed_dim=self.embed_dim,
@@ -188,11 +188,15 @@ class BaseEvaMAETrainer(BaseMAETrainer):
             init_values=self.init_value,
             scale_attn_inner=self.scale_attn_inner,
         )
+        adapt_plan = self.save_adaption_plan(1)
+        return network, adapt_plan
 
+    @override
+    def save_adaption_plan(self, num_input_channels):
         adapt_plan = AdaptationPlan(
             architecture_plans=ArchitecturePlans("PrimusM"),
             pretrain_plan=self.plan,
-            pretrain_num_input_channels=1,
+            pretrain_num_input_channels=num_input_channels,
             recommended_downstream_patchsize=self.recommended_downstream_patchsize,
             key_to_encoder="eva",
             key_to_stem="down_projection",
@@ -200,7 +204,7 @@ class BaseEvaMAETrainer(BaseMAETrainer):
             key_to_lpe="eva.pos_embed",
         )
         save_json(adapt_plan.serialize(), self.adaptation_json_plan)
-        return network, adapt_plan
+        return adapt_plan
 
     def on_validation_epoch_start(self):
         # Make sure the masking is still on.

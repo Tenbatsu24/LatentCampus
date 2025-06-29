@@ -85,6 +85,9 @@ class KVConsisConLoss(torch.nn.Module):
 
         self.mae_loss = LogCoshError(reduction="none")
 
+        self.recon_key = "recon"
+        self.proj_key = "proj"
+
         # create a grid for resampling later
         # ── determine output resolution ──────────────────────────────────────────────
         if isinstance(out_size, int):
@@ -168,15 +171,15 @@ class KVConsisConLoss(torch.nn.Module):
             torch.Tensor: The computed loss value.
         """
         # Compute the consistency loss
-        eps = torch.finfo(model_output["recon"].dtype).eps
+        eps = torch.finfo(model_output[self.recon_key].dtype).eps
 
-        recon_loss = self.mae_loss(model_output["recon"], gt_recon)
+        recon_loss = self.mae_loss(model_output[self.recon_key], gt_recon)
         recon_loss = torch.sum(recon_loss * mask) / (torch.sum(mask) + eps)
 
         # chunk the latents and compute the consistency loss
-        pred_latents = model_output["latents"]
+        pred_latents = model_output[self.proj_key]
 
-        tgt_latents = target["latents"]
+        tgt_latents = target[self.proj_key]
 
         # if latents is 5d tensor, i.e. [b, c, x_p, y_p, z_p], we need to align them for better consistency
         if pred_latents.ndim == 5:
@@ -199,11 +202,13 @@ class KVConsisConLoss(torch.nn.Module):
         )
         repulsion_terms = torch.mean(repulsion_terms)
 
-        loss = attraction_term / (repulsion_terms + self.epsilon) + recon_loss
+        contrastive_loss = attraction_term / (repulsion_terms + self.epsilon)
+        loss = recon_loss + contrastive_loss
 
         return {
             "loss": loss,  # average over the batch
             "recon_loss": recon_loss,
+            "contrastive_loss": contrastive_loss,
             "attraction_term": attraction_term,
             "repulsion_terms": repulsion_terms,
         }
@@ -214,21 +219,29 @@ if __name__ == "__main__":
     print(pairs, len(pairs[0]), len(pairs[1]))
 
     _model_output = {
-        "recon": torch.randn(16, 3, 64, 64, 64),
-        "latents": torch.randn(16, 320),
+        "recon": torch.randn(4, 1, 64, 64, 64, requires_grad=True, device="cuda"),
+        "proj": torch.randn(4, 256, 20, 20, 20, requires_grad=True, device="cuda"),
     }
 
     _target = {
-        "recon": torch.randn(16, 3, 64, 64, 64),
-        "latents": torch.randn(16, 320),
+        "recon": torch.randn(4, 1, 64, 64, 64, device="cuda"),
+        "proj": torch.randn(4, 256, 20, 20, 20, device="cuda"),
     }
 
-    _gt_recon = torch.randn(16, 3, 64, 64, 64)
+    _gt_recon = torch.randn(4, 1, 64, 64, 64, device="cuda")  # Ground truth reconstruction
 
-    _rel_bboxes = torch.rand(16, 6)  # Example relative bounding boxes
-    _mask = torch.ones(16, 1, 64, 64, 64)  # Example mask
+    _rel_bboxes = torch.tensor(
+        [
+            [0.1, 0.1, 0.1, 0.9, 0.9, 0.9],
+            [0.2, 0.2, 0.2, 0.8, 0.8, 0.8],
+            [0.3, 0.3, 0.3, 0.7, 0.7, 0.7],
+            [0.4, 0.4, 0.4, 0.6, 0.6, 0.6],
+        ],
+        device="cuda",
+    )  # Example relative bounding boxes
+    _mask = torch.randint(0, 2, (4, 1, 64, 64, 64), device="cuda")  # Random mask for the example
 
-    loss_fn = KVConsisConLoss(p=2, epsilon=0.1)
+    loss_fn = KVConsisConLoss(torch.device("cuda"), p=2, epsilon=0.1)
     _loss_output = loss_fn(
         model_output=_model_output,
         target=_target,

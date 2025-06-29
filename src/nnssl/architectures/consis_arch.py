@@ -216,17 +216,16 @@ class ConsisEvaMAE(EvaMAE):
 
         # Encode using EVA (internally applies masking with patch_drop_rate)
         encoded, keep_indices = self.eva(x)
-
-        # Restore full sequence with mask tokens
         num_patches = w * h * d
-        restored_x = self.restore_full_sequence(encoded, keep_indices, num_patches)
-        features_decoded, _ = self.feature_decoder(restored_x)
-        projection = self.projector(features_decoded)["proj"]
 
-        # Reshape restored sequence to match original patch shape
-        projection = rearrange(
-            projection, "b (h w d) c -> b c w h d", h=w, w=h, d=d
-        )
+        if self.training:
+            # Restore full sequence with mask tokens
+            restored_x = self.restore_full_sequence(encoded, keep_indices, num_patches)
+            features_decoded, _ = self.feature_decoder(restored_x)
+            projection = self.projector(features_decoded)["proj"]
+        else:
+            restored_x = encoded
+            projection = self.projector(encoded)["proj"]
 
         # Decode with restored sequence and rope embeddings
         decoded, _ = self.decoder(restored_x)
@@ -234,6 +233,10 @@ class ConsisEvaMAE(EvaMAE):
         # Project back to output shape
         decoded = rearrange(decoded, "b (h w d) c -> b c w h d", h=w, w=h, d=d)
         decoded = self.up_projection(decoded)
+        # Reshape restored sequence to match original patch shape
+        projection = rearrange(
+            projection, "b (h w d) c -> b c w h d", h=w, w=h, d=d
+        )
 
         return {
             "proj": projection,
@@ -243,13 +246,45 @@ class ConsisEvaMAE(EvaMAE):
 
 
 if __name__ == "__main__":
+    import thop
     import torch
     import torch.nn as nn
 
     _device = "cuda" if torch.cuda.is_available() else "cpu"
 
+    def measure_memory(model, input_tensor):
+        torch.cuda.reset_peak_memory_stats()
+        with torch.no_grad():
+            _ = model(input_tensor)
+        mem_allocated = torch.cuda.memory_allocated() / (1024 ** 2)  # in MB
+        mem_peak = torch.cuda.max_memory_allocated() / (1024 ** 2)  # in MB
+        print(f"Current allocated memory: {mem_allocated:.2f} MB")
+        print(f"Peak memory usage: {mem_peak:.2f} MB")
+
     # Toy example for testing
     input_shape = (64, 64, 64)
+
+    model = ConsisMAE(
+        input_channels=1,
+        num_classes=1,
+        deep_supervision=False,
+        only_last_stage_as_latent=False,
+    ).to(_device)
+    x = torch.rand((2, 1, *input_shape), device=_device)  # Batch size 2
+    output = model(x)
+    print("Input shape:", x.shape)
+    print(
+        f"Output shape: {output['recon'].shape}, "
+        f"Latent shape: {output['latent'].shape}",
+        f"Projection shape: {output['proj'].shape}",
+    )  # Latent is a list of tensors
+    if _device == "cuda":
+        measure_memory(model, x)
+    macs, params = thop.profile(
+        model, inputs=(x,),
+    )
+    print(f"MACs: {macs / 1e9:.2f} G, Params: {params / 1e6:.2f} M")
+
     patch_embed_size = (8, 8, 8)
     model = ConsisEvaMAE(
         input_channels=1,
@@ -266,6 +301,8 @@ if __name__ == "__main__":
     x = torch.rand((2, 1, *input_shape), device=_device)  # Batch size 2
 
     # Forward pass
+    # measure the memory
+
     output = model(x)
     print("Input shape:", x.shape)
     print(
@@ -273,18 +310,9 @@ if __name__ == "__main__":
         f"Keep indices shape: {output['keep_indices'].shape}, "
         f"Latent shape: {output['proj'].shape}",
     )
-
-    model = ConsisMAE(
-        input_channels=1,
-        num_classes=1,
-        deep_supervision=False,
-        only_last_stage_as_latent=True,
-    ).to(_device)
-    x = torch.rand((2, 1, *input_shape), device=_device)  # Batch size 2
-    output = model(x)
-    print("Input shape:", x.shape)
-    print(
-        f"Output shape: {output['recon'].shape}, "
-        f"Latent shape: {output['latent'].shape}",
-        f"Projection shape: {output['proj'].shape}",
-    )  # Latent is a list of tensors
+    if _device == "cuda":
+        measure_memory(model, x)
+    macs, params = thop.profile(
+        model, inputs=(x,),
+    )
+    print(f"MACs: {macs / 1e9:.2f} G, Params: {params / 1e6:.2f} M")

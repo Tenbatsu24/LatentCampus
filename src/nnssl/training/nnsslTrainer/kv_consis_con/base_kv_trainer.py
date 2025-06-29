@@ -43,6 +43,7 @@ class BaseKVConsisTrainer(BaseMAETrainer):
 
         # Create the loss function
         self.loss = KVConsisConLoss(
+            device=self.device,
             p=2,
             epsilon=0.1,
         )
@@ -148,7 +149,7 @@ class BaseKVConsisTrainer(BaseMAETrainer):
             # create a deep copy of the network to use as a teacher
             self.teacher = copy.deepcopy(self.network)
             self.teacher = self.teacher.to(self.device)
-            self.teacher = self.teacher.eval()  # set the teacher to eval mode
+            self.teacher = self.teacher.eval()  # set the teacher to eval mode and not training
             for param in self.teacher.parameters():
                 param.requires_grad = False
 
@@ -211,15 +212,21 @@ class BaseKVConsisTrainer(BaseMAETrainer):
             if self.device.type == "cuda"
             else dummy_context()
         ):
-            output = self.network(masked_data)
-            # del data
-            l = self.loss(
-                student_output=output,
-                teacher_output=teacher_output,
-                gt_data=data,
-                rel_bboxes=bboxes,
-                mask=mask,
-            )
+            with (
+                torch.no_grad()
+                if not is_train
+                else dummy_context()
+            ):
+                output = self.network(masked_data)
+                # del data
+                loss_dict = self.loss(
+                    student_output=output,
+                    teacher_output=teacher_output,
+                    gt_data=data,
+                    rel_bboxes=bboxes,
+                    mask=mask,
+                )
+                l = loss_dict["loss"]
 
         if is_train:
             if self.grad_scaler is not None:
@@ -237,7 +244,7 @@ class BaseKVConsisTrainer(BaseMAETrainer):
             with torch.no_grad():
                 self.ema(self.teacher, self.network, mom=0.999, update_bn=True)
 
-        return {"loss": l.detach().cpu().numpy()}
+        return {k: v.detach().cpu().numpy() for k, v in loss_dict.items()}
 
     def train_step(self, batch: dict) -> dict:
         return self.shared_step(batch, is_train=True)
