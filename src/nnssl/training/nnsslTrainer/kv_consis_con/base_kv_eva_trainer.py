@@ -202,7 +202,7 @@ class BaseKVConsisEvaTrainer(BaseEvaMAETrainer):
             if self.device.type == "cuda"
             else dummy_context()
         ):
-            with torch.no_grad() if is_train else dummy_context():
+            with torch.no_grad() if not is_train else dummy_context():
                 # Forward pass with PatchDropout
                 output = self.network(data)
                 mask = self.create_mask(
