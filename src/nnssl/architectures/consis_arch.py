@@ -172,6 +172,7 @@ class ConsisEvaMAE(EvaMAE):
         embed_dim: int,
         patch_embed_size: Tuple[int, ...],
         output_channels: int,
+        input_shape: Tuple[int, int, int] = None,
         **kwargs,
     ):
         super().__init__(
