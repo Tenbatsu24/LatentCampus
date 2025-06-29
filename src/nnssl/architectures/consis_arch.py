@@ -1,11 +1,12 @@
 from typing import Tuple
 
+import torch
 import torch.nn as nn
-from dynamic_network_architectures.building_blocks.eva import Eva
 
 from einops import rearrange
 from torch.nn.utils import weight_norm
 from torch.nn.init import trunc_normal_
+from dynamic_network_architectures.building_blocks.eva import Eva
 from dynamic_network_architectures.architectures.unet import ResidualEncoderUNet
 
 from nnssl.architectures.evaMAE_module import EvaMAE
@@ -247,8 +248,6 @@ class ConsisEvaMAE(EvaMAE):
 
 if __name__ == "__main__":
     import thop
-    import torch
-    import torch.nn as nn
 
     _device = "cuda" if torch.cuda.is_available() else "cpu"
 
