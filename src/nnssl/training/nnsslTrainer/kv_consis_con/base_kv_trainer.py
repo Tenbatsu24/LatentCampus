@@ -43,7 +43,7 @@ class BaseKVConsisTrainer(BaseMAETrainer):
         from nnssl.training.loss.kv_consis_con_loss import KVConsisConLoss
 
         # Create the loss function
-        self.loss = KVConsisConLoss(
+        return KVConsisConLoss(
             device=self.device,
             p=2,
             epsilon=0.1,
@@ -155,6 +155,7 @@ class BaseKVConsisTrainer(BaseMAETrainer):
             )  # set the teacher to eval mode and not training
             for param in self.teacher.parameters():
                 param.requires_grad = False
+        super().on_train_start()
 
     def ema(self, teacher_model, student_model, mom=0.995, update_bn=True):
         for p_s, p_t in zip(student_model.parameters(), teacher_model.parameters()):
