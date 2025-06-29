@@ -180,6 +180,7 @@ class ConsisEvaMAE(EvaMAE):
             embed_dim=embed_dim,
             patch_embed_size=patch_embed_size,
             output_channels=output_channels,
+            input_shape=input_shape,
             **kwargs,
         )
 
