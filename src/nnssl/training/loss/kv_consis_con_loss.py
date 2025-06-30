@@ -139,7 +139,7 @@ class KVConsisConLoss(torch.nn.Module):
         shift = shift.view(B, 1, 1, 1, 3)
         scale = scale.view(B, 1, 1, 1, 3)
 
-        # ── produce the sampling grid ───────────────────────────────────────────────
+        # ── produce the sampling grid ──────────────────────────────────────────────
         sampling_grid = self.base_grid * scale + shift  # (B, D_out, H_out, W_out, 3)
 
         # ── trilinear ROI‑align via grid_sample ────────────────────────────────────
@@ -151,7 +151,7 @@ class KVConsisConLoss(torch.nn.Module):
             align_corners=True,
         )
 
-        # adaptive pool to the ouput size
+        # ── adaptive pool to the ouput size ────────────────────────────────────────
         aligned_latents = F.adaptive_avg_pool3d(
             aligned_latents, (self.D_out, self.H_out, self.W_out)
         )
@@ -226,6 +226,7 @@ class KVConsisConLoss(torch.nn.Module):
         contrastive_loss_cos = attraction_term_cos / (repulsion_terms_cos + self.epsilon)
 
         loss = recon_loss_lc + recon_loss_mse + contrastive_loss_lp + contrastive_loss_cos
+        # loss = recon_loss_lc + contrastive_loss_lp
 
         return {
             "loss": loss,

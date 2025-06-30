@@ -139,15 +139,15 @@ class ConsisMAE(ResidualEncoderUNet):
         )
 
         self.adaptive_pool = nn.AdaptiveAvgPool3d((1, 1, 1))
-        if only_last_stage_as_latent:
-            proj_in_dim = features_per_stage[-1]
-        else:
-            proj_in_dim = sum(features_per_stage)
+        # if only_last_stage_as_latent:
+        #     proj_in_dim = features_per_stage[-1]
+        # else:
+        #     proj_in_dim = sum(features_per_stage)
         self.only_last_stage_as_latent = only_last_stage_as_latent
-        self.projector = ProjectionHead(
-            in_dim=proj_in_dim,
-            out_dim=None,
-        )
+        # self.projector = ProjectionHead(
+        #     in_dim=proj_in_dim,
+        #     out_dim=None,
+        # )
 
     def forward(self, x):
         skips = self.encoder(x)
@@ -157,9 +157,9 @@ class ConsisMAE(ResidualEncoderUNet):
         latent = torch.concat(
             [self.adaptive_pool(s) for s in reversed(skips)], dim=1
         ).reshape(x.shape[0], -1)
-        projection = self.projector(latent)
+        # projection = self.projector(latent)
         return {
-            "proj": projection["proj"],
+            "proj": latent,
             "recon": decoded,
         }
 
@@ -205,10 +205,10 @@ class ConsisEvaMAE(EvaMAE):
             init_values=kwargs.get("init_values", 0.1),
             scale_attn_inner=kwargs.get("scale_attn_inner", False),
         )
-        self.projector = ProjectionHead(
-            in_dim=embed_dim,
-            out_dim=None,
-        )
+        # self.projector = ProjectionHead(
+        #     in_dim=embed_dim,
+        #     out_dim=None,
+        # )
 
     def forward(self, x):
         # Encode patches
@@ -224,10 +224,12 @@ class ConsisEvaMAE(EvaMAE):
             # Restore full sequence with mask tokens
             restored_x = self.restore_full_sequence(encoded, keep_indices, num_patches)
             features_decoded, _ = self.feature_decoder(restored_x)
-            projection = self.projector(features_decoded)["proj"]
+            projection = features_decoded
+            # projection = self.projector(features_decoded)["proj"]
         else:
             restored_x = encoded
-            projection = self.projector(encoded)["proj"]
+            projection = encoded
+            # projection = self.projector(encoded)["proj"]
 
         # Decode with restored sequence and rope embeddings
         decoded, _ = self.decoder(restored_x)
