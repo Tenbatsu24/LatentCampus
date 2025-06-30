@@ -206,9 +206,6 @@ class KVConsisConLoss(torch.nn.Module):
         attraction_term_lp = torch.norm(pred_latents - tgt_latents, p=self.p, dim=1)
         attraction_term_lp = torch.mean(attraction_term_lp)
 
-        attraction_term_cos = 2 - 2 * (pred_latents * tgt_latents)  # already normalized
-        attraction_term_cos = torch.mean(attraction_term_cos)  # mean over the batch
-
         neg_idxs_a, neg_idxs_b = get_neg_pairs(b)
         neg_idxs_a, neg_idxs_b = (
             torch.tensor(neg_idxs_a, device=pred_latents.device),
@@ -218,6 +215,11 @@ class KVConsisConLoss(torch.nn.Module):
             pred_latents[neg_idxs_a] - tgt_latents[neg_idxs_b], p=self.p, dim=1
         )
         repulsion_terms_lp = torch.mean(repulsion_terms_lp)
+
+        pred_latents, tgt_latents = F.normalize(pred_latents, dim=1), F.normalize(tgt_latents, dim=1)
+
+        attraction_term_cos = 2 - 2 * (pred_latents * tgt_latents)  # already normalized
+        attraction_term_cos = torch.mean(attraction_term_cos)  # mean over the batch
 
         repulsion_terms_cos = 2 - 2 * (pred_latents[neg_idxs_a] * tgt_latents[neg_idxs_b])
         repulsion_terms_cos = torch.mean(repulsion_terms_cos)
