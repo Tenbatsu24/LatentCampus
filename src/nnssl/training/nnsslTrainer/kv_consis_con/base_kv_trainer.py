@@ -32,7 +32,7 @@ class BaseKVConsisTrainer(BaseMAETrainer):
 
         # Default initial patch size, can be overridden in get_dataloaders
         self.initial_patch_size = (256, 256, 256)
-        self.total_batch_size = 8
+        self.total_batch_size = 2
         self.initial_lr = 1e-3
         self.teacher = None
         self.config_plan.patch_size = (160, 160, 160)  # Default patch size for KV Consis Eva
@@ -186,23 +186,8 @@ class BaseKVConsisTrainer(BaseMAETrainer):
         data = data.to(self.device, non_blocking=True)
         bboxes = bboxes.to(self.device, non_blocking=True)
 
-        # split the data into batches of at most 4
-        if data.shape[0] > 2:
-            datas = torch.split(data, 2, dim=0)
-        else:
-            datas = [data]
-
         with torch.no_grad():
-            output_dicts = []
-            for i, sub_data in enumerate(datas):
-                # Forward pass with the teacher network
-                teacher_sub_output = self.teacher(sub_data)
-                output_dicts.append(teacher_sub_output)
-            # Concatenate the outputs from all batches with corresponging keys
-            teacher_output = {
-                key: torch.cat([output[key] for output in output_dicts], dim=0)
-                for key in output_dicts[0].keys()
-            }
+            teacher_output = self.teacher(data)
 
         # We use the self.batch_size as it is not identical with the plan batch_size in ddp cases.
         mask = self.mask_creation(
@@ -234,24 +219,7 @@ class BaseKVConsisTrainer(BaseMAETrainer):
             else dummy_context()
         ):
             with torch.no_grad() if not is_train else dummy_context():
-                # split the data into batches of at most 4
-                if masked_data.shape[0] > 2:
-                    datas = torch.split(masked_data, 2, dim=0)
-                else:
-                    datas = [masked_data]
-
-                # Forward pass with PatchDropout
-                output_dicts = []
-                for i, sub_data in enumerate(datas):
-                    online_sub_output = self.network(sub_data)
-                    output_dicts.append(online_sub_output)
-
-                # Concatenate the outputs from all batches with corresponging keys
-                output = {
-                    key: torch.cat([output[key] for output in output_dicts], dim=0)
-                    for key in output_dicts[0].keys()
-                }
-
+                output = self.network(masked_data)
                 # del data
                 loss_dict = self.loss(
                     model_output=output,
