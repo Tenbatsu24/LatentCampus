@@ -138,7 +138,7 @@ class ConsisMAE(ResidualEncoderUNet):
             deep_supervision=deep_supervision,
         )
 
-        self.adaptive_pool = nn.AdaptiveAvgPool3d((1, 1, 1))
+        self.adaptive_pool = nn.AdaptiveAvgPool3d((20, 20, 20))
         # if only_last_stage_as_latent:
         #     proj_in_dim = features_per_stage[-1]
         # else:
@@ -156,7 +156,7 @@ class ConsisMAE(ResidualEncoderUNet):
             skips = [skips[-1]]
         latent = torch.concat(
             [self.adaptive_pool(s) for s in reversed(skips)], dim=1
-        ).reshape(x.shape[0], -1)
+        )
         # projection = self.projector(latent)
         return {
             "proj": latent,
@@ -284,9 +284,14 @@ if __name__ == "__main__":
         input_channels=1,
         num_classes=1,
         deep_supervision=False,
-        only_last_stage_as_latent=True,
+        only_last_stage_as_latent=False,
     ).to(_device)
     x = torch.rand((2, 1, *input_shape), device=_device)  # Batch size 2
+    output = model(x)
+    print(
+        f"Input shape: {x.shape}, Output shape: {output['recon'].shape}, Latent shape: {output['proj'].shape}"
+    )
+    del output
     if _device == "cuda":
         measure_memory(model, x)
     else:
