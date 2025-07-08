@@ -35,7 +35,10 @@ class BaseKVConsisEvaTrainer(BaseEvaMAETrainer):
         self.initial_patch_size = (256, 256, 256)
         self.total_batch_size = 4
         self.initial_lr = 1e-4  # Initial learning rate for the optimizer
+        self.num_epochs = 250
+        self.warmup_duration_whole_net = 10  # Warmup duration for the whole network
         self.teacher = None
+        self.teacher_mom = 0.995  # Momentum for the teacher model
         self.config_plan.patch_size = (160, 160, 160)  # Default patch size for KV Consis Eva
 
     def build_loss(self):
@@ -162,7 +165,9 @@ class BaseKVConsisEvaTrainer(BaseEvaMAETrainer):
                 param.requires_grad = False
         super().on_train_start()
 
-    def ema(self, teacher_model, student_model, mom=0.995, update_bn=False):
+    def ema(self, teacher_model, student_model, update_bn=False):
+        mom = self.teacher_mom
+
         for p_s, p_t in zip(student_model.parameters(), teacher_model.parameters()):
             p_t.data = mom * p_t.data + (1 - mom) * p_s.data
 
@@ -191,6 +196,10 @@ class BaseKVConsisEvaTrainer(BaseEvaMAETrainer):
 
         with torch.no_grad():
             teacher_output = self.teacher(data)
+            # del all keys that are not `proj`
+            teacher_output = {
+                k: v for k, v in teacher_output.items() if k == "proj"
+            }
 
         if is_train:
             self.optimizer.zero_grad(set_to_none=True)
@@ -236,9 +245,8 @@ class BaseKVConsisEvaTrainer(BaseEvaMAETrainer):
                 )
                 self.optimizer.step()
 
-            # update the teacher network with momentum of 0.995
             with torch.no_grad():
-                self.ema(self.teacher, self.network, mom=0.995, update_bn=False)
+                self.ema(self.teacher, self.network, update_bn=False)
 
         return {k: v.detach().cpu().numpy() for k, v in loss_dict.items()}
 

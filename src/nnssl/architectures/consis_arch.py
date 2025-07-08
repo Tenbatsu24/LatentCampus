@@ -151,13 +151,15 @@ class ConsisMAE(ResidualEncoderUNet):
 
     def forward(self, x):
         skips = self.encoder(x)
-        decoded = self.decoder(skips)
+        if self.training:
+            decoded = self.decoder(skips)
+        else:
+            decoded = None
         if self.only_last_stage_as_latent:
             skips = [skips[-1]]
         latent = torch.concat(
             [self.adaptive_pool(s) for s in reversed(skips)], dim=1
         )
-        # projection = self.projector(latent)
         return {
             "proj": latent,
             "recon": decoded,
@@ -205,10 +207,6 @@ class ConsisEvaMAE(EvaMAE):
             init_values=kwargs.get("init_values", 0.1),
             scale_attn_inner=kwargs.get("scale_attn_inner", False),
         )
-        # self.projector = ProjectionHead(
-        #     in_dim=embed_dim,
-        #     out_dim=None,
-        # )
 
     def forward(self, x):
         # Encode patches
@@ -218,27 +216,25 @@ class ConsisEvaMAE(EvaMAE):
 
         # Encode using EVA (internally applies masking with patch_drop_rate)
         encoded, keep_indices = self.eva(x)
+        # print(f"Encoded shape: {encoded.shape}, Keep indices shape: {keep_indices.shape if keep_indices is not None else 'None'}")
         num_patches = w * h * d
 
         if self.training:
             # Restore full sequence with mask tokens
             restored_x = self.restore_full_sequence(encoded, keep_indices, num_patches)
-            features_decoded, _ = self.feature_decoder(restored_x)
-            projection = features_decoded
-            # projection = self.projector(features_decoded)["proj"]
+            encoded, _ = self.feature_decoder(restored_x)
+
+            # Decode with restored sequence and rope embeddings
+            decoded, _ = self.decoder(restored_x)
+
+            # Project back to output shape
+            decoded = rearrange(decoded, "b (h w d) c -> b c w h d", h=w, w=h, d=d)
+            decoded = self.up_projection(decoded)
         else:
-            restored_x = encoded
-            projection = encoded
-            # projection = self.projector(encoded)["proj"]
+            decoded = None
 
-        # Decode with restored sequence and rope embeddings
-        decoded, _ = self.decoder(restored_x)
-
-        # Project back to output shape
-        decoded = rearrange(decoded, "b (h w d) c -> b c w h d", h=w, w=h, d=d)
-        decoded = self.up_projection(decoded)
         # Reshape restored sequence to match original patch shape
-        projection = rearrange(projection, "b (h w d) c -> b c w h d", h=w, w=h, d=d)
+        projection = rearrange(encoded, "b (h w d) c -> b c w h d", h=w, w=h, d=d)
 
         return {
             "proj": projection,
@@ -248,70 +244,105 @@ class ConsisEvaMAE(EvaMAE):
 
 
 if __name__ == "__main__":
-    import os
-    import psutil
-
-    import thop
-
-    from nnssl.architectures.architecture_registry import get_res_enc_l
+    # import os
+    # import psutil
+    #
+    # import thop
+    #
+    # from nnssl.architectures.architecture_registry import get_res_enc_l
 
     _device = "cuda" if torch.cuda.is_available() else "cpu"
 
-    def measure_memory(model, input_tensor):
-        torch.cuda.reset_peak_memory_stats()
-        with torch.no_grad():
-            _ = model(input_tensor)
-        mem_allocated = torch.cuda.memory_allocated() / (1024**2)  # in MB
-        mem_peak = torch.cuda.max_memory_allocated() / (1024**2)  # in MB
-        print(f"Current allocated memory: {mem_allocated:.2f} MB")
-        print(f"Peak memory usage: {mem_peak:.2f} MB")
-
-
-    def measure_memory_cpu(model, input_tensor):
-        process = psutil.Process(os.getpid())
-        mem_before = process.memory_info().rss / (1024 ** 2)  # in MB
-        with torch.no_grad():
-            _ = model(input_tensor)
-        mem_after = process.memory_info().rss / (1024 ** 2)  # in MB
-        print(f"Memory before: {mem_before:.2f} MB")
-        print(f"Memory after: {mem_after:.2f} MB")
-        print(f"Memory used by forward pass: {mem_after - mem_before:.2f} MB")
-
+    # def measure_memory(model, input_tensor):
+    #     torch.cuda.reset_peak_memory_stats()
+    #     with torch.no_grad():
+    #         _ = model(input_tensor)
+    #     mem_allocated = torch.cuda.memory_allocated() / (1024**2)  # in MB
+    #     mem_peak = torch.cuda.max_memory_allocated() / (1024**2)  # in MB
+    #     print(f"Current allocated memory: {mem_allocated:.2f} MB")
+    #     print(f"Peak memory usage: {mem_peak:.2f} MB")
+    #
+    #
+    # def measure_memory_cpu(model, input_tensor):
+    #     process = psutil.Process(os.getpid())
+    #     mem_before = process.memory_info().rss / (1024 ** 2)  # in MB
+    #     with torch.no_grad():
+    #         _ = model(input_tensor)
+    #     mem_after = process.memory_info().rss / (1024 ** 2)  # in MB
+    #     print(f"Memory before: {mem_before:.2f} MB")
+    #     print(f"Memory after: {mem_after:.2f} MB")
+    #     print(f"Memory used by forward pass: {mem_after - mem_before:.2f} MB")
+    #
     # Toy example for testing
     input_shape = (64, 64, 64)
-
-    model = ConsisMAE(
-        input_channels=1,
-        num_classes=1,
-        deep_supervision=False,
-        only_last_stage_as_latent=False,
-    ).to(_device)
-    x = torch.rand((2, 1, *input_shape), device=_device)  # Batch size 2
-    output = model(x)
-    print(
-        f"Input shape: {x.shape}, Output shape: {output['recon'].shape}, Latent shape: {output['proj'].shape}"
-    )
-    del output
-    if _device == "cuda":
-        measure_memory(model, x)
-    else:
-        measure_memory_cpu(model, x)
-    macs, params = thop.profile(
-        model,
-        inputs=(x,),
-    )
-    print(f"MACs: {macs / 1e9:.2f} G, Params: {params / 1e6:.2f} M")
-
-    model = get_res_enc_l(1, 1, deep_supervision=False).to(_device)
-    if _device == "cuda":
-        measure_memory(model, x)
-    else:
-        measure_memory_cpu(model, x)
-    macs, params = thop.profile(
-        model,
-        inputs=(x,),
-    )
-    print(f"MACs: {macs / 1e9:.2f} G, Params: {params / 1e6:.2f} M")
+    #
+    # model = ConsisMAE(
+    #     input_channels=1,
+    #     num_classes=1,
+    #     deep_supervision=False,
+    #     only_last_stage_as_latent=False,
+    # ).to(_device)
+    # x = torch.rand((2, 1, *input_shape), device=_device)  # Batch size 2
+    # output = model(x)
+    # print(
+    #     f"Input shape: {x.shape}, Output shape: {output['recon'].shape}, Latent shape: {output['proj'].shape}"
+    # )
+    # del output
+    # if _device == "cuda":
+    #     measure_memory(model, x)
+    # else:
+    #     measure_memory_cpu(model, x)
+    # macs, params = thop.profile(
+    #     model,
+    #     inputs=(x,),
+    # )
+    # print(f"MACs: {macs / 1e9:.2f} G, Params: {params / 1e6:.2f} M")
+    #
+    # model = get_res_enc_l(1, 1, deep_supervision=False).to(_device)
+    # if _device == "cuda":
+    #     measure_memory(model, x)
+    # else:
+    #     measure_memory_cpu(model, x)
+    # macs, params = thop.profile(
+    #     model,
+    #     inputs=(x,),
+    # )
+    # print(f"MACs: {macs / 1e9:.2f} G, Params: {params / 1e6:.2f} M")
+    #
+    # patch_embed_size = (8, 8, 8)
+    # model = ConsisEvaMAE(
+    #     input_channels=1,
+    #     embed_dim=192,
+    #     patch_embed_size=patch_embed_size,
+    #     output_channels=1,
+    #     input_shape=input_shape,
+    #     decoder_eva_depth=6,
+    #     decoder_eva_numheads=8,
+    #     patch_drop_rate=0.7,
+    # ).to(_device)
+    #
+    # # Random input tensor
+    # x = torch.rand((2, 1, *input_shape), device=_device)  # Batch size 2
+    #
+    # # Forward pass
+    # # measure the memory
+    #
+    # output = model(x)
+    # print("Input shape:", x.shape)
+    # print(
+    #     f"Output shape: {output['recon'].shape}, "
+    #     f"Keep indices shape: {output['keep_indices'].shape}, "
+    #     f"Latent shape: {output['proj'].shape}",
+    # )
+    # if _device == "cuda":
+    #     measure_memory(model, x)
+    # else:
+    #     measure_memory_cpu(model, x)
+    # macs, params = thop.profile(
+    #     model,
+    #     inputs=(x,),
+    # )
+    # print(f"MACs: {macs / 1e9:.2f} G, Params: {params / 1e6:.2f} M")
 
     patch_embed_size = (8, 8, 8)
     model = ConsisEvaMAE(
@@ -324,13 +355,11 @@ if __name__ == "__main__":
         decoder_eva_numheads=8,
         patch_drop_rate=0.7,
     ).to(_device)
+    model = model.train(True)
 
     # Random input tensor
     x = torch.rand((2, 1, *input_shape), device=_device)  # Batch size 2
-
     # Forward pass
-    # measure the memory
-
     output = model(x)
     print("Input shape:", x.shape)
     print(
@@ -338,12 +367,12 @@ if __name__ == "__main__":
         f"Keep indices shape: {output['keep_indices'].shape}, "
         f"Latent shape: {output['proj'].shape}",
     )
-    if _device == "cuda":
-        measure_memory(model, x)
-    else:
-        measure_memory_cpu(model, x)
-    macs, params = thop.profile(
-        model,
-        inputs=(x,),
+
+    model = model.train(False)
+    output = model(x)
+    print("Input shape:", x.shape)
+    print(
+        f"Output shape: {output['recon'].shape if output['recon'] is not None else 'None'}, "
+        f"Keep indices shape: {output['keep_indices'].shape if output['keep_indices'] is not None else 'None'}, "
+        f"Latent shape: {output['proj'].shape if output['proj'] is not None else 'None'}",
     )
-    print(f"MACs: {macs / 1e9:.2f} G, Params: {params / 1e6:.2f} M")

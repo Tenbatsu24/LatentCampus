@@ -4,6 +4,8 @@ from functools import lru_cache
 import torch
 import torch.nn.functional as F
 
+from nnssl.training.loss.mse_loss import MAEMSELoss
+
 
 class LogCoshError(torch.nn.Module):
     def __init__(self, reduction: Literal["mean", "sum", "none"] = "none"):
@@ -54,13 +56,8 @@ def get_neg_pairs(
     """
     pairs = [
         (i, j)
-        for i in range(batch_size)
-        for j in range(batch_size)
-        if i % batch_size != j % batch_size
-    ] + [
-        (i, j)
-        for i in range(batch_size, 2 * batch_size)
-        for j in range(batch_size, 2 * batch_size)
+        for i in range(2 * batch_size)
+        for j in range(2 * batch_size)
         if i % batch_size != j % batch_size
     ]
     return tuple(
@@ -83,11 +80,13 @@ class KVConsisConLoss(torch.nn.Module):
         self.p = p
         self.epsilon = epsilon
 
+        self.mse_loss = MAEMSELoss()
         self.log_cosh = LogCoshError(reduction="none")
-        self.mse_loss = torch.nn.HuberLoss(reduction="none")
+        self.huber = torch.nn.HuberLoss(reduction="none")
 
         self.recon_key = "recon"
         self.proj_key = "proj"
+        self.latent_key = "proj"
 
         # create a grid for resampling later
         # ── determine output resolution ──────────────────────────────────────────────
@@ -183,15 +182,19 @@ class KVConsisConLoss(torch.nn.Module):
         eps = torch.finfo(model_output[self.recon_key].dtype).eps
 
         recon_loss_lc = self.log_cosh(model_output[self.recon_key], gt_recon)
-        recon_loss_lc = torch.sum(recon_loss_lc * mask) / (torch.sum(mask) + eps)
+        recon_loss_lc = torch.sum(recon_loss_lc * (1 - mask)) / (torch.sum((1 - mask)) + eps)
 
-        recon_loss_mse = self.mse_loss(model_output[self.recon_key], gt_recon)
-        recon_loss_mse = torch.sum(recon_loss_mse * mask) / (torch.sum(mask) + eps)
+        recon_loss_huber = self.huber(model_output[self.recon_key], gt_recon)
+        recon_loss_huber = torch.sum(recon_loss_huber * (1 - mask)) / (torch.sum((1 - mask)) + eps)
+
+        recon_loss_mse = self.mse_loss(
+            model_output[self.recon_key], gt_recon, mask
+        )
 
         # chunk the latents and compute the consistency loss
         pred_latents = model_output[self.proj_key]
 
-        tgt_latents = target[self.proj_key]
+        tgt_latents = target[self.latent_key]
 
         # if latents is 5d tensor, i.e. [b, c, x_p, y_p, z_p], we need to align them for better consistency
         if pred_latents.ndim == 5:
@@ -218,33 +221,31 @@ class KVConsisConLoss(torch.nn.Module):
 
         pred_latents, tgt_latents = F.normalize(pred_latents, dim=1), F.normalize(tgt_latents, dim=1)
 
-        attraction_term_cos = 2 - 2 * (pred_latents * tgt_latents)  # already normalized
-        attraction_term_cos = torch.mean(attraction_term_cos)  # mean over the batch
+        negative_cosine_regression = 2 - 2 * (pred_latents * tgt_latents).sum(dim=1).mean()  # already normalized
+        # attraction_term_cos = torch.mean(attraction_term_cos)  # mean over the batch
 
-        repulsion_terms_cos = 2 - 2 * (pred_latents[neg_idxs_a] * tgt_latents[neg_idxs_b])
-        repulsion_terms_cos = torch.mean(repulsion_terms_cos)
+        # repulsion_terms_cos = - (pred_latents[neg_idxs_a] * tgt_latents[neg_idxs_b])
+        # repulsion_terms_cos = torch.mean(repulsion_terms_cos)
 
         contrastive_loss_lp = attraction_term_lp / (repulsion_terms_lp + self.epsilon)
-        contrastive_loss_cos = attraction_term_cos / (repulsion_terms_cos + self.epsilon)
+        # contrastive_loss_cos = attraction_term_cos / (repulsion_terms_cos + self.epsilon)
 
-        loss = recon_loss_lc + recon_loss_mse + contrastive_loss_lp + contrastive_loss_cos
-        # loss = recon_loss_lc + contrastive_loss_lp
+        loss = recon_loss_huber + contrastive_loss_lp + negative_cosine_regression
 
         return {
             "loss": loss,
             "log_cosh": recon_loss_lc,
-            "huber": recon_loss_mse,
+            "huber": recon_loss_huber,
+            "mse": recon_loss_mse,
             "cl_lp": contrastive_loss_lp,
             "pos_lp": attraction_term_lp,
             "neg_lp": repulsion_terms_lp,
-            "cl_cos": contrastive_loss_cos,
-            "pos_cos": attraction_term_cos,
-            "neg_cos": repulsion_terms_cos,
+            "neg_cos": negative_cosine_regression,
         }
 
 
 if __name__ == "__main__":
-    pairs = get_neg_pairs(2)
+    pairs = get_neg_pairs(4)
     print(pairs, len(pairs[0]), len(pairs[1]))
 
     _model_output = {
