@@ -4,92 +4,11 @@ import torch
 import torch.nn as nn
 
 from einops import rearrange
-from torch.nn.utils import weight_norm
 from torch.nn.init import trunc_normal_
 from dynamic_network_architectures.building_blocks.eva import Eva
 from dynamic_network_architectures.architectures.unet import ResidualEncoderUNet
 
 from nnssl.architectures.evaMAE_module import EvaMAE
-
-
-class ProjectionHead(nn.Module):
-    def __init__(
-        self,
-        in_dim,
-        out_dim=None,
-        use_bn=False,
-        n_layers=3,
-        hidden_dim=2048,
-        bottleneck_dim=256,
-        mlp_bias=True,
-        l2_normalize=True,
-    ):
-        super().__init__()
-        n_layers = max(n_layers, 1)
-
-        self.out_dim = out_dim
-        self.mlp = _build_mlp(
-            n_layers,
-            in_dim,
-            bottleneck_dim,
-            hidden_dim=hidden_dim,
-            use_bn=use_bn,
-            bias=mlp_bias,
-        )
-        self.l2_normalize = l2_normalize
-        self.apply(self._init_weights)
-
-        if out_dim is None:
-            self.last_layer = nn.Identity()
-        else:
-            self.last_layer = weight_norm(
-                nn.Linear(bottleneck_dim, out_dim, bias=False)
-            )
-            self.last_layer.weight_g.data.fill_(1)
-
-    def _init_weights(self, m):
-        if isinstance(m, nn.Linear):
-            trunc_normal_(m.weight, std=0.02)
-            if isinstance(m, nn.Linear) and m.bias is not None:
-                nn.init.constant_(m.bias, 0)
-
-    def forward(self, x):
-        x = self.mlp(x)
-
-        if self.l2_normalize:
-            # Use a small epsilon to avoid division by zero
-            # This is especially important for float16 inputs
-            eps = 1e-6 if x.dtype == torch.float16 else 1e-12
-            x = nn.functional.normalize(x, dim=-1, p=2, eps=eps)
-
-        if self.out_dim is not None:
-            classifier = self.last_layer(x)
-        else:
-            classifier = None
-
-        return {
-            "logits": classifier,
-            "proj": x,
-        }
-
-
-def _build_mlp(
-    nlayers, in_dim, bottleneck_dim, hidden_dim=None, use_bn=False, bias=True
-):
-    if nlayers == 1:
-        return nn.Linear(in_dim, bottleneck_dim, bias=bias)
-    else:
-        layers: list["nn.Module"] = [nn.Linear(in_dim, hidden_dim, bias=bias)]
-        if use_bn:
-            layers.append(nn.BatchNorm1d(hidden_dim))
-        layers.append(nn.GELU())
-        for _ in range(nlayers - 2):
-            layers.append(nn.Linear(hidden_dim, hidden_dim, bias=bias))
-            if use_bn:
-                layers.append(nn.BatchNorm1d(hidden_dim))
-            layers.append(nn.GELU())
-        layers.append(nn.Linear(hidden_dim, bottleneck_dim, bias=bias))
-        return nn.Sequential(*layers)
 
 
 class ConsisMAE(ResidualEncoderUNet):
@@ -112,6 +31,8 @@ class ConsisMAE(ResidualEncoderUNet):
         nonlin_kwargs=None,
         deep_supervision=False,
         only_last_stage_as_latent=False,
+        use_projector=False,
+        **kwargs,
     ):
         if kernel_sizes is None:
             kernel_sizes = [[3, 3, 3] for _ in range(n_stages)]
@@ -139,27 +60,43 @@ class ConsisMAE(ResidualEncoderUNet):
         )
 
         self.adaptive_pool = nn.AdaptiveAvgPool3d((20, 20, 20))
-        # if only_last_stage_as_latent:
-        #     proj_in_dim = features_per_stage[-1]
-        # else:
-        #     proj_in_dim = sum(features_per_stage)
+        self.use_projector = use_projector
+        if only_last_stage_as_latent:
+            proj_in_dim = features_per_stage[-1]
+        else:
+            proj_in_dim = sum(features_per_stage)
         self.only_last_stage_as_latent = only_last_stage_as_latent
-        # self.projector = ProjectionHead(
-        #     in_dim=proj_in_dim,
-        #     out_dim=None,
-        # )
+        if self.use_projector:
+            self.projector = nn.Sequential(
+                nn.Linear(proj_in_dim, 256, bias=False),
+                nn.BatchNorm1d(256),
+                nn.ReLU(inplace=True), # hidden layer
+                nn.Linear(256, proj_in_dim)
+            ) # output layer
+
+            # initialize the projector weights
+            for m in self.projector.modules():
+                if isinstance(m, nn.Linear):
+                    trunc_normal_(m.weight, std=0.02)
+                    if m.bias is not None:
+                        nn.init.constant_(m.bias, 0)
 
     def forward(self, x):
         skips = self.encoder(x)
-        if self.training:
-            decoded = self.decoder(skips)
-        else:
-            decoded = None
+        decoded = self.decoder(skips)
+
         if self.only_last_stage_as_latent:
             skips = [skips[-1]]
         latent = torch.concat(
             [self.adaptive_pool(s) for s in reversed(skips)], dim=1
         )
+
+        if self.training and self.use_projector:
+            b = latent.shape[0]
+            latent = rearrange(latent, "b c w h d -> (b w h d) c")
+            latent = self.projector(latent)
+            latent = rearrange(latent, "(b w h d) c -> b c w h d", b=b, w=20, h=20, d=20)
+
         return {
             "proj": latent,
             "recon": decoded,
@@ -275,18 +212,20 @@ if __name__ == "__main__":
     #
     # Toy example for testing
     input_shape = (64, 64, 64)
-    #
-    # model = ConsisMAE(
-    #     input_channels=1,
-    #     num_classes=1,
-    #     deep_supervision=False,
-    #     only_last_stage_as_latent=False,
-    # ).to(_device)
-    # x = torch.rand((2, 1, *input_shape), device=_device)  # Batch size 2
-    # output = model(x)
-    # print(
-    #     f"Input shape: {x.shape}, Output shape: {output['recon'].shape}, Latent shape: {output['proj'].shape}"
-    # )
+
+    model = ConsisMAE(
+        input_channels=1,
+        num_classes=1,
+        deep_supervision=False,
+        only_last_stage_as_latent=False,
+        use_projector=True
+    ).to(_device)
+    model = model.train(True)
+    x = torch.rand((2, 1, *input_shape), device=_device)  # Batch size 2
+    output = model(x)
+    print(
+        f"Input shape: {x.shape}, Output shape: {output['recon'].shape}, Latent shape: {output['proj'].shape}"
+    )
     # del output
     # if _device == "cuda":
     #     measure_memory(model, x)
