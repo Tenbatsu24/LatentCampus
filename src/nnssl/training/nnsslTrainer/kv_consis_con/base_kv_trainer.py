@@ -32,7 +32,7 @@ class BaseKVConsisTrainer(BaseMAETrainer):
 
         # Default initial patch size, can be overridden in get_dataloaders
         self.initial_patch_size = (256, 256, 256)
-        self.total_batch_size = 4
+        self.total_batch_size = 2
         self.initial_lr = 1e-3
         self.num_epochs = 250
         self.teacher = None
