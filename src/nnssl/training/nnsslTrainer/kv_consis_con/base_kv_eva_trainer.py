@@ -263,3 +263,18 @@ class BaseKVConsisEvaTrainer(BaseEvaMAETrainer):
         This method is overridden to provide specific validation logic.
         """
         return self.shared_step(batch, is_train=False)
+
+
+class BaseKVConsisEvaTrainerSimSiam(BaseKVConsisEvaTrainer):
+    """
+    Base class for Key-Value Consistency EVA Trainer with SimSiam.
+    This class inherits from BaseKVConsisEvaTrainer and is designed to handle
+    SimSiam-specific training logic.
+    """
+
+    def __init__(self, *args, **kwargs):
+        """
+        Initialize the BaseKVConsisEvaTrainerSimSiam with the given arguments.
+        """
+        super().__init__(*args, **kwargs)
+        self.teacher_mom = 0.0  # the teacher model is always the same as the student model in SimSiam
