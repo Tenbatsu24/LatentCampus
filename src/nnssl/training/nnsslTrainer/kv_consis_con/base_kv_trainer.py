@@ -31,7 +31,7 @@ class BaseKVConsisTrainer(BaseMAETrainer):
 
         # Default initial patch size, can be overridden in get_dataloaders
         self.initial_patch_size = (256, 256, 256)
-        self.total_batch_size = 4
+        self.total_batch_size = 2
         self.initial_lr = 1e-3
         self.num_epochs = 250
         self.config_plan.patch_size = (160, 160, 160)  # Default patch size for KV Consis Eva
