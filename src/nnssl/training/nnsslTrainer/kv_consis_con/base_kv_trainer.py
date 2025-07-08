@@ -1,4 +1,3 @@
-import copy
 from typing import Union, Tuple, List
 from typing_extensions import override
 
@@ -32,11 +31,9 @@ class BaseKVConsisTrainer(BaseMAETrainer):
 
         # Default initial patch size, can be overridden in get_dataloaders
         self.initial_patch_size = (256, 256, 256)
-        self.total_batch_size = 2
+        self.total_batch_size = 4
         self.initial_lr = 1e-3
         self.num_epochs = 250
-        self.teacher = None
-        self.teacher_mom = 0.995  # Momentum for the teacher model update
         self.config_plan.patch_size = (160, 160, 160)  # Default patch size for KV Consis Eva
 
     def build_loss(self):
@@ -150,37 +147,6 @@ class BaseKVConsisTrainer(BaseMAETrainer):
 
         return self.make_generators(initial_patch_size, tr_transforms, val_transforms)
 
-    def on_train_start(self):
-        if self.teacher is None:
-            # create a deep copy of the network to use as a teacher
-            self.teacher = copy.deepcopy(self.network)
-            self.teacher = self.teacher.to(self.device)
-            self.teacher = (
-                self.teacher.eval()
-            )  # set the teacher to eval mode and not training
-            for param in self.teacher.parameters():
-                param.requires_grad = False
-        super().on_train_start()
-
-    def ema(self, teacher_model, student_model, update_bn=False):
-        mom = self.teacher_mom
-
-        for p_s, p_t in zip(student_model.parameters(), teacher_model.parameters()):
-            p_t.data = mom * p_t.data + (1 - mom) * p_s.data
-
-        if not update_bn:
-            return  # update BN stat buffers if required
-        for (n_s, m_s), (n_t, m_t) in zip(
-            student_model.named_modules(), teacher_model.named_modules()
-        ):
-            if isinstance(m_s, torch.nn.modules.batchnorm._NormBase) and n_s == n_t:
-                m_t.running_mean.data = (
-                    mom * m_t.running_mean.data + (1 - mom) * m_s.running_mean.data
-                )
-                m_t.running_var.data = (
-                    mom * m_t.running_var.data + (1 - mom) * m_s.running_var.data
-                )
-
     def shared_step(self, batch: dict, is_train: bool = True) -> dict:
         """
         Shared step for both training and validation.
@@ -192,7 +158,9 @@ class BaseKVConsisTrainer(BaseMAETrainer):
         bboxes = bboxes.to(self.device, non_blocking=True)
 
         with torch.no_grad():
-            teacher_output = self.teacher(data)
+            self.network.eval()
+            teacher_output = self.network(data)  # the teacher output is therefore the not masked data
+            self.network.train()
 
         # We use the self.batch_size as it is not identical with the plan batch_size in ddp cases.
         mask = self.mask_creation(
@@ -247,10 +215,6 @@ class BaseKVConsisTrainer(BaseMAETrainer):
                 torch.nn.utils.clip_grad_norm_(self.network.parameters(), 12)
                 self.optimizer.step()
 
-            # update the teacher network with momentum of 0.95
-            with torch.no_grad():
-                self.ema(self.teacher, self.network, update_bn=False)
-
         return {k: v.detach().cpu().numpy() for k, v in loss_dict.items()}
 
     def train_step(self, batch: dict) -> dict:
@@ -261,13 +225,6 @@ class BaseKVConsisTrainer(BaseMAETrainer):
 
 
 class BaseKVConsisTrainerSimSiam(BaseKVConsisTrainer):
-
-    def __init__(self, *args, **kwargs):
-        """
-        Initialize the BaseKVConsisTrainerSimSiam with the given arguments.
-        """
-        super().__init__(*args, **kwargs)
-        self.teacher_mom = 0.0
 
     def build_architecture_and_adaptation_plan(
         self,
