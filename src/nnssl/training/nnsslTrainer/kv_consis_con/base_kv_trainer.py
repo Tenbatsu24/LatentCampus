@@ -260,6 +260,17 @@ class BaseKVConsisTrainer(BaseMAETrainer):
         return self.shared_step(batch, is_train=False)
 
 
+class KVConsis128Trainer(BaseKVConsisTrainer):
+
+    def __init__(self, *args, **kwargs):
+        """
+        Initialize the KVConsis128Trainer with the given arguments.
+        """
+        super().__init__(*args, **kwargs)
+        self.total_batch_size = 4
+        self.config_plan.patch_size = (128, 128, 128)
+
+
 class BaseKVConsisTrainerSimSiam(BaseKVConsisTrainer):
 
     def __init__(self, *args, **kwargs):
