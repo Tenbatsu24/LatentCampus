@@ -283,3 +283,17 @@ class KVConsisEvaSimSiamTrainer(BaseKVConsisEvaTrainer):
         """
         super().__init__(*args, **kwargs)
         self.teacher_mom = 0.0  # the teacher model is always the same as the student model in SimSiam
+
+
+class KVConsisEvaSimSiamNoConTrainer(BaseKVConsisEvaTrainer):
+    """
+    Base class for Key-Value Consistency EVA Trainer with SimSiam and no contrastive loss.
+    This class inherits from BaseKVConsisEvaTrainer and is designed to handle
+    SimSiam-specific training logic without contrastive loss.
+    """
+
+    def __init__(self, *args, **kwargs):
+        """
+        Initialize the BaseKVConsisEvaTrainerSimSiamNoCon with the given arguments.
+        """
+        super().__init__(*args, **kwargs)
