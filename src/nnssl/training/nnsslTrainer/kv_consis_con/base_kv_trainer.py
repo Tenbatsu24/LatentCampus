@@ -305,3 +305,34 @@ class KVConsis128SimSiamTrainer(KVConsis128Trainer):
         # no changes to original mae since projector can be thrown away
         adapt_plan = self.save_adaption_plan(num_input_channels)
         return architecture, adapt_plan
+
+
+class KVConsis128SimSiamBNTrainer(KVConsis128Trainer):
+
+    def __init__(self, *args, **kwargs):
+        """
+        Initialize the BaseKVConsisTrainerSimSiam with the given arguments.
+        """
+        super().__init__(*args, **kwargs)
+        self.teacher_mom = 0.0
+
+    def build_architecture_and_adaptation_plan(
+        self,
+        config_plan,
+        num_input_channels: int,
+        num_output_channels: int,
+        *args,
+        **kwargs,
+    ):
+        # ---------------------------- Create architecture --------------------------- #
+        architecture = ConsisMAE(
+            input_channels=num_input_channels,
+            num_classes=num_output_channels,
+            deep_supervision=False,
+            only_last_stage_as_latent=False,
+            use_projector=True
+        )
+        # --------------------- Build associated adaptation plan --------------------- #
+        # no changes to original mae since projector can be thrown away
+        adapt_plan = self.save_adaption_plan(num_input_channels)
+        return architecture, adapt_plan
