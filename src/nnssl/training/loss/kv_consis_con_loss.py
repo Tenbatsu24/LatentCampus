@@ -228,7 +228,7 @@ class KVConsisConLoss(torch.nn.Module):
         pred_latents_aa, tgt_latents_aa = F.normalize(pred_latents_aa, dim=1), F.normalize(tgt_latents_aa, dim=1)
 
         attract_cos_aa = 2 - 2 * (pred_latents_aa * tgt_latents_aa).sum(dim=1).mean()  # already normalized
-        repel_cos_aa = 2 - 2 * (pred_latents[neg_idxs_a] * tgt_latents[neg_idxs_b]).sum(dim=1).mean()
+        repel_cos_aa = 2 - 2 * (pred_latents_aa[neg_idxs_a] * tgt_latents_aa[neg_idxs_b]).sum(dim=1).mean()
 
         # contrastive_loss_lp = attraction_term_lp / (repulsion_terms_lp + self.epsilon)
         contrastive_loss_cos = attract_cos_aa / (repel_cos_aa + self.epsilon)
