@@ -165,6 +165,11 @@ class BaseKVConsisTrainer(BaseMAETrainer):
     def ema(self, teacher_model, student_model, update_bn=False):
         mom = self.teacher_mom
 
+        if mom == 0.0:
+            # if the momentum is 0, we just copy the student model to the teacher model
+            teacher_model.load_state_dict(student_model.state_dict())
+            return
+
         for p_s, p_t in zip(student_model.parameters(), teacher_model.parameters()):
             p_t.data = mom * p_t.data + (1 - mom) * p_s.data
 
