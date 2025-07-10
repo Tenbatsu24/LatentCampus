@@ -209,33 +209,36 @@ class KVConsisConLoss(torch.nn.Module):
         # attraction_term_lp = torch.norm(pred_latents - tgt_latents, p=self.p, dim=1)
         # attraction_term_lp = torch.mean(attraction_term_lp)
 
-        # neg_idxs_a, neg_idxs_b = get_neg_pairs(b)
-        # neg_idxs_a, neg_idxs_b = (
-        #     torch.tensor(neg_idxs_a, device=pred_latents.device),
-        #     torch.tensor(neg_idxs_b, device=pred_latents.device),
-        # )
+        neg_idxs_a, neg_idxs_b = get_neg_pairs(b)
+        neg_idxs_a, neg_idxs_b = (
+            torch.tensor(neg_idxs_a, device=pred_latents.device),
+            torch.tensor(neg_idxs_b, device=pred_latents.device),
+        )
         # repulsion_terms_lp = torch.norm(
         #     pred_latents[neg_idxs_a] - tgt_latents[neg_idxs_b], p=self.p, dim=1
         # )
         # repulsion_terms_lp = torch.mean(repulsion_terms_lp)
 
-        pred_latents, tgt_latents = F.normalize(pred_latents, dim=1), F.normalize(tgt_latents, dim=1)
+        pred_latents_fg, tgt_latents_fg = F.normalize(pred_latents, dim=1), F.normalize(tgt_latents, dim=1)
 
-        negative_cosine_regression = 2 - 2 * (pred_latents * tgt_latents).sum(dim=1).mean()  # already normalized
-        # attraction_term_cos = torch.mean(attraction_term_cos)  # mean over the batch
+        fg_cos_reg = 2 - 2 * (pred_latents_fg * tgt_latents_fg).sum(dim=1).mean()  # already normalized
 
-        # repulsion_terms_cos = - (pred_latents[neg_idxs_a] * tgt_latents[neg_idxs_b])
-        # repulsion_terms_cos = torch.mean(repulsion_terms_cos)
+        # aggregate the aligned feature maps over the spatial dimensions
+        pred_latents_aa, tgt_latents_aa = pred_latents.mean(dim=(2, 3, 4)), tgt_latents.mean(dim=(2, 3, 4))
+        pred_latents_aa, tgt_latents_aa = F.normalize(pred_latents_aa, dim=1), F.normalize(tgt_latents_aa, dim=1)
+
+        attract_cos_aa = 2 - 2 * (pred_latents_aa * tgt_latents_aa).sum(dim=1).mean()  # already normalized
+        repel_cos_aa = 2 - 2 * (pred_latents[neg_idxs_a] * tgt_latents[neg_idxs_b]).sum(dim=1).mean()
 
         # contrastive_loss_lp = attraction_term_lp / (repulsion_terms_lp + self.epsilon)
-        # contrastive_loss_cos = attraction_term_cos / (repulsion_terms_cos + self.epsilon)
+        contrastive_loss_cos = attract_cos_aa / (repel_cos_aa + self.epsilon)
 
         # get the channel wise std
-        dims_to_reduce = (0, 2, 3, 4) if pred_latents.ndim == 5 else (0, 2, 3)
-        mean_std = torch.std(pred_latents.detach(), dim=dims_to_reduce, keepdim=True).mean() / (1 / pred_latents.shape[1] ** 0.5)
+        dims_to_reduce = (0, 2, 3, 4) if tgt_latents_aa.ndim == 5 else (0,)
+        mean_std = torch.std(tgt_latents_aa.detach(), dim=dims_to_reduce, keepdim=True).mean() / (1 / pred_latents.shape[1] ** 0.5)
 
         # loss = recon_loss_huber + contrastive_loss_lp + negative_cosine_regression
-        loss = recon_loss_huber + negative_cosine_regression
+        loss = recon_loss_huber + 0.5 * fg_cos_reg + contrastive_loss_cos
 
         return {
             "loss": loss,
@@ -243,10 +246,10 @@ class KVConsisConLoss(torch.nn.Module):
             "huber": recon_loss_huber,
             "mse": recon_loss_mse,
             "cw_std": mean_std,
-            # "cl_lp": contrastive_loss_lp,
-            # "pos_lp": attraction_term_lp,
-            # "neg_lp": repulsion_terms_lp,
-            "neg_cos": negative_cosine_regression,
+            "cl_cos": contrastive_loss_cos,
+            "aa_pos_cos": attract_cos_aa,
+            "aa_neg_cos": repel_cos_aa,
+            "fg_cos_reg": fg_cos_reg,
         }
 
 
