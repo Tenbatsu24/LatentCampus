@@ -5,7 +5,6 @@ import torch.nn as nn
 
 from einops import rearrange
 from torch.nn.init import trunc_normal_
-from dynamic_network_architectures.building_blocks.eva import Eva
 from dynamic_network_architectures.architectures.unet import ResidualEncoderUNet
 
 from nnssl.architectures.evaMAE_module import EvaMAE
@@ -66,17 +65,29 @@ class ConsisMAE(ResidualEncoderUNet):
         else:
             proj_in_dim = sum(features_per_stage)
         self.only_last_stage_as_latent = only_last_stage_as_latent
+
         if self.use_projector:
             self.projector = nn.Sequential(
-                nn.Linear(proj_in_dim, 256, bias=False),
-                nn.BatchNorm1d(256),
-                nn.ReLU(inplace=True), # hidden layer
-                nn.Linear(256, proj_in_dim)
-            ) # output layer
+                nn.Conv1d(proj_in_dim, 2048, kernel_size=1, bias=False),  # this is technically a linear layer
+                nn.InstanceNorm1d(2048, affine=False, track_running_stats=False),
+                nn.SiLU(),
+                nn.Conv1d(2048, 2048, kernel_size=1, bias=False),
+                nn.InstanceNorm1d(2048, affine=False, track_running_stats=False),
+                nn.SiLU(),
+                nn.Conv1d(2048, 2048, kernel_size=1, bias=False),
+                nn.InstanceNorm1d(2048, affine=False, track_running_stats=False),
+            )  # output layer
+
+            self.predictor = nn.Sequential(
+                nn.Conv1d(2048, 512, kernel_size=1, bias=False),
+                nn.InstanceNorm1d(512, affine=False, track_running_stats=False),
+                nn.SiLU(),
+                nn.Conv1d(512, 2048, kernel_size=1, bias=False),
+            )
 
             # initialize the projector weights
             for m in self.projector.modules():
-                if isinstance(m, nn.Linear):
+                if isinstance(m, nn.Conv1d):
                     trunc_normal_(m.weight, std=0.02)
                     if m.bias is not None:
                         nn.init.constant_(m.bias, 0)
@@ -91,11 +102,15 @@ class ConsisMAE(ResidualEncoderUNet):
             [self.adaptive_pool(s) for s in reversed(skips)], dim=1
         )
 
-        if self.training and self.use_projector:
+        if self.use_projector:
             b = latent.shape[0]
-            latent = rearrange(latent, "b c w h d -> (b w h d) c")
+            latent = rearrange(latent, "b c w h d -> b c (w h d)")
             latent = self.projector(latent)
-            latent = rearrange(latent, "(b w h d) c -> b c w h d", b=b, w=20, h=20, d=20)
+
+            if self.training:
+                latent = self.predictor(latent)
+
+            latent = rearrange(latent, "b c (w h d) -> b c w h d", b=b, w=20, h=20, d=20)
 
         return {
             "proj": latent,
@@ -126,24 +141,51 @@ class ConsisEvaMAE(EvaMAE):
         if not self.use_decoder:
             raise ValueError("ConsisEvaMAE requires a decoder to be used.")
 
-        self.feature_decoder = Eva(
-            embed_dim=embed_dim,
-            depth=1,  # eva_depth,
-            num_heads=16,  # eva_numheads,
-            ref_feat_shape=tuple(
-                [i // ds for i, ds in zip(input_shape, patch_embed_size)]
-            ),
-            num_reg_tokens=kwargs.get("num_register_tokens", 0),
-            use_rot_pos_emb=kwargs.get("use_rot_pos_emb", True),
-            use_abs_pos_emb=kwargs.get("use_abs_pos_emb", True),
-            mlp_ratio=kwargs.get("mlp_ratio", 4 * 2 / 3),
-            drop_path_rate=kwargs.get("drop_path_rate", 0),
-            patch_drop_rate=0,  # No drop in the decoder
-            proj_drop_rate=kwargs.get("proj_drop_rate", 0.0),
-            attn_drop_rate=kwargs.get("attn_drop_rate", 0.0),
-            init_values=kwargs.get("init_values", 0.1),
-            scale_attn_inner=kwargs.get("scale_attn_inner", False),
+        # self.feature_decoder = Eva(
+        #     embed_dim=embed_dim,
+        #     depth=1,  # eva_depth,
+        #     num_heads=16,  # eva_numheads,
+        #     ref_feat_shape=tuple(
+        #         [i // ds for i, ds in zip(input_shape, patch_embed_size)]
+        #     ),
+        #     num_reg_tokens=kwargs.get("num_register_tokens", 0),
+        #     use_rot_pos_emb=kwargs.get("use_rot_pos_emb", True),
+        #     use_abs_pos_emb=kwargs.get("use_abs_pos_emb", True),
+        #     mlp_ratio=kwargs.get("mlp_ratio", 4 * 2 / 3),
+        #     drop_path_rate=kwargs.get("drop_path_rate", 0),
+        #     patch_drop_rate=0,  # No drop in the decoder
+        #     proj_drop_rate=kwargs.get("proj_drop_rate", 0.0),
+        #     attn_drop_rate=kwargs.get("attn_drop_rate", 0.0),
+        #     init_values=kwargs.get("init_values", 0.1),
+        #     scale_attn_inner=kwargs.get("scale_attn_inner", False),
+        # )
+
+        self.use_projector = True
+
+        self.projector = nn.Sequential(
+            nn.Conv1d(embed_dim, 2048, kernel_size=1, bias=False),  # this is technically a linear layer
+            nn.InstanceNorm1d(2048, affine=False, track_running_stats=False),
+            nn.SiLU(),
+            nn.Conv1d(2048, 2048, kernel_size=1, bias=False),
+            nn.InstanceNorm1d(2048, affine=False, track_running_stats=False),
+            nn.SiLU(),
+            nn.Conv1d(2048, 2048, kernel_size=1, bias=False),
+            nn.InstanceNorm1d(2048, affine=False, track_running_stats=False),
+        )  # output layer
+
+        self.predictor = nn.Sequential(
+            nn.Conv1d(2048, 512, kernel_size=1, bias=False),
+            nn.InstanceNorm1d(512, affine=False, track_running_stats=False),
+            nn.SiLU(),
+            nn.Conv1d(512, 2048, kernel_size=1, bias=False),
         )
+
+        # initialize the projector weights
+        for m in self.projector.modules():
+            if isinstance(m, nn.Conv1d):
+                trunc_normal_(m.weight, std=0.02)
+                if m.bias is not None:
+                    nn.init.constant_(m.bias, 0)
 
     def forward(self, x):
         # Encode patches
@@ -156,25 +198,32 @@ class ConsisEvaMAE(EvaMAE):
         # print(f"Encoded shape: {encoded.shape}, Keep indices shape: {keep_indices.shape if keep_indices is not None else 'None'}")
         num_patches = w * h * d
 
-        if self.training:
+        if not self.training:
+            restored_x = encoded
+        else:
             # Restore full sequence with mask tokens
             restored_x = self.restore_full_sequence(encoded, keep_indices, num_patches)
-            encoded, _ = self.feature_decoder(restored_x)
 
-            # Decode with restored sequence and rope embeddings
-            decoded, _ = self.decoder(restored_x)
+        # Decode with restored sequence and rope embeddings
+        decoded, _ = self.decoder(restored_x)
 
-            # Project back to output shape
-            decoded = rearrange(decoded, "b (h w d) c -> b c w h d", h=w, w=h, d=d)
-            decoded = self.up_projection(decoded)
+        if self.use_projector:
+            decoded = rearrange(decoded, "b s c -> b c s")
+            projected = self.projector(decoded)
+
+            if self.training:
+                projected = self.predictor(projected)
+
+            projected = rearrange(projected, "b c (h w d) -> b c w h d", b=b, w=w, h=h, d=d)
         else:
-            decoded = None
+            projected = None
 
-        # Reshape restored sequence to match original patch shape
-        projection = rearrange(encoded, "b (h w d) c -> b c w h d", h=w, w=h, d=d)
+        # Project back to output shape
+        decoded = rearrange(decoded, "b c (h w d) -> b c w h d", h=w, w=h, d=d)
+        decoded = self.up_projection(decoded)
 
         return {
-            "proj": projection,
+            "proj": projected,
             "recon": decoded,
             "keep_indices": keep_indices,
         }
