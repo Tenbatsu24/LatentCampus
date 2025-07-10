@@ -265,7 +265,7 @@ class BaseKVConsisEvaTrainer(BaseEvaMAETrainer):
         return self.shared_step(batch, is_train=False)
 
 
-class BaseKVConsisEvaTrainerSimSiam(BaseKVConsisEvaTrainer):
+class KVConsisEvaSimSiamTrainer(BaseKVConsisEvaTrainer):
     """
     Base class for Key-Value Consistency EVA Trainer with SimSiam.
     This class inherits from BaseKVConsisEvaTrainer and is designed to handle
