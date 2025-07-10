@@ -68,26 +68,26 @@ class ConsisMAE(ResidualEncoderUNet):
 
         if self.use_projector:
             self.projector = nn.Sequential(
-                nn.Conv1d(proj_in_dim, 2048, kernel_size=1, bias=False),  # this is technically a linear layer
-                nn.InstanceNorm1d(2048, affine=False, track_running_stats=False),
+                nn.Linear(proj_in_dim, 2048),  # this is technically a linear layer
+                nn.BatchNorm1d(2048, affine=False, track_running_stats=False),
                 nn.SiLU(),
-                nn.Conv1d(2048, 2048, kernel_size=1, bias=False),
-                nn.InstanceNorm1d(2048, affine=False, track_running_stats=False),
+                nn.Linear(2048, 2048),
+                nn.BatchNorm1d(2048, affine=False, track_running_stats=False),
                 nn.SiLU(),
-                nn.Conv1d(2048, 2048, kernel_size=1, bias=False),
-                nn.InstanceNorm1d(2048, affine=False, track_running_stats=False),
+                nn.Linear(2048, 2048),
+                nn.BatchNorm1d(2048, affine=False, track_running_stats=False),
             )  # output layer
 
             self.predictor = nn.Sequential(
-                nn.Conv1d(2048, 512, kernel_size=1, bias=False),
-                nn.InstanceNorm1d(512, affine=False, track_running_stats=False),
+                nn.Linear(2048, 512),
+                nn.BatchNorm1d(512, affine=False, track_running_stats=False),
                 nn.SiLU(),
-                nn.Conv1d(512, 2048, kernel_size=1, bias=False),
+                nn.Linear(512, 2048),
             )
 
             # initialize the projector weights
             for m in self.projector.modules():
-                if isinstance(m, nn.Conv1d):
+                if isinstance(m, nn.Linear):
                     trunc_normal_(m.weight, std=0.02)
                     if m.bias is not None:
                         nn.init.constant_(m.bias, 0)
@@ -104,13 +104,13 @@ class ConsisMAE(ResidualEncoderUNet):
 
         if self.use_projector:
             b = latent.shape[0]
-            latent = rearrange(latent, "b c w h d -> b c (w h d)")
+            latent = rearrange(latent, "b c w h d -> (b w h d) c")
             latent = self.projector(latent)
 
             if self.training:
                 latent = self.predictor(latent)
 
-            latent = rearrange(latent, "b c (w h d) -> b c w h d", b=b, w=20, h=20, d=20)
+            latent = rearrange(latent, "(b w h d) c -> b c w h d", b=b, w=20, h=20, d=20)
 
         return {
             "proj": latent,
