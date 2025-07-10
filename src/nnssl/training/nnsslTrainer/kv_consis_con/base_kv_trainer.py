@@ -271,7 +271,7 @@ class KVConsis128Trainer(BaseKVConsisTrainer):
         self.config_plan.patch_size = (128, 128, 128)
 
 
-class BaseKVConsisTrainerSimSiam(BaseKVConsisTrainer):
+class KVConsis128SimSiamTrainer(KVConsis128Trainer):
 
     def __init__(self, *args, **kwargs):
         """
