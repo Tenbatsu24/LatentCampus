@@ -199,7 +199,9 @@ class BaseKVConsisTrainer(BaseMAETrainer):
         with torch.no_grad():
             self.teacher.eval()
             teacher_output = self.teacher(data)
-
+            teacher_output = {
+                k: v for k, v in teacher_output.items() if k == "proj" or k == "image_latent"
+            }
         # We use the self.batch_size as it is not identical with the plan batch_size in ddp cases.
         mask = self.mask_creation(
             2 * self.batch_size, self.config_plan.patch_size, self.mask_percentage

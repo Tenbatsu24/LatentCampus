@@ -315,7 +315,7 @@ class KVConsisConLoss(torch.nn.Module):
             "mse": recon_loss_mse,
             "cw_std": cw_std,
             "ntxent": contrastive_loss,
-            "acc": acc,
+            "acc": torch.tensor(acc, dtype=torch.float, device=loss.device),
             # "cl_cos": contrastive_loss_cos,
             # "aa_pos_cos": attract_cos_aa,
             # "aa_neg_cos": repel_cos_aa,

@@ -204,7 +204,7 @@ class BaseKVConsisEvaTrainer(BaseEvaMAETrainer):
             teacher_output = self.teacher(data)
             # del all keys that are not `proj`
             teacher_output = {
-                k: v for k, v in teacher_output.items() if k == "proj"
+                k: v for k, v in teacher_output.items() if k == "proj" or k == "image_latent"
             }
 
         if is_train:
