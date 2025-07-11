@@ -58,14 +58,14 @@ class ConsisMAE(ResidualEncoderUNet):
             deep_supervision=deep_supervision,
         )
 
-        self.v_adaptive_pool = nn.AdaptiveAvgPool3d((20, 20, 20))
+        self.v_adaptive_pool = nn.AdaptiveAvgPool3d((16, 16, 16))
         self.i_adaptive_pool = nn.AdaptiveAvgPool3d((1, 1, 1))
 
         self.use_projector = use_projector
         if only_last_stage_as_latent:
             proj_in_dim = features_per_stage[-1]
         else:
-            proj_in_dim = sum(features_per_stage)
+            proj_in_dim = sum(features_per_stage[-4:])
         self.only_last_stage_as_latent = only_last_stage_as_latent
 
         if self.use_projector:
@@ -101,7 +101,7 @@ class ConsisMAE(ResidualEncoderUNet):
         if self.only_last_stage_as_latent:
             skips = [skips[-1]]
         latent = torch.concat(
-            [self.v_adaptive_pool(s) for s in reversed(skips)], dim=1
+            [self.v_adaptive_pool(s) for s in skips[-4:]], dim=1
         )
 
         if self.use_projector:
@@ -112,10 +112,10 @@ class ConsisMAE(ResidualEncoderUNet):
             if self.training:
                 latent = self.predictor(latent)
 
-            latent = rearrange(latent, "(b w h d) c -> b c w h d", b=b, w=20, h=20, d=20)
+            latent = rearrange(latent, "(b w h d) c -> b c w h d", b=b, w=16, h=16, d=16)
 
         image_latent = torch.concat(
-            [self.i_adaptive_pool(s) for s in reversed(skips)], dim=1
+            [self.i_adaptive_pool(s) for s in skips[-4:]], dim=1
         ).reshape(x.shape[0], -1)
 
         if self.use_projector:
