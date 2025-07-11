@@ -310,7 +310,7 @@ class KVConsisConLoss(torch.nn.Module):
 
         contrastive_loss, acc = self.contrastive_loss(
             F.normalize(model_output[self.image_latent_key], dim=1),
-            F.normalize(target[self.image_latent_key].detach(), dim=1),
+            F.normalize(target[self.image_latent_key].detach(), dim=1).roll(b, 0)  # swapped assignments
         )
 
         # loss = recon_loss_huber + contrastive_loss_lp + negative_cosine_regression
