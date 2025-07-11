@@ -259,8 +259,8 @@ class KVConsisConLoss(torch.nn.Module):
         pred_latents = model_output[self.proj_key]
 
         tgt_latents = target[self.latent_key].detach()
-        cw_std = torch.std(F.normalize(tgt_latents.mean(dim=(2, 3, 4)), dim=1), dim=(0,), keepdim=True).mean() / (
-                    1 / tgt_latents.shape[1] ** 0.5)
+        cw_std = torch.std(F.normalize(target[self.image_latent_key].detach(), dim=1), dim=(0,), keepdim=True).mean()
+        cw_std = cw_std / (1 / target[self.image_latent_key].shape[1] ** 0.5)
 
         # if latents is 5d tensor, i.e. [b, c, x_p, y_p, z_p], we need to align them for better consistency
         if pred_latents.ndim == 5:
