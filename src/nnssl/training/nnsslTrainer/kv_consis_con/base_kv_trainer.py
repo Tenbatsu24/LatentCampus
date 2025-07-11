@@ -360,11 +360,11 @@ class ConsisMAETrainer(KVConsis128SimSiamBNTrainer):
         """
         super().__init__(*args, **kwargs)
         self.teacher_mom = 0.0
-        self.batch_size = 8
+        self.batch_size = 4
         self.initial_lr = 1e-3
         self.num_epochs = 250
         self.teacher = None
-        self.config_plan.patch_size = (96, 96, 96)  # we want a smaller patch size to get larger batch size
+        self.config_plan.patch_size = (128, 128, 128)  # we want a smaller patch size to get larger batch size
         # for cnn masked auto encoder is a difficult task, so we use
         self.mask_percentage = 0.60
 
