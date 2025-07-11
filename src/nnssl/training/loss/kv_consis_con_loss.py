@@ -315,9 +315,9 @@ class KVConsisConLoss(torch.nn.Module):
 
         # loss = recon_loss_huber + contrastive_loss_lp + negative_cosine_regression
         loss = (
-            self.recon_weight * recon_loss_huber +
-            self.fg_cos_weight * 0.5 * fg_cos_reg +
-            self.ntxent_weight * 0.5 * contrastive_loss
+            self.recon_weight * recon_loss_huber +  # on a random scale this is about 1.0
+            self.fg_cos_weight * 0.5 * fg_cos_reg +  # on a random scale this is about 2.0 (hence the 0.5)
+            self.ntxent_weight * 0.25 * contrastive_loss  # on a random scale this is about 4.0 (hence the 0.25)
         )
 
         return {
