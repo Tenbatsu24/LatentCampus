@@ -309,10 +309,9 @@ class ConsisMAEEvaTrainer(KVConsisEvaSimSiamTrainer):
         """
         super().__init__(*args, **kwargs)
         self.teacher_mom = 0.0
-        self.total_batch_size = 16
+        self.total_batch_size = 4
         self.initial_lr = 1e-4  # Initial learning rate for the optimizer
         self.num_epochs = 250
-        self.config_plan.patch_size = (96, 96, 96)  # we want a smaller patch size to get larger batch size
         self.warmup_duration_whole_net = 10  # Warmup duration for the whole network
 
     def build_loss(self):
