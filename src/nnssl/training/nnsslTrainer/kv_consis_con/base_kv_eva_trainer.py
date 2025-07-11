@@ -200,6 +200,7 @@ class BaseKVConsisEvaTrainer(BaseEvaMAETrainer):
         bboxes = bboxes.to(self.device, non_blocking=True)
 
         with torch.no_grad():
+            self.teacher.eval()  # ensure the teacher is in eval mode
             teacher_output = self.teacher(data)
             # del all keys that are not `proj`
             teacher_output = {
@@ -297,3 +298,18 @@ class KVConsisEvaSimSiamNoConTrainer(BaseKVConsisEvaTrainer):
         Initialize the BaseKVConsisEvaTrainerSimSiamNoCon with the given arguments.
         """
         super().__init__(*args, **kwargs)
+
+
+class ConsisMAEEvaTrainer(KVConsisEvaSimSiamTrainer):
+
+    def __init__(self, *args, **kwargs):
+        """
+        Initialize the ConsisMAEEvaTrainer with the given arguments.
+        This class is specifically designed for training ConsisMAE models.
+        """
+        super().__init__(*args, **kwargs)
+        self.teacher_mom = 0.0
+        self.total_batch_size = 4
+        self.initial_lr = 1e-4  # Initial learning rate for the optimizer
+        self.num_epochs = 250
+        self.warmup_duration_whole_net = 10  # Warmup duration for the whole network

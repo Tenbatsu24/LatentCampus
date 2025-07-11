@@ -58,7 +58,9 @@ class ConsisMAE(ResidualEncoderUNet):
             deep_supervision=deep_supervision,
         )
 
-        self.adaptive_pool = nn.AdaptiveAvgPool3d((20, 20, 20))
+        self.v_adaptive_pool = nn.AdaptiveAvgPool3d((20, 20, 20))
+        self.i_adaptive_pool = nn.AdaptiveAvgPool3d((1, 1, 1))
+
         self.use_projector = use_projector
         if only_last_stage_as_latent:
             proj_in_dim = features_per_stage[-1]
@@ -99,7 +101,7 @@ class ConsisMAE(ResidualEncoderUNet):
         if self.only_last_stage_as_latent:
             skips = [skips[-1]]
         latent = torch.concat(
-            [self.adaptive_pool(s) for s in reversed(skips)], dim=1
+            [self.v_adaptive_pool(s) for s in reversed(skips)], dim=1
         )
 
         if self.use_projector:
@@ -112,9 +114,19 @@ class ConsisMAE(ResidualEncoderUNet):
 
             latent = rearrange(latent, "(b w h d) c -> b c w h d", b=b, w=20, h=20, d=20)
 
+        image_latent = torch.concat(
+            [self.i_adaptive_pool(s) for s in reversed(skips)], dim=1
+        ).reshape(x.shape[0], -1)
+
+        if self.use_projector:
+            image_latent = self.projector(image_latent)
+            if self.training:
+                image_latent = self.predictor(image_latent)
+
         return {
             "proj": latent,
             "recon": decoded,
+            "image_latent": image_latent,
         }
 
 
@@ -187,6 +199,8 @@ class ConsisEvaMAE(EvaMAE):
                 if m.bias is not None:
                     nn.init.constant_(m.bias, 0)
 
+        self.i_adaptive_pool = nn.AdaptiveAvgPool3d((1, 1, 1))
+
     def forward(self, x):
         # Encode patches
         x = self.down_projection(x)
@@ -215,8 +229,11 @@ class ConsisEvaMAE(EvaMAE):
                 projected = self.predictor(projected)
 
             projected = rearrange(projected, "b c (h w d) -> b c w h d", b=b, w=w, h=h, d=d)
+
+            image_latent = self.i_adaptive_pool(projected).reshape(b, -1)
         else:
             projected = None
+            image_latent = None
 
         # Project back to output shape
         decoded = rearrange(decoded, "b c (h w d) -> b c w h d", h=w, w=h, d=d)
@@ -224,6 +241,7 @@ class ConsisEvaMAE(EvaMAE):
 
         return {
             "proj": projected,
+            "image_latent": image_latent,
             "recon": decoded,
             "keep_indices": keep_indices,
         }
@@ -273,7 +291,10 @@ if __name__ == "__main__":
     x = torch.rand((2, 1, *input_shape), device=_device)  # Batch size 2
     output = model(x)
     print(
-        f"Input shape: {x.shape}, Output shape: {output['recon'].shape}, Latent shape: {output['proj'].shape}"
+        f"Input shape: {x.shape}, "
+        f"Output shape: {output['recon'].shape}, "
+        f"Latent shape: {output['proj'].shape}, "
+        f"Image latent shape: {output['image_latent'].shape if output['image_latent'] is not None else 'None'}",
     )
     # del output
     # if _device == "cuda":
@@ -354,6 +375,7 @@ if __name__ == "__main__":
         f"Output shape: {output['recon'].shape}, "
         f"Keep indices shape: {output['keep_indices'].shape}, "
         f"Latent shape: {output['proj'].shape}",
+        f"Image latent shape: {output['image_latent'].shape if output['image_latent'] is not None else 'None'}",
     )
 
     model = model.train(False)
@@ -363,4 +385,5 @@ if __name__ == "__main__":
         f"Output shape: {output['recon'].shape if output['recon'] is not None else 'None'}, "
         f"Keep indices shape: {output['keep_indices'].shape if output['keep_indices'] is not None else 'None'}, "
         f"Latent shape: {output['proj'].shape if output['proj'] is not None else 'None'}",
+        f"Image latent shape: {output['image_latent'].shape if output['image_latent'] is not None else 'None'}",
     )

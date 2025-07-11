@@ -4,7 +4,92 @@ from functools import lru_cache
 import torch
 import torch.nn.functional as F
 
+from torch import nn
+
 from nnssl.training.loss.mse_loss import MAEMSELoss
+
+
+@lru_cache(maxsize=5)
+def _get_correlated_mask(b, device, using_teacher):
+    diag = torch.eye(2 * b, device=device, dtype=torch.uint8)
+    shifted = torch.eye(2 * b, device=device, dtype=torch.uint8).roll(-b, dims=1)
+    if using_teacher:
+        l_pos = torch.eye(2 * b, device=device, dtype=torch.uint8).roll(-b // 2, dims=1)
+        r_pos = torch.eye(2 * b, device=device, dtype=torch.uint8).roll(b // 2, dims=1)
+        mask = diag + shifted + l_pos + r_pos
+    else:
+        mask = diag + shifted
+    mask = (1 - mask).bool()  # Invert the mask to get negatives
+
+    return mask
+
+
+class NTXentLoss(nn.Module):
+
+    def __init__(self, temperature=0.5, similarity_function: Literal["cosine", "dot"] = "cosine", using_teacher=False):
+        super(NTXentLoss, self).__init__()
+
+        self.temperature = temperature
+
+        self.softmax = nn.Softmax(dim=-1)
+
+        self.criterion = nn.CrossEntropyLoss(reduction="sum")
+        self.using_teacher = using_teacher
+
+        if similarity_function == "cosine":
+            self.similarity = self._cosine_simililarity
+        else:
+            self.similarity = self._dot_simililarity
+
+    @staticmethod
+    def _dot_simililarity(x, y):
+        v = torch.tensordot(x.unsqueeze(1), y.T.unsqueeze(0), dims=2)
+        return v
+
+    @staticmethod
+    def _cosine_simililarity(x, y):
+        eps = torch.finfo(x.dtype).eps
+        v = F.cosine_similarity(x.unsqueeze(1), y.unsqueeze(0), dim=-1, eps=eps)
+        return v
+
+    def get_logits(self, zis, zjs):
+        b = zis.size(0)  # batch size
+        device = zis.device
+
+        representations = torch.cat([zjs, zis], dim=0)
+
+        similarity_matrix = self.similarity(representations, representations)
+
+        # filter out the scores from the positive samples
+        l_pos = torch.diag(similarity_matrix, b)
+        r_pos = torch.diag(similarity_matrix, -b)
+        positives = torch.cat([l_pos, r_pos]).view(2 * b, 1)
+        mask_samples_from_same_repr = (
+            _get_correlated_mask(b, device, self.using_teacher)
+        )
+        negatives = similarity_matrix[mask_samples_from_same_repr].view(
+            2 * b, -1
+        )
+
+        logits = torch.cat((positives, negatives), dim=1)
+        logits /= self.temperature
+
+        labels = (
+            torch.zeros(2 * b, dtype=torch.long, device=device)
+        )
+
+        return logits, labels
+
+    def forward(self, zis, zjs):
+        b = zis.size(0)  # batch size
+        logits, labels = self.get_logits(zis, zjs)
+
+        loss = self.criterion(logits, labels)
+        accuracy = (
+           torch.max(logits.detach(), dim=1)[1] == 0
+       ).sum().item() / logits.size(0)
+
+        return loss / (2 * b), accuracy
 
 
 class LogCoshError(torch.nn.Module):
@@ -41,30 +126,6 @@ class LogCoshError(torch.nn.Module):
             return loss  # [b, ...] shape, no reduction applied
 
 
-@lru_cache(maxsize=5)
-def get_neg_pairs(
-    batch_size: int,
-) -> tuple:
-    """
-    Generate positive and negative masks for the given batch size.
-
-    Args:
-        batch_size (int): The size of the batch.
-
-    Returns:
-        list[tuple[int, int]]: A list of tuples representing the negative pairs.
-    """
-    pairs = [
-        (i, j)
-        for i in range(2 * batch_size)
-        for j in range(2 * batch_size)
-        if i % batch_size != j % batch_size
-    ]
-    return tuple(
-        idxs for idxs in zip(*pairs)
-    )  # returns two lists: first and second elements of the pairs
-
-
 class KVConsisConLoss(torch.nn.Module):
 
     def __init__(self, device, p=2, epsilon=0.1, out_size=7, sampling_ratio=2):
@@ -87,6 +148,9 @@ class KVConsisConLoss(torch.nn.Module):
         self.recon_key = "recon"
         self.proj_key = "proj"
         self.latent_key = "proj"
+        self.image_latent_key = "image_latent"
+
+        self.contrastive_loss = NTXentLoss(temperature=0.5, similarity_function="cosine", using_teacher=True)
 
         # create a grid for resampling later
         # ── determine output resolution ──────────────────────────────────────────────
@@ -195,7 +259,8 @@ class KVConsisConLoss(torch.nn.Module):
         pred_latents = model_output[self.proj_key]
 
         tgt_latents = target[self.latent_key].detach()
-        cw_std = torch.std(F.normalize(tgt_latents.mean(dim=(2, 3, 4)), dim=1), dim=(0,), keepdim=True).mean() / (1 / tgt_latents.shape[1] ** 0.5)
+        cw_std = torch.std(F.normalize(tgt_latents.mean(dim=(2, 3, 4)), dim=1), dim=(0,), keepdim=True).mean() / (
+                    1 / tgt_latents.shape[1] ** 0.5)
 
         # if latents is 5d tensor, i.e. [b, c, x_p, y_p, z_p], we need to align them for better consistency
         if pred_latents.ndim == 5:
@@ -235,8 +300,13 @@ class KVConsisConLoss(torch.nn.Module):
         # # contrastive_loss_lp = attraction_term_lp / (repulsion_terms_lp + self.epsilon)
         # contrastive_loss_cos = attract_cos_aa / (repel_cos_aa + self.epsilon)
 
+        contrastive_loss, acc = self.contrastive_loss(
+            F.normalize(model_output[self.image_latent_key], dim=1),
+            F.normalize(target[self.image_latent_key].detach(), dim=1),
+        )
+
         # loss = recon_loss_huber + contrastive_loss_lp + negative_cosine_regression
-        loss = recon_loss_huber + 0.5 * fg_cos_reg
+        loss = recon_loss_huber + 0.5 * fg_cos_reg + 0.5 * contrastive_loss
 
         return {
             "loss": loss,
@@ -244,6 +314,8 @@ class KVConsisConLoss(torch.nn.Module):
             "huber": recon_loss_huber,
             "mse": recon_loss_mse,
             "cw_std": cw_std,
+            "ntxent": contrastive_loss,
+            "acc": acc,
             # "cl_cos": contrastive_loss_cos,
             # "aa_pos_cos": attract_cos_aa,
             # "aa_neg_cos": repel_cos_aa,
@@ -252,21 +324,23 @@ class KVConsisConLoss(torch.nn.Module):
 
 
 if __name__ == "__main__":
-    pairs = get_neg_pairs(4)
-    print(pairs, len(pairs[0]), len(pairs[1]))
+    # pairs = get_neg_pairs(4)
+    # print(pairs, len(pairs[0]), len(pairs[1]))
 
     _model_output = {
-        "recon": torch.randn(4, 1, 64, 64, 64, requires_grad=True, device="cuda"),
-        "proj": torch.randn(4, 256, 20, 20, 20, requires_grad=True, device="cuda"),
+        "recon": torch.randn(8, 1, 64, 64, 64, requires_grad=True, device="cuda"),
+        "proj": torch.randn(8, 2048, 20, 20, 20, requires_grad=True, device="cuda"),
+        "image_latent": torch.randn(8, 2048, device="cuda"),
     }
 
     _target = {
-        "recon": torch.randn(4, 1, 64, 64, 64, device="cuda"),
-        "proj": torch.randn(4, 256, 20, 20, 20, device="cuda"),
+        "recon": torch.randn(8, 1, 64, 64, 64, device="cuda"),
+        "proj": torch.randn(8, 2048, 20, 20, 20, device="cuda"),
+        "image_latent": torch.randn(8, 2048, device="cuda"),
     }
 
     _gt_recon = torch.randn(
-        4, 1, 64, 64, 64, device="cuda"
+        8, 1, 64, 64, 64, device="cuda"
     )  # Ground truth reconstruction
 
     _rel_bboxes = torch.tensor(
@@ -275,11 +349,15 @@ if __name__ == "__main__":
             [0.2, 0.2, 0.2, 0.8, 0.8, 0.8],
             [0.3, 0.3, 0.3, 0.7, 0.7, 0.7],
             [0.4, 0.4, 0.4, 0.6, 0.6, 0.6],
+            [0.1, 0.1, 0.1, 0.9, 0.9, 0.9],
+            [0.2, 0.2, 0.2, 0.8, 0.8, 0.8],
+            [0.3, 0.3, 0.3, 0.7, 0.7, 0.7],
+            [0.4, 0.4, 0.4, 0.6, 0.6, 0.6],
         ],
         device="cuda",
     )  # Example relative bounding boxes
     _mask = torch.randint(
-        0, 2, (4, 1, 64, 64, 64), device="cuda"
+        0, 2, (8, 1, 64, 64, 64), device="cuda"
     )  # Random mask for the example
 
     loss_fn = KVConsisConLoss(torch.device("cuda"), p=2, epsilon=0.1)

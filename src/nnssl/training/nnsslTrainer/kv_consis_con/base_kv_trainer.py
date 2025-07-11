@@ -197,6 +197,7 @@ class BaseKVConsisTrainer(BaseMAETrainer):
         bboxes = bboxes.to(self.device, non_blocking=True)
 
         with torch.no_grad():
+            self.teacher.eval()
             teacher_output = self.teacher(data)
 
         # We use the self.batch_size as it is not identical with the plan batch_size in ddp cases.
@@ -346,3 +347,40 @@ class KVConsis128SimSiamBNNoConTrainer(KVConsis128Trainer):
         """
         super().__init__(*args, **kwargs)
         self.teacher_mom = 0.0
+
+
+class ConsisMAETrainer(KVConsis128SimSiamBNTrainer):
+
+    def __init__(self, *args, **kwargs):
+        """
+        Initialize the ConsisMAEEvaTrainer with the given arguments.
+        This class is specifically designed for training ConsisMAE models.
+        """
+        super().__init__(*args, **kwargs)
+        self.teacher_mom = 0.0
+        self.batch_size = 4
+        self.initial_lr = 1e-3
+        self.num_epochs = 250
+        self.teacher = None
+        self.config_plan.patch_size = (128, 128, 128)  # Default patch size for ConsisMAE
+
+    def build_architecture_and_adaptation_plan(
+        self,
+        config_plan,
+        num_input_channels: int,
+        num_output_channels: int,
+        *args,
+        **kwargs,
+    ):
+        # ---------------------------- Create architecture --------------------------- #
+        architecture = ConsisMAE(
+            input_channels=num_input_channels,
+            num_classes=num_output_channels,
+            deep_supervision=False,
+            only_last_stage_as_latent=False,
+            use_projector=True
+        )
+        # --------------------- Build associated adaptation plan --------------------- #
+        # no changes to original mae since projector can be thrown away
+        adapt_plan = self.save_adaption_plan(num_input_channels)
+        return architecture, adapt_plan
