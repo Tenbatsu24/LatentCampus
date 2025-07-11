@@ -128,7 +128,11 @@ class LogCoshError(torch.nn.Module):
 
 class KVConsisConLoss(torch.nn.Module):
 
-    def __init__(self, device, p=2, epsilon=0.1, out_size=7, sampling_ratio=2):
+    def __init__(
+            self,
+            device, p=2, epsilon=0.1, out_size=7, sampling_ratio=2,
+            recon_weight=1.0, fg_cos_weight=1.0, ntxent_weight=1.0
+    ):
         """
         Initialize the KVConsisConLoss with the given parameters.
 
@@ -151,6 +155,10 @@ class KVConsisConLoss(torch.nn.Module):
         self.image_latent_key = "image_latent"
 
         self.contrastive_loss = NTXentLoss(temperature=0.5, similarity_function="cosine", using_teacher=True)
+
+        self.recon_weight = recon_weight
+        self.fg_cos_weight = fg_cos_weight
+        self.ntxent_weight = ntxent_weight
 
         # create a grid for resampling later
         # ── determine output resolution ──────────────────────────────────────────────
@@ -306,7 +314,11 @@ class KVConsisConLoss(torch.nn.Module):
         )
 
         # loss = recon_loss_huber + contrastive_loss_lp + negative_cosine_regression
-        loss = recon_loss_huber + 0.5 * fg_cos_reg + 0.5 * contrastive_loss
+        loss = (
+            self.recon_weight * recon_loss_huber +
+            self.fg_cos_weight * 0.5 * fg_cos_reg +
+            self.ntxent_weight * 0.5 * contrastive_loss
+        )
 
         return {
             "loss": loss,
