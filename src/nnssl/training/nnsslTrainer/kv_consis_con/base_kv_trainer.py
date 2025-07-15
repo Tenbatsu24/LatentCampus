@@ -405,6 +405,84 @@ class ConsisMAETrainer(KVConsis128SimSiamBNTrainer):
         return architecture, adapt_plan
 
 
+class ConsisAETrainer(ConsisMAETrainer):
+
+    def __init__(self, *args, **kwargs):
+        """
+        Initialize the ConsisAETrainer with the given arguments.
+        This class is specifically designed for training ConsisAE models.
+        """
+        super().__init__(*args, **kwargs)
+        self.initial_patch_size = (256, 256, 256)
+        self.total_batch_size = 2
+        self.teacher_mom = 0.0
+        self.mask_percentage = 0.00  # No masking for AutoEncoder
+        self.config_plan.patch_size = (160, 160, 160)
+
+    def on_validation_epoch_start(self):
+        # self.network.eval()
+
+        # the predictor part of the model requires network to be in training mode...
+        pass
+
+    def shared_step(self, batch: dict, is_train: bool = True) -> dict:
+        """
+        Shared step for both training and validation.
+        This method is overridden to provide specific shared step logic for ConsisAE.
+        """
+        data, bboxes = batch["all_crops"], batch["rel_bboxes"]
+
+        data = data.to(self.device, non_blocking=True)
+        bboxes = bboxes.to(self.device, non_blocking=True)
+
+        with torch.no_grad():
+            self.teacher.eval()
+            teacher_output = self.teacher(data)
+            # get the projections with stop gradient
+            teacher_output = {
+                k: v for k, v in teacher_output.items() if k == "proj" or k == "image_latent"
+            }
+
+        mask = torch.zeros_like(data)
+
+        if is_train:
+            self.optimizer.zero_grad(set_to_none=True)
+
+        with (
+            autocast(self.device.type, enabled=True)
+            if self.device.type == "cuda"
+            else dummy_context()
+        ):
+            with torch.no_grad() if not is_train else dummy_context():
+                output = self.network(data)
+                loss_dict = self.loss(
+                    model_output=output,
+                    target=teacher_output,
+                    gt_recon=data,
+                    rel_bboxes=bboxes,
+                    mask=mask,
+                )
+                l = loss_dict["loss"]
+
+        if is_train:
+            if self.grad_scaler is not None:
+                self.grad_scaler.scale(l).backward()
+                self.grad_scaler.unscale_(self.optimizer)
+                torch.nn.utils.clip_grad_norm_(self.network.parameters(), 12)
+                self.grad_scaler.step(self.optimizer)
+                self.grad_scaler.update()
+            else:
+                l.backward()
+                torch.nn.utils.clip_grad_norm_(self.network.parameters(), 12)
+                self.optimizer.step()
+
+            # update the teacher network with momentum of 0.95
+            with torch.no_grad():
+                self.ema(self.teacher, self.network, update_bn=False)
+
+        return {k: v.detach().cpu().numpy() for k, v in loss_dict.items()}
+
+
 class ConsisMAE10Trainer(ConsisMAETrainer):
 
     def __init__(self, *args, **kwargs):

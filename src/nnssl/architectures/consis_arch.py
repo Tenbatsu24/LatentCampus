@@ -212,7 +212,7 @@ class ConsisEvaMAE(EvaMAE):
         # print(f"Encoded shape: {encoded.shape}, Keep indices shape: {keep_indices.shape if keep_indices is not None else 'None'}")
         num_patches = w * h * d
 
-        if not self.training:
+        if keep_indices is None or not self.training:
             restored_x = encoded
         else:
             # Restore full sequence with mask tokens
@@ -362,7 +362,7 @@ if __name__ == "__main__":
         input_shape=input_shape,
         decoder_eva_depth=6,
         decoder_eva_numheads=8,
-        patch_drop_rate=0.7,
+        patch_drop_rate=0.0,
     ).to(_device)
     model = model.train(True)
 
@@ -373,7 +373,7 @@ if __name__ == "__main__":
     print("Input shape:", x.shape)
     print(
         f"Output shape: {output['recon'].shape}, "
-        f"Keep indices shape: {output['keep_indices'].shape}, "
+        f"Keep indices shape: {output['keep_indices'].shape if output['keep_indices'] is not None else 'None'}, "
         f"Latent shape: {output['proj'].shape}",
         f"Image latent shape: {output['image_latent'].shape if output['image_latent'] is not None else 'None'}",
     )
