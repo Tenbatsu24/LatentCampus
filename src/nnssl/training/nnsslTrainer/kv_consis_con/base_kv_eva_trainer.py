@@ -330,7 +330,7 @@ class ConsisMAEEvaTrainer(KVConsisEvaSimSiamTrainer):
         )
 
 
-class ConsisMAE25EvaTrainer(KVConsisEvaSimSiamTrainer):
+class ConsisMAE30EvaTrainer(KVConsisEvaSimSiamTrainer):
     """
     Trainer for ConsisMAE with a mask percentage of 10%.
     """
@@ -340,4 +340,4 @@ class ConsisMAE25EvaTrainer(KVConsisEvaSimSiamTrainer):
         Initialize the ConsisMAE10EvaTrainer with the given arguments.
         """
         super().__init__(*args, **kwargs)
-        self.mask_percentage = 0.25
+        self.mask_percentage = 0.30
