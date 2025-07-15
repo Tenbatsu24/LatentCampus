@@ -403,3 +403,15 @@ class ConsisMAETrainer(KVConsis128SimSiamBNTrainer):
         # no changes to original mae since projector can be thrown away
         adapt_plan = self.save_adaption_plan(num_input_channels)
         return architecture, adapt_plan
+
+
+class ConsisMAE10Trainer(ConsisMAETrainer):
+
+    def __init__(self, *args, **kwargs):
+        """
+        Initialize the ConsisMAE10Trainer with the given arguments.
+
+        This class is specifically designed for training ConsisMAE models with a 10% mask.
+        """
+        super().__init__(*args, **kwargs)
+        self.mask_percentage = 0.10
