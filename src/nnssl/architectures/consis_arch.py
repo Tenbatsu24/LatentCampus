@@ -176,18 +176,18 @@ class ConsisEvaMAE(EvaMAE):
 
         self.projector = nn.Sequential(
             nn.Linear(embed_dim, 2048),  # this is technically a linear layer
-            nn.LayerNorm(2048),
+            nn.BatchNorm1d(2048),
             nn.SiLU(),
             nn.Linear(2048, 2048),
-            nn.LayerNorm(2048),
+            nn.BatchNorm1d(2048),
             nn.SiLU(),
             nn.Linear(2048, 2048),
-            nn.LayerNorm(2048),
+            nn.BatchNorm1d(2048),
         )  # output layer
 
         self.predictor = nn.Sequential(
             nn.Linear(2048, 512),
-            nn.LayerNorm(512),
+            nn.BatchNorm1d(512),
             nn.SiLU(),
             nn.Linear(512, 2048),
         )
@@ -222,12 +222,14 @@ class ConsisEvaMAE(EvaMAE):
         decoded, _ = self.decoder(restored_x)
 
         if self.use_projector:
-            projected = self.projector(decoded)
+            projected = self.projector(
+                rearrange(decoded, "b (h w d) c -> (b h w d) c", b=b, h=w, w=h, d=d)
+            )
 
             if self.training:
                 projected = self.predictor(projected)
 
-            projected = rearrange(projected, "b (h w d) c -> b c w h d", b=b, w=w, h=h, d=d)
+            projected = rearrange(projected, "(b h w d) c -> b c w h d", b=b, h=w, w=h, d=d)
 
             image_latent = self.i_adaptive_pool(projected).reshape(b, -1)
         else:
