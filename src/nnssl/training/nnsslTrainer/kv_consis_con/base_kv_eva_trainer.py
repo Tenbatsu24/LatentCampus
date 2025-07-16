@@ -330,6 +330,36 @@ class ConsisMAEEvaTrainer(KVConsisEvaSimSiamTrainer):
         )
 
 
+class ConMAEEvaTrainer(KVConsisEvaSimSiamTrainer):
+
+    def __init__(self, *args, **kwargs):
+        """
+        Initialize the ConsisMAEEvaTrainer with the given arguments.
+        This class is specifically designed for training ConsisMAE models.
+        """
+        super().__init__(*args, **kwargs)
+        self.teacher_mom = 0.0
+        self.total_batch_size = 4
+        self.initial_lr = 1e-4  # Initial learning rate for the optimizer
+        self.num_epochs = 250
+        self.warmup_duration_whole_net = 10  # Warmup duration for the whole network
+
+    def build_loss(self):
+        """
+        Builds the loss function for the model.
+        This method is overridden to provide specific loss logic.
+        """
+        from nnssl.training.loss.kv_consis_con_loss import KVConsisConLoss
+
+        # Create the loss function
+        return KVConsisConLoss(
+            device=self.device,
+            p=2,
+            epsilon=0.1,
+            recon_weight=5.0
+        )
+
+
 class ConsisAEEvaTrainer(ConsisMAEEvaTrainer):
     """
     Trainer for ConsisAE with a mask percentage of 10%.
