@@ -177,10 +177,10 @@ class ConsisEvaMAE(EvaMAE):
         self.projector = nn.Sequential(
             nn.Linear(embed_dim, 2048),  # this is technically a linear layer
             nn.LayerNorm(2048),
-            nn.GELU(),
+            nn.SiLU(),
             nn.Linear(2048, 2048),
             nn.LayerNorm(2048),
-            nn.GELU(),
+            nn.SiLU(),
             nn.Linear(2048, 2048),
             nn.LayerNorm(2048),
         )  # output layer
@@ -188,7 +188,7 @@ class ConsisEvaMAE(EvaMAE):
         self.predictor = nn.Sequential(
             nn.Linear(2048, 512),
             nn.LayerNorm(512),
-            nn.GELU(),
+            nn.SiLU(),
             nn.Linear(512, 2048),
         )
 
