@@ -147,6 +147,7 @@ class BaseAlignedMAETrainer(BaseMAETrainer):
         return self.make_generators(initial_patch_size, tr_transforms, val_transforms)
 
     def on_train_start(self):
+        super().on_train_start()
         if self.teacher is None:
             # create a deep copy of the network to use as a teacher
             self.teacher = copy.deepcopy(self.network)
@@ -156,7 +157,6 @@ class BaseAlignedMAETrainer(BaseMAETrainer):
             )  # set the teacher to eval mode and not training
             for param in self.teacher.parameters():
                 param.requires_grad = False
-        super().on_train_start()
 
     def ema(self, teacher_model, student_model, update_bn=False):
         mom = self.teacher_mom
