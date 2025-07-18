@@ -355,7 +355,6 @@ class AlignedMAESimSiamTrainer(AlignedMAETrainer):
         super().__init__(*args, **kwargs)
         self.teacher_mom = 0.0
         self.total_batch_size = 4
-        self.teacher_mom = 0.995
         self.initial_lr = 1e-2
         self.num_epochs = 300
         self.mask_percentage = 0.75  # Default mask percentage for ConMAE
