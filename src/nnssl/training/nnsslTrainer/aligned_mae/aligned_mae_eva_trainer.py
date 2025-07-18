@@ -10,7 +10,7 @@ from typing_extensions import override
 
 from nnssl.architectures.consis_arch import ConsisEvaMAE
 from nnssl.utilities.helpers import dummy_context
-from nnssl.ssl_data.dataloading.kv_consis_con_transform import KVConsisTransform
+from nnssl.ssl_data.dataloading.aligned_transform import OverlapTransform
 from nnssl.training.nnsslTrainer.masked_image_modeling.BaseEvaMAETrainer import (
     BaseEvaMAETrainer,
 )
@@ -19,7 +19,7 @@ from nnssl.ssl_data.configure_basic_dummyDA import (
 )
 
 
-class BaseKVConsisEvaTrainer(BaseEvaMAETrainer):
+class BaseAlignedMAETrainer(BaseEvaMAETrainer):
     """
     Base class for Key-Value Consistency EVA Trainer.
     This class inherits from EvaMAETrainer and is designed to handle
@@ -46,21 +46,17 @@ class BaseKVConsisEvaTrainer(BaseEvaMAETrainer):
         Builds the loss function for the model.
         This method is overridden to provide specific loss logic.
         """
-        from nnssl.training.loss.kv_consis_con_loss import KVConsisConLoss
+        from nnssl.training.loss.aligned_mae_loss import AlignedMAELoss
 
         # Create the loss function
-        return KVConsisConLoss(
-            device=self.device,
-            p=2,
-            epsilon=0.1,
-        )
+        return AlignedMAELoss(device=self.device)
 
     def get_validation_transforms(self):
         """
         Returns the validation transforms for the model.
         This method is overridden to provide specific validation transforms.
         """
-        return KVConsisTransform(
+        return OverlapTransform(
             train="none",
             data_key="data",
             initial_patch_size=self.initial_patch_size,
@@ -82,7 +78,7 @@ class BaseKVConsisEvaTrainer(BaseEvaMAETrainer):
         Returns the training transforms for the model.
         This method is overridden to provide specific training transforms.
         """
-        return KVConsisTransform(
+        return OverlapTransform(
             train="train",
             data_key="data",
             initial_patch_size=self.initial_patch_size,
@@ -271,36 +267,7 @@ class BaseKVConsisEvaTrainer(BaseEvaMAETrainer):
         return self.shared_step(batch, is_train=False)
 
 
-class KVConsisEvaSimSiamTrainer(BaseKVConsisEvaTrainer):
-    """
-    Base class for Key-Value Consistency EVA Trainer with SimSiam.
-    This class inherits from BaseKVConsisEvaTrainer and is designed to handle
-    SimSiam-specific training logic.
-    """
-
-    def __init__(self, *args, **kwargs):
-        """
-        Initialize the BaseKVConsisEvaTrainerSimSiam with the given arguments.
-        """
-        super().__init__(*args, **kwargs)
-        self.teacher_mom = 0.0  # the teacher model is always the same as the student model in SimSiam
-
-
-class KVConsisEvaSimSiamNoConTrainer(BaseKVConsisEvaTrainer):
-    """
-    Base class for Key-Value Consistency EVA Trainer with SimSiam and no contrastive loss.
-    This class inherits from BaseKVConsisEvaTrainer and is designed to handle
-    SimSiam-specific training logic without contrastive loss.
-    """
-
-    def __init__(self, *args, **kwargs):
-        """
-        Initialize the BaseKVConsisEvaTrainerSimSiamNoCon with the given arguments.
-        """
-        super().__init__(*args, **kwargs)
-
-
-class ConsisMAEEvaTrainer(KVConsisEvaSimSiamTrainer):
+class AlignedMAEEvaTrainer(BaseAlignedMAETrainer):
 
     def __init__(self, *args, **kwargs):
         """
@@ -308,10 +275,10 @@ class ConsisMAEEvaTrainer(KVConsisEvaSimSiamTrainer):
         This class is specifically designed for training ConsisMAE models.
         """
         super().__init__(*args, **kwargs)
-        self.teacher_mom = 0.0
+        self.teacher_mom = 0.995
         self.total_batch_size = 4
         self.initial_lr = 1e-4  # Initial learning rate for the optimizer
-        self.num_epochs = 250
+        self.num_epochs = 500
         self.warmup_duration_whole_net = 10  # Warmup duration for the whole network
 
     def build_loss(self):
@@ -319,48 +286,16 @@ class ConsisMAEEvaTrainer(KVConsisEvaSimSiamTrainer):
         Builds the loss function for the model.
         This method is overridden to provide specific loss logic.
         """
-        from nnssl.training.loss.kv_consis_con_loss import KVConsisConLoss
+        from nnssl.training.loss.aligned_mae_loss import AlignedMAELoss
 
         # Create the loss function
-        return KVConsisConLoss(
+        return AlignedMAELoss(
             device=self.device,
-            p=2,
-            epsilon=0.1,
             recon_weight=5.0
         )
 
 
-class ConMAEEvaTrainer(KVConsisEvaSimSiamTrainer):
-
-    def __init__(self, *args, **kwargs):
-        """
-        Initialize the ConsisMAEEvaTrainer with the given arguments.
-        This class is specifically designed for training ConsisMAE models.
-        """
-        super().__init__(*args, **kwargs)
-        self.teacher_mom = 0.0
-        self.total_batch_size = 4
-        self.initial_lr = 1e-4  # Initial learning rate for the optimizer
-        self.num_epochs = 250
-        self.warmup_duration_whole_net = 10  # Warmup duration for the whole network
-
-    def build_loss(self):
-        """
-        Builds the loss function for the model.
-        This method is overridden to provide specific loss logic.
-        """
-        from nnssl.training.loss.kv_consis_con_loss import KVConsisConLoss
-
-        # Create the loss function
-        return KVConsisConLoss(
-            device=self.device,
-            p=2,
-            epsilon=0.1,
-            recon_weight=5.0
-        )
-
-
-class ConsisAEEvaTrainer(ConsisMAEEvaTrainer):
+class AlignedAEEvaTrainer(AlignedMAEEvaTrainer):
     """
     Trainer for ConsisAE with a mask percentage of 10%.
     """

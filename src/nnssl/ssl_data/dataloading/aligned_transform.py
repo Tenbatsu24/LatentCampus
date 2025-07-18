@@ -40,7 +40,7 @@ class OneOf(AbstractTransform):
         return transform(**data_dict)
 
 
-class KVConsisTransform(AbstractTransform):
+class OverlapTransform(AbstractTransform):
     def __init__(
         self,
         train: Literal["train", "none"],
@@ -200,9 +200,9 @@ class KVConsisTransform(AbstractTransform):
         )
 
         crops = np.concatenate([crop_1, crop_2], axis=0)
-        abs_bboxes = np.concatenate([rel_bbox_1, rel_bbox_2], axis=0)
+        rel_bboxes = np.concatenate([rel_bbox_1, rel_bbox_2], axis=0)
 
-        return crops, abs_bboxes
+        return crops, rel_bboxes
 
     def __call__(self, **data_dict):
         base_crops = self.make_base_crop(data_dict)
@@ -248,7 +248,7 @@ if __name__ == "__main__":
     test_volume[:, 0, :, 20:40, 220:240] = 6  # another square in the middle
 
     inp_dict = {"data": test_volume}
-    trafo = KVConsisTransform(
+    trafo = OverlapTransform(
         train="train",
         data_key="data",
         initial_patch_size=(256, 256, 256),

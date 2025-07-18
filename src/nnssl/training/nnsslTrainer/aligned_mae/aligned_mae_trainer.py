@@ -15,10 +15,10 @@ from nnssl.training.nnsslTrainer.masked_image_modeling.BaseMAETrainer import (
     BaseMAETrainer,
 )
 from nnssl.utilities.helpers import dummy_context
-from nnssl.ssl_data.dataloading.kv_consis_con_transform import KVConsisTransform
+from nnssl.ssl_data.dataloading.aligned_transform import OverlapTransform
 
 
-class BaseKVConsisTrainer(BaseMAETrainer):
+class BaseAlignedMAETrainer(BaseMAETrainer):
     """
     Base class for Key-Value Consistency EVA Trainer.
     This class inherits from EvaMAETrainer and is designed to handle
@@ -44,14 +44,10 @@ class BaseKVConsisTrainer(BaseMAETrainer):
         Builds the loss function for the model.
         This method is overridden to provide specific loss logic.
         """
-        from nnssl.training.loss.kv_consis_con_loss import KVConsisConLoss
+        from nnssl.training.loss.aligned_mae_loss import AlignedMAELoss
 
         # Create the loss function
-        return KVConsisConLoss(
-            device=self.device,
-            p=2,
-            epsilon=0.1,
-        )
+        return AlignedMAELoss(device=self.device)
 
     @override
     def build_architecture_and_adaptation_plan(
@@ -80,7 +76,7 @@ class BaseKVConsisTrainer(BaseMAETrainer):
         Returns the validation transforms for the model.
         This method is overridden to provide specific validation transforms.
         """
-        return KVConsisTransform(
+        return OverlapTransform(
             train="none",
             data_key="data",
             initial_patch_size=self.initial_patch_size,
@@ -102,7 +98,7 @@ class BaseKVConsisTrainer(BaseMAETrainer):
         Returns the training transforms for the model.
         This method is overridden to provide specific training transforms.
         """
-        return KVConsisTransform(
+        return OverlapTransform(
             train="train",
             data_key="data",
             initial_patch_size=self.initial_patch_size,
@@ -268,26 +264,14 @@ class BaseKVConsisTrainer(BaseMAETrainer):
         return self.shared_step(batch, is_train=False)
 
 
-class KVConsis128Trainer(BaseKVConsisTrainer):
+class AlignedMAE128Trainer(BaseAlignedMAETrainer):
 
     def __init__(self, *args, **kwargs):
-        """
-        Initialize the KVConsis128Trainer with the given arguments.
-        """
         super().__init__(*args, **kwargs)
         self.total_batch_size = 4
         self.config_plan.patch_size = (128, 128, 128)
 
-
-class KVConsis128SimSiamTrainer(KVConsis128Trainer):
-
-    def __init__(self, *args, **kwargs):
-        """
-        Initialize the BaseKVConsisTrainerSimSiam with the given arguments.
-        """
-        super().__init__(*args, **kwargs)
-        self.teacher_mom = 0.0
-
+    @override
     def build_architecture_and_adaptation_plan(
         self,
         config_plan,
@@ -310,77 +294,28 @@ class KVConsis128SimSiamTrainer(KVConsis128Trainer):
         return architecture, adapt_plan
 
 
-class KVConsis128SimSiamBNTrainer(KVConsis128Trainer):
+class AlignedMAETrainer(AlignedMAE128Trainer):
 
     def __init__(self, *args, **kwargs):
         """
-        Initialize the BaseKVConsisTrainerSimSiam with the given arguments.
+        Initialize the ConMAETrainer with the given arguments.
         """
         super().__init__(*args, **kwargs)
-        self.teacher_mom = 0.0
-
-    def build_architecture_and_adaptation_plan(
-        self,
-        config_plan,
-        num_input_channels: int,
-        num_output_channels: int,
-        *args,
-        **kwargs,
-    ):
-        # ---------------------------- Create architecture --------------------------- #
-        architecture = ConsisMAE(
-            input_channels=num_input_channels,
-            num_classes=num_output_channels,
-            deep_supervision=False,
-            only_last_stage_as_latent=False,
-            use_projector=True
-        )
-        # --------------------- Build associated adaptation plan --------------------- #
-        # no changes to original mae since projector can be thrown away
-        adapt_plan = self.save_adaption_plan(num_input_channels)
-        return architecture, adapt_plan
-
-
-class KVConsis128SimSiamBNNoConTrainer(KVConsis128Trainer):
-
-    def __init__(self, *args, **kwargs):
-        """
-        Initialize the BaseKVConsisTrainerSimSiam with the given arguments.
-        """
-        super().__init__(*args, **kwargs)
-        self.teacher_mom = 0.0
-
-
-class ConsisMAETrainer(KVConsis128SimSiamBNTrainer):
-
-    def __init__(self, *args, **kwargs):
-        """
-        Initialize the ConsisMAEEvaTrainer with the given arguments.
-        This class is specifically designed for training ConsisMAE models.
-        """
-        super().__init__(*args, **kwargs)
-        self.teacher_mom = 0.0
-        self.batch_size = 4
-        self.initial_lr = 1e-3
-        self.num_epochs = 250
-        self.teacher = None
-        self.config_plan.patch_size = (128, 128, 128)  # we want a smaller patch size to get larger batch size
-        # for cnn masked auto encoder is a difficult task, so we use
-        self.mask_percentage = 0.60
+        self.total_batch_size = 4
+        self.teacher_mom = 0.995
+        self.num_epochs = 1000
+        self.mask_percentage = 0.75  # Default mask percentage for ConMAE
+        self.config_plan.patch_size = (128, 128, 128)  # Patch size for ConMAE
 
     def build_loss(self):
         """
         Builds the loss function for the model.
-        This method is overridden to provide specific loss logic.
+        This method is overridden to provide specific loss logic for ConMAE.
         """
-        from nnssl.training.loss.kv_consis_con_loss import KVConsisConLoss
+        from nnssl.training.loss.aligned_mae_loss import AlignedMAELoss
 
-        # Create the loss function
-        return KVConsisConLoss(
-            device=self.device,
-            p=2,
-            epsilon=0.1,
-            recon_weight=10.
+        return AlignedMAELoss(
+            device=self.device, recon_weight=5.0
         )
 
     def build_architecture_and_adaptation_plan(
@@ -405,7 +340,7 @@ class ConsisMAETrainer(KVConsis128SimSiamBNTrainer):
         return architecture, adapt_plan
 
 
-class ConsisAETrainer(ConsisMAETrainer):
+class AlignedAETrainer(AlignedMAETrainer):
 
     def __init__(self, *args, **kwargs):
         """
@@ -481,15 +416,3 @@ class ConsisAETrainer(ConsisMAETrainer):
                 self.ema(self.teacher, self.network, update_bn=False)
 
         return {k: v.detach().cpu().numpy() for k, v in loss_dict.items()}
-
-
-class ConsisMAE10Trainer(ConsisMAETrainer):
-
-    def __init__(self, *args, **kwargs):
-        """
-        Initialize the ConsisMAE10Trainer with the given arguments.
-
-        This class is specifically designed for training ConsisMAE models with a 10% mask.
-        """
-        super().__init__(*args, **kwargs)
-        self.mask_percentage = 0.10

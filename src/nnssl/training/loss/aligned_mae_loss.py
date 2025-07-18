@@ -10,7 +10,7 @@ from nnssl.training.loss.mse_loss import MAEMSELoss
 
 
 @lru_cache(maxsize=5)
-def _get_correlated_mask(b, device, using_teacher):
+def _get_correlated_mask(b, device, using_teacher, verbose=False):
     diag = torch.eye(2 * b, device=device, dtype=torch.uint8)
     shifted = torch.eye(2 * b, device=device, dtype=torch.uint8).roll(-b, dims=1)
     if using_teacher:
@@ -20,6 +20,14 @@ def _get_correlated_mask(b, device, using_teacher):
     else:
         mask = diag + shifted
     mask = (1 - mask).bool()  # Invert the mask to get negatives
+
+    if verbose:
+        import matplotlib.pyplot as plt
+        plt.imshow(mask.detach().cpu().numpy(), interpolation='nearest')
+        plt.title("Correlated Mask")
+        plt.colorbar()
+        plt.tight_layout()
+        plt.show()
 
     return mask
 
@@ -126,24 +134,24 @@ class LogCoshError(torch.nn.Module):
             return loss  # [b, ...] shape, no reduction applied
 
 
-class KVConsisConLoss(torch.nn.Module):
+class AlignedMAELoss(torch.nn.Module):
 
     def __init__(
-            self,
-            device, p=2, epsilon=0.1, out_size=7, sampling_ratio=2,
-            recon_weight=1.0, fg_cos_weight=1.0, ntxent_weight=1.0
+        self,
+        device, out_size=7, sampling_ratio=2, recon_weight=1.0, fg_cos_weight=0.5, ntxent_weight=0.1
     ):
         """
         Initialize the KVConsisConLoss with the given parameters.
 
         Args:
             device (torch.device): The device to run the loss on.
-            p (int): The norm degree for the consistency loss.
-            epsilon (float): A small value to avoid division by zero.
+            out_size (int or tuple[int, int, int]): The output size for the aligned latents.
+            sampling_ratio (int): The ratio for sampling the output size.
+            recon_weight (float): Weight for the reconstruction loss.
+            fg_cos_weight (float): Weight for the finegrained cosine similarity loss.
+            ntxent_weight (float): Weight for the NT-Xent loss.
         """
-        super(KVConsisConLoss, self).__init__()
-        self.p = p
-        self.epsilon = epsilon
+        super(AlignedMAELoss, self).__init__()
 
         self.mse_loss = MAEMSELoss()
         self.log_cosh = LogCoshError(reduction="none")
@@ -224,7 +232,7 @@ class KVConsisConLoss(torch.nn.Module):
 
         # ── adaptive pool to the ouput size ────────────────────────────────────────
         aligned_latents = F.adaptive_avg_pool3d(
-            aligned_latents, (self.D_out, self.H_out, self.W_out)
+            aligned_latents, (self.W_out, self.H_out, self.D_out)
         )
 
         return aligned_latents
@@ -267,8 +275,10 @@ class KVConsisConLoss(torch.nn.Module):
         pred_latents = model_output[self.proj_key]
 
         tgt_latents = target[self.latent_key].detach()
-        cw_std = torch.std(F.normalize(target[self.image_latent_key].detach(), dim=1), dim=(0,), keepdim=True).mean()
-        cw_std = cw_std / (1 / target[self.image_latent_key].shape[1] ** 0.5)
+        cw_std = torch.std(
+            F.normalize(target[self.latent_key].detach(), dim=1, eps=eps), dim=(0, 2, 3, 4), keepdim=True
+        ).mean()
+        cw_std = cw_std / (1 / target[self.latent_key].shape[1] ** 0.5)
 
         # if latents is 5d tensor, i.e. [b, c, x_p, y_p, z_p], we need to align them for better consistency
         if pred_latents.ndim == 5:
@@ -276,48 +286,25 @@ class KVConsisConLoss(torch.nn.Module):
             tgt_latents = self.align_views(tgt_latents, rel_bboxes)
 
         b = pred_latents.shape[0] // 2
-        tgt_latents = tgt_latents.roll(
-            b, 0
-        )  # swap the latents. the num_views is hardcoded to 2 for this method
+        # swap the latents. the num_views is hardcoded to 2 for this method
+        tgt_latents = tgt_latents.roll(b, 0)
 
-        # attraction_term_lp = torch.norm(pred_latents - tgt_latents, p=self.p, dim=1)
-        # attraction_term_lp = torch.mean(attraction_term_lp)
-
-        # neg_idxs_a, neg_idxs_b = get_neg_pairs(b)
-        # neg_idxs_a, neg_idxs_b = (
-        #     torch.tensor(neg_idxs_a, device=pred_latents.device),
-        #     torch.tensor(neg_idxs_b, device=pred_latents.device),
-        # )
-
-        # repulsion_terms_lp = torch.norm(
-        #     pred_latents[neg_idxs_a] - tgt_latents[neg_idxs_b], p=self.p, dim=1
-        # )
-        # repulsion_terms_lp = torch.mean(repulsion_terms_lp)
-
-        pred_latents_fg, tgt_latents_fg = F.normalize(pred_latents, dim=1), F.normalize(tgt_latents, dim=1)
+        pred_latents_fg, tgt_latents_fg = F.normalize(pred_latents, dim=1, eps=eps), F.normalize(tgt_latents, dim=1, eps=eps)
 
         fg_cos_reg = 2 - 2 * (pred_latents_fg * tgt_latents_fg).sum(dim=1).mean()  # already normalized
 
-        # # aggregate the aligned feature maps over the spatial dimensions
-        # pred_latents_aa, tgt_latents_aa = pred_latents.mean(dim=(2, 3, 4)), tgt_latents.mean(dim=(2, 3, 4))
-        # pred_latents_aa, tgt_latents_aa = F.normalize(pred_latents_aa, dim=1), F.normalize(tgt_latents_aa, dim=1)
-        #
-        # attract_cos_aa = 2 - 2 * (pred_latents_aa * tgt_latents_aa).sum(dim=1).mean()  # already normalized
-        # repel_cos_aa = 2 - 2 * (pred_latents_aa[neg_idxs_a] * tgt_latents_aa[neg_idxs_b]).sum(dim=1).mean()
-        #
-        # # contrastive_loss_lp = attraction_term_lp / (repulsion_terms_lp + self.epsilon)
-        # contrastive_loss_cos = attract_cos_aa / (repel_cos_aa + self.epsilon)
+        # aggregate the aligned feature maps over the spatial dimensions - image latents
+        pred_latents_aa, tgt_latents_aa = pred_latents.mean(dim=(2, 3, 4)), tgt_latents.mean(dim=(2, 3, 4))
 
         contrastive_loss, acc = self.contrastive_loss(
-            F.normalize(model_output[self.image_latent_key], dim=1),
-            F.normalize(target[self.image_latent_key].detach(), dim=1).roll(b, 0)  # swapped assignments
+            F.normalize(pred_latents_aa, dim=1, eps=eps),
+            F.normalize(tgt_latents_aa.detach(), dim=1, eps=eps)  # already swapped assignments
         )
 
-        # loss = recon_loss_huber + contrastive_loss_lp + negative_cosine_regression
         loss = (
             self.recon_weight * recon_loss_huber +  # on a random scale this is about 1.0
-            self.fg_cos_weight * 0.5 * fg_cos_reg +  # on a random scale this is about 2.0 (hence the 0.5)
-            self.ntxent_weight * 0.25 * contrastive_loss  # on a random scale this is about 4.0 (hence the 0.25)
+            self.fg_cos_weight * fg_cos_reg +  # on a random scale this is about 2.0 (hence the 0.5)
+            self.ntxent_weight * contrastive_loss  # on a random scale this is about 4.0 (hence the 0.25)
         )
 
         return {
@@ -328,27 +315,20 @@ class KVConsisConLoss(torch.nn.Module):
             "cw_std": cw_std,
             "ntxent": contrastive_loss,
             "acc": torch.tensor(acc, dtype=torch.float, device=loss.device),
-            # "cl_cos": contrastive_loss_cos,
-            # "aa_pos_cos": attract_cos_aa,
-            # "aa_neg_cos": repel_cos_aa,
             "fg_cos_reg": fg_cos_reg,
         }
 
 
 if __name__ == "__main__":
-    # pairs = get_neg_pairs(4)
-    # print(pairs, len(pairs[0]), len(pairs[1]))
+    _get_correlated_mask(4, torch.device("cuda"), using_teacher=True, verbose=True)
 
     _model_output = {
         "recon": torch.randn(8, 1, 64, 64, 64, requires_grad=True, device="cuda"),
-        "proj": torch.randn(8, 2048, 20, 20, 20, requires_grad=True, device="cuda"),
-        "image_latent": torch.randn(8, 2048, device="cuda"),
+        "proj": torch.randn(8, 2048, 16, 16, 16, requires_grad=True, device="cuda"),
     }
 
     _target = {
-        "recon": torch.randn(8, 1, 64, 64, 64, device="cuda"),
         "proj": torch.randn(8, 2048, 20, 20, 20, device="cuda"),
-        "image_latent": torch.randn(8, 2048, device="cuda"),
     }
 
     _gt_recon = torch.randn(
@@ -372,7 +352,7 @@ if __name__ == "__main__":
         0, 2, (8, 1, 64, 64, 64), device="cuda"
     )  # Random mask for the example
 
-    loss_fn = KVConsisConLoss(torch.device("cuda"), p=2, epsilon=0.1)
+    loss_fn = AlignedMAELoss(torch.device("cuda"))
     _loss_output = loss_fn(
         model_output=_model_output,
         target=_target,

@@ -5,6 +5,7 @@ import torch.nn as nn
 
 from einops import rearrange
 from torch.nn.init import trunc_normal_
+from dynamic_network_architectures.building_blocks.eva import Eva
 from dynamic_network_architectures.architectures.unet import ResidualEncoderUNet
 
 from nnssl.architectures.evaMAE_module import EvaMAE
@@ -58,8 +59,7 @@ class ConsisMAE(ResidualEncoderUNet):
             deep_supervision=deep_supervision,
         )
 
-        self.v_adaptive_pool = nn.AdaptiveAvgPool3d((20, 20, 20))
-        self.i_adaptive_pool = nn.AdaptiveAvgPool3d((1, 1, 1))
+        self.v_adaptive_pool = nn.AdaptiveAvgPool3d((16, 16, 16))
 
         self.use_projector = use_projector
         if only_last_stage_as_latent:
@@ -94,6 +94,12 @@ class ConsisMAE(ResidualEncoderUNet):
                     if m.bias is not None:
                         nn.init.constant_(m.bias, 0)
 
+            for m in self.predictor.modules():
+                if isinstance(m, nn.Linear):
+                    trunc_normal_(m.weight, std=0.02)
+                    if m.bias is not None:
+                        nn.init.constant_(m.bias, 0)
+
     def forward(self, x):
         skips = self.encoder(x)
         decoded = self.decoder(skips)
@@ -112,21 +118,11 @@ class ConsisMAE(ResidualEncoderUNet):
             if self.training:
                 latent = self.predictor(latent)
 
-            latent = rearrange(latent, "(b w h d) c -> b c w h d", b=b, w=20, h=20, d=20)
-
-        image_latent = torch.concat(
-            [self.i_adaptive_pool(s) for s in skips], dim=1
-        ).reshape(x.shape[0], -1)
-
-        if self.use_projector:
-            image_latent = self.projector(image_latent)
-            if self.training:
-                image_latent = self.predictor(image_latent)
+            latent = rearrange(latent, "(b w h d) c -> b c w h d", b=b, w=16, h=16, d=16)
 
         return {
             "proj": latent,
             "recon": decoded,
-            "image_latent": image_latent,
         }
 
 
@@ -153,29 +149,29 @@ class ConsisEvaMAE(EvaMAE):
         if not self.use_decoder:
             raise ValueError("ConsisEvaMAE requires a decoder to be used.")
 
-        # self.feature_decoder = Eva(
-        #     embed_dim=embed_dim,
-        #     depth=1,  # eva_depth,
-        #     num_heads=16,  # eva_numheads,
-        #     ref_feat_shape=tuple(
-        #         [i // ds for i, ds in zip(input_shape, patch_embed_size)]
-        #     ),
-        #     num_reg_tokens=kwargs.get("num_register_tokens", 0),
-        #     use_rot_pos_emb=kwargs.get("use_rot_pos_emb", True),
-        #     use_abs_pos_emb=kwargs.get("use_abs_pos_emb", True),
-        #     mlp_ratio=kwargs.get("mlp_ratio", 4 * 2 / 3),
-        #     drop_path_rate=kwargs.get("drop_path_rate", 0),
-        #     patch_drop_rate=0,  # No drop in the decoder
-        #     proj_drop_rate=kwargs.get("proj_drop_rate", 0.0),
-        #     attn_drop_rate=kwargs.get("attn_drop_rate", 0.0),
-        #     init_values=kwargs.get("init_values", 0.1),
-        #     scale_attn_inner=kwargs.get("scale_attn_inner", False),
-        # )
+        self.feature_decoder = Eva(
+            embed_dim=embed_dim,
+            depth=2,  # eva_depth,
+            num_heads=16,  # eva_numheads,
+            ref_feat_shape=tuple(
+                [i // ds for i, ds in zip(input_shape, patch_embed_size)]
+            ),
+            num_reg_tokens=kwargs.get("num_register_tokens", 0),
+            use_rot_pos_emb=kwargs.get("use_rot_pos_emb", True),
+            use_abs_pos_emb=kwargs.get("use_abs_pos_emb", True),
+            mlp_ratio=kwargs.get("mlp_ratio", 4 * 2 / 3),
+            drop_path_rate=kwargs.get("drop_path_rate", 0),
+            patch_drop_rate=0,  # No drop in the decoder
+            proj_drop_rate=kwargs.get("proj_drop_rate", 0.0),
+            attn_drop_rate=kwargs.get("attn_drop_rate", 0.0),
+            init_values=kwargs.get("init_values", 0.1),
+            scale_attn_inner=kwargs.get("scale_attn_inner", False),
+        )
 
         self.use_projector = True
 
         self.projector = nn.Sequential(
-            nn.Linear(embed_dim, 2048),  # this is technically a linear layer
+            nn.Linear(embed_dim, 2048),
             nn.BatchNorm1d(2048),
             nn.SiLU(),
             nn.Linear(2048, 2048),
@@ -199,7 +195,11 @@ class ConsisEvaMAE(EvaMAE):
                 if m.bias is not None:
                     nn.init.constant_(m.bias, 0)
 
-        self.i_adaptive_pool = nn.AdaptiveAvgPool3d((1, 1, 1))
+        for m in self.predictor.modules():
+            if isinstance(m, nn.Linear):
+                trunc_normal_(m.weight, std=0.02)
+                if m.bias is not None:
+                    nn.init.constant_(m.bias, 0)
 
     def forward(self, x):
         # Encode patches
@@ -213,36 +213,33 @@ class ConsisEvaMAE(EvaMAE):
         num_patches = w * h * d
 
         if keep_indices is None or not self.training:
-            restored_x = encoded
+            feature_decoded = restored_x = encoded
         else:
             # Restore full sequence with mask tokens
             restored_x = self.restore_full_sequence(encoded, keep_indices, num_patches)
+            feature_decoded = self.feature_decoder(restored_x)
+
+        if self.use_projector:
+            patch_latents = rearrange(feature_decoded, "b (h w d) c -> (b h w d) c", h=w, w=h, d=d)
+
+            patch_latents = self.projector(patch_latents)
+            if self.training:
+                patch_latents = self.predictor(patch_latents)
+
+            patch_latents = rearrange(patch_latents, "(b h w d) c -> b c w h d", b=b, h=w, w=h, d=d)
+        else:
+            # projected = None
+            patch_latents = None
 
         # Decode with restored sequence and rope embeddings
         decoded, _ = self.decoder(restored_x)
-
-        if self.use_projector:
-            projected = self.projector(
-                rearrange(decoded, "b (h w d) c -> (b h w d) c", b=b, h=w, w=h, d=d)
-            )
-
-            if self.training:
-                projected = self.predictor(projected)
-
-            projected = rearrange(projected, "(b h w d) c -> b c w h d", b=b, h=w, w=h, d=d)
-
-            image_latent = self.i_adaptive_pool(projected).reshape(b, -1)
-        else:
-            projected = None
-            image_latent = None
 
         # Project back to output shape
         decoded = rearrange(decoded, "b (h w d) c -> b c w h d", h=w, w=h, d=d)
         decoded = self.up_projection(decoded)
 
         return {
-            "proj": projected,
-            "image_latent": image_latent,
+            "proj": patch_latents,
             "recon": decoded,
             "keep_indices": keep_indices,
         }
@@ -295,7 +292,6 @@ if __name__ == "__main__":
         f"Input shape: {x.shape}, "
         f"Output shape: {output['recon'].shape}, "
         f"Latent shape: {output['proj'].shape}, "
-        f"Image latent shape: {output['image_latent'].shape if output['image_latent'] is not None else 'None'}",
     )
     # del output
     # if _device == "cuda":
@@ -376,7 +372,6 @@ if __name__ == "__main__":
         f"Output shape: {output['recon'].shape}, "
         f"Keep indices shape: {output['keep_indices'].shape if output['keep_indices'] is not None else 'None'}, "
         f"Latent shape: {output['proj'].shape}",
-        f"Image latent shape: {output['image_latent'].shape if output['image_latent'] is not None else 'None'}",
     )
 
     model = model.train(False)
@@ -386,5 +381,4 @@ if __name__ == "__main__":
         f"Output shape: {output['recon'].shape if output['recon'] is not None else 'None'}, "
         f"Keep indices shape: {output['keep_indices'].shape if output['keep_indices'] is not None else 'None'}, "
         f"Latent shape: {output['proj'].shape if output['proj'] is not None else 'None'}",
-        f"Image latent shape: {output['image_latent'].shape if output['image_latent'] is not None else 'None'}",
     )
