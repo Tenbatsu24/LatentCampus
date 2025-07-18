@@ -294,6 +294,19 @@ class AlignedMAEEvaTrainer(BaseAlignedMAETrainer):
             recon_weight=5.0
         )
 
+class AlignedMAEEvaSimSiamTrainer(AlignedMAEEvaTrainer):
+    """
+    Trainer for ConsisAE with a mask percentage of 10%.
+    This class is specifically designed for training ConsisMAE models with SimSiam.
+    """
+
+    def __init__(self, *args, **kwargs):
+        """
+        Initialize the ConsisMAEEvaSimSiamTrainer with the given arguments.
+        """
+        super().__init__(*args, **kwargs)
+        self.teacher_mom = 0.
+        self.num_epochs = 200
 
 class AlignedAEEvaTrainer(AlignedMAEEvaTrainer):
     """
