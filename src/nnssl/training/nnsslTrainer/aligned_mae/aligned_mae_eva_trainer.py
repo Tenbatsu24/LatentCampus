@@ -186,6 +186,16 @@ class BaseAlignedMAETrainer(BaseEvaMAETrainer):
                 )
 
     def shared_step(self, batch: dict, is_train: bool = True) -> dict:
+        if self.teacher is None:
+            # create a deep copy of the network to use as a teacher
+            self.teacher = copy.deepcopy(self.network)
+            self.teacher = self.teacher.to(self.device)
+            self.teacher = (
+                self.teacher.eval()
+            )  # set the teacher to eval mode and not training
+            for param in self.teacher.parameters():
+                param.requires_grad = False
+
         """
         Shared step for both training and validation.
         This method is overridden to provide specific shared step logic.
