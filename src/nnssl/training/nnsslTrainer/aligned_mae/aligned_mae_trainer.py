@@ -33,7 +33,7 @@ class BaseAlignedMAETrainer(BaseMAETrainer):
         # Default initial patch size, can be overridden in get_dataloaders
         self.initial_patch_size = (256, 256, 256)
         self.total_batch_size = 2
-        self.initial_lr = 1e-3
+        self.initial_lr = 1e-2
         self.num_epochs = 250
         self.teacher = None
         self.teacher_mom = 0.995  # Momentum for the teacher model update
@@ -303,6 +303,7 @@ class AlignedMAETrainer(AlignedMAE128Trainer):
         super().__init__(*args, **kwargs)
         self.total_batch_size = 4
         self.teacher_mom = 0.995
+        self.initial_lr = 1e-2
         self.num_epochs = 1000
         self.mask_percentage = 0.75  # Default mask percentage for ConMAE
         self.config_plan.patch_size = (128, 128, 128)  # Patch size for ConMAE
@@ -339,6 +340,22 @@ class AlignedMAETrainer(AlignedMAE128Trainer):
         adapt_plan = self.save_adaption_plan(num_input_channels)
         return architecture, adapt_plan
 
+
+class AlignedMAESimSiamTrainer(AlignedMAETrainer):
+
+    def __init__(self, *args, **kwargs):
+        """
+        Initialize the AlignedMAESimSiamTrainer with the given arguments.
+        This class is specifically designed for training AlignedMAE with SimSiam.
+        """
+        super().__init__(*args, **kwargs)
+        self.teacher_mom = 0.
+        self.total_batch_size = 4
+        self.teacher_mom = 0.995
+        self.initial_lr = 1e-2
+        self.num_epochs = 300
+        self.mask_percentage = 0.75  # Default mask percentage for ConMAE
+        self.config_plan.patch_size = (128, 128, 128)  # Patch size for ConMAE
 
 class AlignedAETrainer(AlignedMAETrainer):
 
