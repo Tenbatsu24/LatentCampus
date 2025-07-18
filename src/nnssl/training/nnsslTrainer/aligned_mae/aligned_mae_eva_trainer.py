@@ -277,7 +277,7 @@ class AlignedMAEEvaTrainer(BaseAlignedMAETrainer):
         super().__init__(*args, **kwargs)
         self.teacher_mom = 0.995
         self.total_batch_size = 4
-        self.initial_lr = 1e-4  # Initial learning rate for the optimizer
+        self.initial_lr = 3e-4  # Initial learning rate for the optimizer
         self.num_epochs = 500
         self.warmup_duration_whole_net = 10  # Warmup duration for the whole network
 
@@ -306,7 +306,10 @@ class AlignedMAEEvaSimSiamTrainer(AlignedMAEEvaTrainer):
         """
         super().__init__(*args, **kwargs)
         self.teacher_mom = 0.
+        self.total_batch_size = 4
+        self.initial_lr = 3e-4  # Initial learning rate for the optimizer
         self.num_epochs = 200
+        self.warmup_duration_whole_net = 10  # Warmup duration for the whole network
 
 class AlignedAEEvaTrainer(AlignedMAEEvaTrainer):
     """
