@@ -948,7 +948,9 @@ class AbstractBaseTrainer(ABC):
             log_dict["step"] = self.current_epoch * self.num_iterations_per_epoch
             wandb.log(log_dict)
 
-        self.logger.log("val_losses", reduced_outputs.get("loss", None), self.current_epoch)
+        self.logger.log(
+            "val_losses", reduced_outputs.get("loss", None), self.current_epoch
+        )
 
     def on_train_epoch_start(self, using_wandb: bool = False):
         self.network.train()

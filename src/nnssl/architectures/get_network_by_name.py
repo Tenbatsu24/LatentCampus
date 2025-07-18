@@ -112,14 +112,13 @@ if __name__ == "__main__":
 
     def measure_memory_cpu(model, input_tensor):
         process = psutil.Process(os.getpid())
-        mem_before = process.memory_info().rss / (1024 ** 2)  # in MB
+        mem_before = process.memory_info().rss / (1024**2)  # in MB
         with torch.no_grad():
             _ = model(input_tensor)
-        mem_after = process.memory_info().rss / (1024 ** 2)  # in MB
+        mem_after = process.memory_info().rss / (1024**2)  # in MB
         print(f"Memory before: {mem_before:.2f} MB")
         print(f"Memory after: {mem_after:.2f} MB")
         print(f"Memory used by forward pass: {mem_after - mem_before:.2f} MB")
-
 
     # Toy example for testing
     input_shape = (64, 64, 64)

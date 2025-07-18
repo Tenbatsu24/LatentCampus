@@ -106,9 +106,7 @@ class ConsisMAE(ResidualEncoderUNet):
 
         if self.only_last_stage_as_latent:
             skips = [skips[-1]]
-        latent = torch.concat(
-            [self.v_adaptive_pool(s) for s in skips], dim=1
-        )
+        latent = torch.concat([self.v_adaptive_pool(s) for s in skips], dim=1)
 
         if self.use_projector:
             b = latent.shape[0]
@@ -118,7 +116,9 @@ class ConsisMAE(ResidualEncoderUNet):
             if self.training:
                 latent = self.predictor(latent)
 
-            latent = rearrange(latent, "(b w h d) c -> b c w h d", b=b, w=16, h=16, d=16)
+            latent = rearrange(
+                latent, "(b w h d) c -> b c w h d", b=b, w=16, h=16, d=16
+            )
 
         return {
             "proj": latent,
@@ -220,13 +220,17 @@ class ConsisEvaMAE(EvaMAE):
             feature_decoded, _ = self.feature_decoder(restored_x)
 
         if self.use_projector:
-            patch_latents = rearrange(feature_decoded, "b (w h d) c -> (b w h d) c", b=b, w=w, h=h, d=d)
+            patch_latents = rearrange(
+                feature_decoded, "b (w h d) c -> (b w h d) c", b=b, w=w, h=h, d=d
+            )
 
             patch_latents = self.projector(patch_latents)
             if self.training:
                 patch_latents = self.predictor(patch_latents)
 
-            patch_latents = rearrange(patch_latents, "(b w h d) c -> b c w h d", b=b, w=w, h=h, d=d)
+            patch_latents = rearrange(
+                patch_latents, "(b w h d) c -> b c w h d", b=b, w=w, h=h, d=d
+            )
         else:
             # projected = None
             patch_latents = None
@@ -283,7 +287,7 @@ if __name__ == "__main__":
         num_classes=1,
         deep_supervision=False,
         only_last_stage_as_latent=False,
-        use_projector=True
+        use_projector=True,
     ).to(_device)
     model = model.train(True)
     x = torch.rand((2, 1, *input_shape), device=_device)  # Batch size 2

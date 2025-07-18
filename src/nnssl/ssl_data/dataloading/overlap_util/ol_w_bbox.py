@@ -49,13 +49,19 @@ def make_overlapping_crops_w_bbox(
 
         overlap = [int(patch_size[d] * overlap_frac[d]) for d in range(3)]
         start_1, start_2 = [], []
-        for d, (v, p, o) in enumerate(([X, px, overlap[0]], [Y, py, overlap[1]], [Z, pz, overlap[2]])):
+        for d, (v, p, o) in enumerate(
+            ([X, px, overlap[0]], [Y, py, overlap[1]], [Z, pz, overlap[2]])
+        ):
             # Ensure there's room on both sides of the overlap region
             min_center = o // 2 + (p - o) + 1  # off by one to ensure overlap is valid
-            max_center = v - (p - o) - (o // 2) - 1  # off by one to ensure overlap is valid
+            max_center = (
+                v - (p - o) - (o // 2) - 1
+            )  # off by one to ensure overlap is valid
 
             if max_center <= min_center:
-                raise ValueError(f"Overlap too large or volume too small along axis {d}")
+                raise ValueError(
+                    f"Overlap too large or volume too small along axis {d}"
+                )
 
             center = np.random.randint(min_center, max_center + 1)
 
@@ -68,9 +74,7 @@ def make_overlapping_crops_w_bbox(
         if debug:
             # Debugging information
             ol_ratio = np.prod(overlap / np.array(patch_size))
-            print(
-                f"Overlap: {ol_ratio}, Start1: {start_1}, Start2: {start_2}"
-            )
+            print(f"Overlap: {ol_ratio}, Start1: {start_1}, Start2: {start_2}")
             print(f"{np.prod(overlap)} / {np.prod(patch_size)} = {ol_ratio}")
 
             import matplotlib.pyplot as plt
@@ -126,17 +130,17 @@ def make_overlapping_crops_w_bbox(
                 1 - overlap_frac[0],
                 1 - overlap_frac[1],
                 1 - overlap_frac[2],
-                1.,
-                1.,
-                1.,
+                1.0,
+                1.0,
+                1.0,
             ]
         )
 
         bboxes2[i] = np.array(
             [
-                0.,
-                0.,
-                0.,
+                0.0,
+                0.0,
+                0.0,
                 overlap_frac[0],
                 overlap_frac[1],
                 overlap_frac[2],

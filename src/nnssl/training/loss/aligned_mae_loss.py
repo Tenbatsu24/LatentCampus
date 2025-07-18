@@ -23,7 +23,8 @@ def _get_correlated_mask(b, device, using_teacher, verbose=False):
 
     if verbose:
         import matplotlib.pyplot as plt
-        plt.imshow(mask.detach().cpu().numpy(), interpolation='nearest')
+
+        plt.imshow(mask.detach().cpu().numpy(), interpolation="nearest")
         plt.title("Correlated Mask")
         plt.colorbar()
         plt.tight_layout()
@@ -34,7 +35,12 @@ def _get_correlated_mask(b, device, using_teacher, verbose=False):
 
 class NTXentLoss(nn.Module):
 
-    def __init__(self, temperature=0.5, similarity_function: Literal["cosine", "dot"] = "cosine", using_teacher=False):
+    def __init__(
+        self,
+        temperature=0.5,
+        similarity_function: Literal["cosine", "dot"] = "cosine",
+        using_teacher=False,
+    ):
         super(NTXentLoss, self).__init__()
 
         self.temperature = temperature
@@ -72,19 +78,15 @@ class NTXentLoss(nn.Module):
         l_pos = torch.diag(similarity_matrix, b)
         r_pos = torch.diag(similarity_matrix, -b)
         positives = torch.cat([l_pos, r_pos]).view(2 * b, 1)
-        mask_samples_from_same_repr = (
-            _get_correlated_mask(b, device, self.using_teacher)
+        mask_samples_from_same_repr = _get_correlated_mask(
+            b, device, self.using_teacher
         )
-        negatives = similarity_matrix[mask_samples_from_same_repr].view(
-            2 * b, -1
-        )
+        negatives = similarity_matrix[mask_samples_from_same_repr].view(2 * b, -1)
 
         logits = torch.cat((positives, negatives), dim=1)
         logits /= self.temperature
 
-        labels = (
-            torch.zeros(2 * b, dtype=torch.long, device=device)
-        )
+        labels = torch.zeros(2 * b, dtype=torch.long, device=device)
 
         return logits, labels
 
@@ -94,8 +96,8 @@ class NTXentLoss(nn.Module):
 
         loss = self.criterion(logits, labels)
         accuracy = (
-           torch.max(logits.detach(), dim=1)[1] == 0
-       ).sum().item() / logits.size(0)
+            torch.max(logits.detach(), dim=1)[1] == 0
+        ).sum().item() / logits.size(0)
 
         return loss / (2 * b), accuracy
 
@@ -138,7 +140,12 @@ class AlignedMAELoss(torch.nn.Module):
 
     def __init__(
         self,
-        device, out_size=7, sampling_ratio=2, recon_weight=1.0, fg_cos_weight=0.5, ntxent_weight=0.1
+        device,
+        out_size=7,
+        sampling_ratio=2,
+        recon_weight=1.0,
+        fg_cos_weight=0.5,
+        ntxent_weight=0.1,
     ):
         """
         Initialize the KVConsisConLoss with the given parameters.
@@ -162,7 +169,9 @@ class AlignedMAELoss(torch.nn.Module):
         self.latent_key = "proj"
         self.image_latent_key = "image_latent"
 
-        self.contrastive_loss = NTXentLoss(temperature=0.5, similarity_function="cosine", using_teacher=True)
+        self.contrastive_loss = NTXentLoss(
+            temperature=0.5, similarity_function="cosine", using_teacher=True
+        )
 
         self.recon_weight = recon_weight
         self.fg_cos_weight = fg_cos_weight
@@ -262,21 +271,25 @@ class AlignedMAELoss(torch.nn.Module):
         eps = torch.finfo(model_output[self.recon_key].dtype).eps
 
         recon_loss_lc = self.log_cosh(model_output[self.recon_key], gt_recon)
-        recon_loss_lc = torch.sum(recon_loss_lc * (1 - mask)) / (torch.sum((1 - mask)) + eps)
+        recon_loss_lc = torch.sum(recon_loss_lc * (1 - mask)) / (
+            torch.sum((1 - mask)) + eps
+        )
 
         recon_loss_huber = self.huber(model_output[self.recon_key], gt_recon)
-        recon_loss_huber = torch.sum(recon_loss_huber * (1 - mask)) / (torch.sum((1 - mask)) + eps)
-
-        recon_loss_mse = self.mse_loss(
-            model_output[self.recon_key], gt_recon, mask
+        recon_loss_huber = torch.sum(recon_loss_huber * (1 - mask)) / (
+            torch.sum((1 - mask)) + eps
         )
+
+        recon_loss_mse = self.mse_loss(model_output[self.recon_key], gt_recon, mask)
 
         # chunk the latents and compute the consistency loss
         pred_latents = model_output[self.proj_key]
 
         tgt_latents = target[self.latent_key].detach()
         cw_std = torch.std(
-            F.normalize(target[self.latent_key].detach(), dim=1, eps=eps), dim=(0, 2, 3, 4), keepdim=True
+            F.normalize(target[self.latent_key].detach(), dim=1, eps=eps),
+            dim=(0, 2, 3, 4),
+            keepdim=True,
         ).mean()
         cw_std = cw_std / (1 / target[self.latent_key].shape[1] ** 0.5)
 
@@ -289,22 +302,32 @@ class AlignedMAELoss(torch.nn.Module):
         # swap the latents. the num_views is hardcoded to 2 for this method
         tgt_latents = tgt_latents.roll(b, 0)
 
-        pred_latents_fg, tgt_latents_fg = F.normalize(pred_latents, dim=1, eps=eps), F.normalize(tgt_latents, dim=1, eps=eps)
+        pred_latents_fg, tgt_latents_fg = F.normalize(
+            pred_latents, dim=1, eps=eps
+        ), F.normalize(tgt_latents, dim=1, eps=eps)
 
-        fg_cos_reg = 2 - 2 * (pred_latents_fg * tgt_latents_fg).sum(dim=1).mean()  # already normalized
+        fg_cos_reg = (
+            2 - 2 * (pred_latents_fg * tgt_latents_fg).sum(dim=1).mean()
+        )  # already normalized
 
         # aggregate the aligned feature maps over the spatial dimensions - image latents
-        pred_latents_aa, tgt_latents_aa = pred_latents.mean(dim=(2, 3, 4)), tgt_latents.mean(dim=(2, 3, 4))
+        pred_latents_aa, tgt_latents_aa = pred_latents.mean(
+            dim=(2, 3, 4)
+        ), tgt_latents.mean(dim=(2, 3, 4))
 
         contrastive_loss, acc = self.contrastive_loss(
             F.normalize(pred_latents_aa, dim=1, eps=eps),
-            F.normalize(tgt_latents_aa.detach(), dim=1, eps=eps)  # already swapped assignments
+            F.normalize(
+                tgt_latents_aa.detach(), dim=1, eps=eps
+            ),  # already swapped assignments
         )
 
         loss = (
-            self.recon_weight * recon_loss_huber +  # on a random scale this is about 1.0
-            self.fg_cos_weight * fg_cos_reg +  # on a random scale this is about 2.0 (hence the 0.5)
-            self.ntxent_weight * contrastive_loss  # on a random scale this is about 4.0 (hence the 0.25)
+            self.recon_weight * recon_loss_huber  # on a random scale this is about 1.0
+            + self.fg_cos_weight
+            * fg_cos_reg  # on a random scale this is about 2.0 (hence the 0.5)
+            + self.ntxent_weight
+            * contrastive_loss  # on a random scale this is about 4.0 (hence the 0.25)
         )
 
         return {

@@ -37,7 +37,11 @@ class BaseAlignedMAETrainer(BaseMAETrainer):
         self.num_epochs = 250
         self.teacher = None
         self.teacher_mom = 0.995  # Momentum for the teacher model update
-        self.config_plan.patch_size = (160, 160, 160)  # Default patch size for KV Consis Eva
+        self.config_plan.patch_size = (
+            160,
+            160,
+            160,
+        )  # Default patch size for KV Consis Eva
 
     def build_loss(self):
         """
@@ -64,7 +68,7 @@ class BaseAlignedMAETrainer(BaseMAETrainer):
             num_classes=num_output_channels,
             deep_supervision=False,
             only_last_stage_as_latent=False,
-            use_projector=False
+            use_projector=False,
         )
         # --------------------- Build associated adaptation plan --------------------- #
         # no changes to original mae since projector can be thrown away
@@ -196,7 +200,9 @@ class BaseAlignedMAETrainer(BaseMAETrainer):
             self.teacher.eval()
             teacher_output = self.teacher(data)
             teacher_output = {
-                k: v for k, v in teacher_output.items() if k == "proj" or k == "image_latent"
+                k: v
+                for k, v in teacher_output.items()
+                if k == "proj" or k == "image_latent"
             }
         # We use the self.batch_size as it is not identical with the plan batch_size in ddp cases.
         mask = self.mask_creation(
@@ -286,7 +292,7 @@ class AlignedMAE128Trainer(BaseAlignedMAETrainer):
             num_classes=num_output_channels,
             deep_supervision=False,
             only_last_stage_as_latent=False,
-            use_projector=True
+            use_projector=True,
         )
         # --------------------- Build associated adaptation plan --------------------- #
         # no changes to original mae since projector can be thrown away
@@ -315,9 +321,7 @@ class AlignedMAETrainer(AlignedMAE128Trainer):
         """
         from nnssl.training.loss.aligned_mae_loss import AlignedMAELoss
 
-        return AlignedMAELoss(
-            device=self.device, recon_weight=5.0
-        )
+        return AlignedMAELoss(device=self.device, recon_weight=5.0)
 
     def build_architecture_and_adaptation_plan(
         self,
@@ -333,7 +337,7 @@ class AlignedMAETrainer(AlignedMAE128Trainer):
             num_classes=num_output_channels,
             deep_supervision=False,
             only_last_stage_as_latent=False,
-            use_projector=True
+            use_projector=True,
         )
         # --------------------- Build associated adaptation plan --------------------- #
         # no changes to original mae since projector can be thrown away
@@ -349,13 +353,14 @@ class AlignedMAESimSiamTrainer(AlignedMAETrainer):
         This class is specifically designed for training AlignedMAE with SimSiam.
         """
         super().__init__(*args, **kwargs)
-        self.teacher_mom = 0.
+        self.teacher_mom = 0.0
         self.total_batch_size = 4
         self.teacher_mom = 0.995
         self.initial_lr = 1e-2
         self.num_epochs = 300
         self.mask_percentage = 0.75  # Default mask percentage for ConMAE
         self.config_plan.patch_size = (128, 128, 128)  # Patch size for ConMAE
+
 
 class AlignedAETrainer(AlignedMAETrainer):
 
@@ -392,7 +397,9 @@ class AlignedAETrainer(AlignedMAETrainer):
             teacher_output = self.teacher(data)
             # get the projections with stop gradient
             teacher_output = {
-                k: v for k, v in teacher_output.items() if k == "proj" or k == "image_latent"
+                k: v
+                for k, v in teacher_output.items()
+                if k == "proj" or k == "image_latent"
             }
 
         mask = torch.zeros_like(data)

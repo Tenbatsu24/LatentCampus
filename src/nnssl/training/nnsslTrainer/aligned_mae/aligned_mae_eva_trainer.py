@@ -39,7 +39,11 @@ class BaseAlignedMAETrainer(BaseEvaMAETrainer):
         self.warmup_duration_whole_net = 10  # Warmup duration for the whole network
         self.teacher = None
         self.teacher_mom = 0.995  # Momentum for the teacher model
-        self.config_plan.patch_size = (160, 160, 160)  # Default patch size for KV Consis Eva
+        self.config_plan.patch_size = (
+            160,
+            160,
+            160,
+        )  # Default patch size for KV Consis Eva
 
     def build_loss(self):
         """
@@ -200,7 +204,9 @@ class BaseAlignedMAETrainer(BaseEvaMAETrainer):
             teacher_output = self.teacher(data)
             # del all keys that are not `proj`
             teacher_output = {
-                k: v for k, v in teacher_output.items() if k == "proj" or k == "image_latent"
+                k: v
+                for k, v in teacher_output.items()
+                if k == "proj" or k == "image_latent"
             }
 
         if is_train:
@@ -218,7 +224,9 @@ class BaseAlignedMAETrainer(BaseEvaMAETrainer):
                 # Forward pass with PatchDropout
                 output = self.network(data)
                 mask = self.create_mask(
-                    output["keep_indices"], self.config_plan.patch_size, self.vit_patch_size
+                    output["keep_indices"],
+                    self.config_plan.patch_size,
+                    self.vit_patch_size,
                 )
 
                 # del data
@@ -289,10 +297,8 @@ class AlignedMAEEvaTrainer(BaseAlignedMAETrainer):
         from nnssl.training.loss.aligned_mae_loss import AlignedMAELoss
 
         # Create the loss function
-        return AlignedMAELoss(
-            device=self.device,
-            recon_weight=5.0
-        )
+        return AlignedMAELoss(device=self.device, recon_weight=5.0)
+
 
 class AlignedMAEEvaSimSiamTrainer(AlignedMAEEvaTrainer):
     """
@@ -305,11 +311,12 @@ class AlignedMAEEvaSimSiamTrainer(AlignedMAEEvaTrainer):
         Initialize the ConsisMAEEvaSimSiamTrainer with the given arguments.
         """
         super().__init__(*args, **kwargs)
-        self.teacher_mom = 0.
+        self.teacher_mom = 0.0
         self.total_batch_size = 4
         self.initial_lr = 3e-4  # Initial learning rate for the optimizer
         self.num_epochs = 200
         self.warmup_duration_whole_net = 10  # Warmup duration for the whole network
+
 
 class AlignedAEEvaTrainer(AlignedMAEEvaTrainer):
     """
@@ -322,7 +329,9 @@ class AlignedAEEvaTrainer(AlignedMAEEvaTrainer):
         """
         super().__init__(*args, **kwargs)
         self.mask_percentage = 0.0
-        self.total_batch_size = 2  # since we don't mask anything, we need to reduce the batch size
+        self.total_batch_size = (
+            2  # since we don't mask anything, we need to reduce the batch size
+        )
 
     def shared_step(self, batch: dict, is_train: bool = True) -> dict:
         """
@@ -340,7 +349,9 @@ class AlignedAEEvaTrainer(AlignedMAEEvaTrainer):
             teacher_output = self.teacher(data)
             # del all keys that are not `proj`
             teacher_output = {
-                k: v for k, v in teacher_output.items() if k == "proj" or k == "image_latent"
+                k: v
+                for k, v in teacher_output.items()
+                if k == "proj" or k == "image_latent"
             }
 
         if is_train:
