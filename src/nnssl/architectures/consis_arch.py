@@ -205,7 +205,7 @@ class ConsisEvaMAE(EvaMAE):
         # Encode patches
         x = self.down_projection(x)
         b, c, w, h, d = x.shape
-        x = rearrange(x, "b c w h d -> b (h w d) c")
+        x = rearrange(x, "b c w h d -> b (w h d) c")
 
         # Encode using EVA (internally applies masking with patch_drop_rate)
         encoded, keep_indices = self.eva(x)
@@ -217,16 +217,16 @@ class ConsisEvaMAE(EvaMAE):
         else:
             # Restore full sequence with mask tokens
             restored_x = self.restore_full_sequence(encoded, keep_indices, num_patches)
-            feature_decoded = self.feature_decoder(restored_x)
+            feature_decoded, _ = self.feature_decoder(restored_x)
 
         if self.use_projector:
-            patch_latents = rearrange(feature_decoded, "b (h w d) c -> (b h w d) c", h=w, w=h, d=d)
+            patch_latents = rearrange(feature_decoded, "b (w h d) c -> (b w h d) c", b=b, w=w, h=h, d=d)
 
             patch_latents = self.projector(patch_latents)
             if self.training:
                 patch_latents = self.predictor(patch_latents)
 
-            patch_latents = rearrange(patch_latents, "(b h w d) c -> b c w h d", b=b, h=w, w=h, d=d)
+            patch_latents = rearrange(patch_latents, "(b w h d) c -> b c w h d", b=b, w=w, h=h, d=d)
         else:
             # projected = None
             patch_latents = None
@@ -235,7 +235,7 @@ class ConsisEvaMAE(EvaMAE):
         decoded, _ = self.decoder(restored_x)
 
         # Project back to output shape
-        decoded = rearrange(decoded, "b (h w d) c -> b c w h d", h=w, w=h, d=d)
+        decoded = rearrange(decoded, "b (w h d) c -> b c w h d", b=b, h=w, w=h, d=d)
         decoded = self.up_projection(decoded)
 
         return {
