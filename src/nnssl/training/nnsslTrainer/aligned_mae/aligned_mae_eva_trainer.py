@@ -300,6 +300,17 @@ class AlignedMAEEvaTrainer(BaseAlignedMAETrainer):
         return AlignedMAELoss(device=self.device, recon_weight=5.0)
 
 
+class AlignedMAEFTEvaTrainer(AlignedMAEEvaTrainer):
+
+    def __init__(self, *args, **kwargs):
+        """
+        Initialize the ConsisMAEFTEvaTrainer with the given arguments.
+        """
+        super().__init__(*args, **kwargs)
+        self.initial_lr = 1e-4
+        self.num_epochs = 200
+
+
 class AlignedMAEEvaSimSiamTrainer(AlignedMAEEvaTrainer):
     """
     Trainer for ConsisAE with a mask percentage of 10%.

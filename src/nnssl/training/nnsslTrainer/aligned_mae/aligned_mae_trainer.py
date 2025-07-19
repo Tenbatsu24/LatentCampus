@@ -345,6 +345,17 @@ class AlignedMAETrainer(AlignedMAE128Trainer):
         return architecture, adapt_plan
 
 
+class AlignedMAEFTTrainer(AlignedMAE128Trainer):
+
+    def __init__(self, *args, **kwargs):
+        """
+        Initialize the ConMAETrainer with the given arguments.
+        """
+        super().__init__(*args, **kwargs)
+        self.initial_lr = 1e-3
+        self.num_epochs = 500
+
+
 class AlignedMAESimSiamTrainer(AlignedMAETrainer):
 
     def __init__(self, *args, **kwargs):
