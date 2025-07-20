@@ -329,6 +329,24 @@ class AlignedMAEEvaSimSiamTrainer(AlignedMAEEvaTrainer):
         self.warmup_duration_whole_net = 10  # Warmup duration for the whole network
 
 
+class AlignedMAEEvaSimSiamFTTrainer(AlignedMAEEvaTrainer):
+    """
+    Trainer for ConsisAE with a mask percentage of 10%.
+    This class is specifically designed for training ConsisMAE models with SimSiam.
+    """
+
+    def __init__(self, *args, **kwargs):
+        """
+        Initialize the ConsisMAEEvaSimSiamTrainer with the given arguments.
+        """
+        super().__init__(*args, **kwargs)
+        self.teacher_mom = 0.0
+        self.total_batch_size = 4
+        self.initial_lr = 1e-4  # Initial learning rate for the optimizer
+        self.num_epochs = 200
+        self.warmup_duration_whole_net = 10  # Warmup duration for the whole network
+
+
 class AlignedAEEvaTrainer(AlignedMAEEvaTrainer):
     """
     Trainer for ConsisAE with a mask percentage of 10%.
