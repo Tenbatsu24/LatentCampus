@@ -59,14 +59,12 @@ def make_overlapping_crops_w_bbox(
             )  # off by one to ensure overlap is valid
 
             if max_center <= min_center:
-                raise ValueError(
-                    f"Overlap too large or volume too small along axis {d}"
-                )
+                _start1 = _start2 = 0  # fail-safe case, no valid overlap
+            else:
+                center = np.random.randint(min_center, max_center + 1)
 
-            center = np.random.randint(min_center, max_center + 1)
-
-            _start1 = center + o // 2 - p
-            _start2 = center - o // 2
+                _start1 = center + o // 2 - p
+                _start2 = center - o // 2
 
             start_1.append(_start1)
             start_2.append(_start2)
