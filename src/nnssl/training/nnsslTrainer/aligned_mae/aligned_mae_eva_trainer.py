@@ -312,7 +312,7 @@ class AlignedMAEFTEvaTrainer(AlignedMAEEvaTrainer):
         self.num_epochs = 200
 
 
-class AlignedMAEImageFTEvaTraienr(AlignedMAEEvaTrainer):
+class AlignedMAEImageFTEvaTrainer(AlignedMAEEvaTrainer):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
