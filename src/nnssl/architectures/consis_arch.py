@@ -63,15 +63,10 @@ class ConsisMAE(ResidualEncoderUNet):
         self.v_adaptive_pool = nn.AdaptiveAvgPool3d((16, 16, 16))
 
         self.use_projector = use_projector
-        if only_last_stage_as_latent:
-            proj_in_dim = features_per_stage[-1]
-        else:
-            proj_in_dim = sum(features_per_stage)
-        self.only_last_stage_as_latent = only_last_stage_as_latent
 
         if self.use_projector:
-            self.projector = nn.Sequential(
-                nn.Linear(proj_in_dim, 2048),  # this is technically a linear layer
+            self.v_projector = nn.Sequential(
+                nn.Linear(sum(features_per_stage), 2048),  # this is technically a linear layer
                 nn.BatchNorm1d(2048, affine=False, track_running_stats=False),
                 nn.SiLU(),
                 nn.Linear(2048, 2048),
@@ -81,7 +76,25 @@ class ConsisMAE(ResidualEncoderUNet):
                 nn.BatchNorm1d(2048, affine=False, track_running_stats=False),
             )  # output layer
 
-            self.predictor = nn.Sequential(
+            self.v_predictor = nn.Sequential(
+                nn.Linear(2048, 512),
+                nn.BatchNorm1d(512, affine=False, track_running_stats=False),
+                nn.SiLU(),
+                nn.Linear(512, 2048),
+            )
+
+            self.i_projector = nn.Sequential(
+                nn.Linear(features_per_stage[-1], 2048),  # this is technically a linear layer
+                nn.BatchNorm1d(2048, affine=False, track_running_stats=False),
+                nn.SiLU(),
+                nn.Linear(2048, 2048),
+                nn.BatchNorm1d(2048, affine=False, track_running_stats=False),
+                nn.SiLU(),
+                nn.Linear(2048, 2048),
+                nn.BatchNorm1d(2048, affine=False, track_running_stats=False),
+            )
+
+            self.i_predictor = nn.Sequential(
                 nn.Linear(2048, 512),
                 nn.BatchNorm1d(512, affine=False, track_running_stats=False),
                 nn.SiLU(),
@@ -89,13 +102,25 @@ class ConsisMAE(ResidualEncoderUNet):
             )
 
             # initialize the projector weights
-            for m in self.projector.modules():
+            for m in self.v_projector.modules():
                 if isinstance(m, nn.Linear):
                     trunc_normal_(m.weight, std=0.02)
                     if m.bias is not None:
                         nn.init.constant_(m.bias, 0)
 
-            for m in self.predictor.modules():
+            for m in self.v_predictor.modules():
+                if isinstance(m, nn.Linear):
+                    trunc_normal_(m.weight, std=0.02)
+                    if m.bias is not None:
+                        nn.init.constant_(m.bias, 0)
+
+            for m in self.i_projector.modules():
+                if isinstance(m, nn.Linear):
+                    trunc_normal_(m.weight, std=0.02)
+                    if m.bias is not None:
+                        nn.init.constant_(m.bias, 0)
+
+            for m in self.i_predictor.modules():
                 if isinstance(m, nn.Linear):
                     trunc_normal_(m.weight, std=0.02)
                     if m.bias is not None:
@@ -106,21 +131,17 @@ class ConsisMAE(ResidualEncoderUNet):
         skips = self.encoder(x)
         decoded = self.decoder(skips)
 
-        if self.only_last_stage_as_latent:
-            skips = [skips[-1]]
-        image_latent = torch.concat(
-            [self.i_adaptive_pool(s) for s in skips], dim=1
-        ).reshape(b, -1)
+        image_latent = self.i_adaptive_pool(skips[-1]).reshape(b, -1)
         patch_latent = torch.concat([self.v_adaptive_pool(s) for s in skips], dim=1)
 
         if self.use_projector:
             patch_latent = rearrange(patch_latent, "b c w h d -> (b w h d) c")
-            patch_latent = self.projector(patch_latent)
-            image_latent = self.projector(image_latent)
+            patch_latent = self.v_projector(patch_latent)
+            image_latent = self.i_projector(image_latent)
 
             if self.training:
-                patch_latent = self.predictor(patch_latent)
-                image_latent = self.predictor(image_latent)
+                patch_latent = self.v_predictor(patch_latent)
+                image_latent = self.i_predictor(image_latent)
 
             patch_latent = rearrange(
                 patch_latent, "(b w h d) c -> b c w h d", b=b, w=16, h=16, d=16
@@ -308,7 +329,7 @@ if __name__ == "__main__":
         input_channels=1,
         num_classes=1,
         deep_supervision=False,
-        only_last_stage_as_latent=False,
+        only_last_stage_as_latent=True,
         use_projector=True,
     ).to(_device)
     model = model.train(True)
