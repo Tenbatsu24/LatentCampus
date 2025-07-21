@@ -383,6 +383,28 @@ class AlignedMAEGImageFTTrainer(AlignedMAE128Trainer):
         )
 
 
+class AlignedMAEImageFTTrainer(AlignedMAE128Trainer):
+
+    def __init__(self, *args, **kwargs):
+        """
+        Initialize the AlignedMAEImageFTTrainer with the given arguments.
+        This class is specifically designed for training AlignedMAE with image data.
+        """
+        super().__init__(*args, **kwargs)
+        self.initial_lr = 1e-3
+        self.num_epochs = 250
+
+    def build_loss(self):
+        """
+        Builds the loss function for the model.
+        This method is overridden to provide specific loss logic for AlignedMAE with image data.
+        """
+        from nnssl.training.loss.aligned_mae_loss import AlignedMAELoss
+
+        return AlignedMAELoss(
+            device=self.device, recon_weight=5.0, fg_cos_weight=1.0, ntxent_weight=1.0
+        )
+
 class ConMAEFTTrainer(AlignedMAE128Trainer):
 
     def __init__(self, *args, **kwargs):
