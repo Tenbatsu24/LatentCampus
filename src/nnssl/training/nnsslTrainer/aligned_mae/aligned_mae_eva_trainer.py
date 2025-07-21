@@ -335,7 +335,7 @@ class AlignedMAEGImageFTEvaTrainer(AlignedMAEEvaTrainer):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.initial_lr = 1e-4
+        self.initial_lr = 3e-4
         self.num_epochs = 150
 
     def build_loss(self):
@@ -354,7 +354,7 @@ class ConMAEFTEvaTrainer(AlignedMAEEvaTrainer):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.initial_lr = 1e-4
+        self.initial_lr = 3e-4
         self.num_epochs = 150
 
     def build_loss(self):
