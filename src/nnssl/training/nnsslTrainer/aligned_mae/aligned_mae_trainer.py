@@ -360,8 +360,12 @@ class AlignedMAEFTTrainer(AlignedMAE128Trainer):
         Initialize the ConMAETrainer with the given arguments.
         """
         super().__init__(*args, **kwargs)
-        self.initial_lr = 1e-3
+        self.total_batch_size = 4
+        self.teacher_mom = 0.995
+        self.initial_lr = 1e-2
         self.num_epochs = 250
+        self.mask_percentage = 0.75  # Default mask percentage for ConMAE
+        self.config_plan.patch_size = (128, 128, 128)  # Patch size for ConMAE
 
 
 class AlignedMAEGImageFTTrainer(AlignedMAE128Trainer):
