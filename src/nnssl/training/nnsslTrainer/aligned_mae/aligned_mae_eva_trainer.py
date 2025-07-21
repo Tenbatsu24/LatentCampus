@@ -308,6 +308,28 @@ class AlignedMAEFTEvaTrainer(AlignedMAEEvaTrainer):
         Initialize the ConsisMAEFTEvaTrainer with the given arguments.
         """
         super().__init__(*args, **kwargs)
+        self.initial_lr = 3e-4
+        self.num_epochs = 150
+
+    def build_loss(self):
+        """
+        Builds the loss function for the model.
+        This method is overridden to provide specific loss logic.
+        """
+        from nnssl.training.loss.aligned_mae_loss import AlignedMAELoss
+
+        return AlignedMAELoss(
+            device=self.device, recon_weight=5.0, fg_cos_weight=1.0, ntxent_weight=1.0
+        )
+
+
+class AlignedMAEFTLowLREvaTrainer(AlignedMAEEvaTrainer):
+
+    def __init__(self, *args, **kwargs):
+        """
+        Initialize the ConsisMAEFTEvaTrainer with the given arguments.
+        """
+        super().__init__(*args, **kwargs)
         self.initial_lr = 1e-4
         self.num_epochs = 150
 
