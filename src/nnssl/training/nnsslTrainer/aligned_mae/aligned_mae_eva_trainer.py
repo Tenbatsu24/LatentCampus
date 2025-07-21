@@ -330,6 +330,51 @@ class AlignedMAEImageFTEvaTrainer(AlignedMAEEvaTrainer):
             device=self.device, recon_weight=5.0, fg_cos_weight=1.0, ntxent_weight=1.0
         )
 
+    def load_checkpoint(self, filename_or_checkpoint: Union[dict, str]) -> None:
+        if not self.was_initialized:
+            self.initialize()
+
+        if isinstance(filename_or_checkpoint, str):
+            checkpoint = torch.load(filename_or_checkpoint, map_location=self.device)
+        else:
+            checkpoint = filename_or_checkpoint
+
+        # from the model state dict `network_weights`, add a prefix for the positional embedding for the cls token
+        if "network_weights" in checkpoint:
+            pos_embed = checkpoint["network_weights"].get("eva.pos_embed", None)
+            if pos_embed is not None:
+                print(f"Adding one space (prefix) to positional embedding for cls token")
+                pos_embed = torch.cat([torch.zeros(1, 1, pos_embed.shape[-1], device=self.device), pos_embed], dim=1)
+                checkpoint["network_weights"]["eva.pos_embed"] = pos_embed
+            pos_embed = checkpoint["network_weights"].get("decoder.pos_embed", None)
+            if pos_embed is not None:
+                print(f"Adding one space (prefix) to positional embedding for cls token in decoder")
+                pos_embed = torch.cat([torch.zeros(1, 1, pos_embed.shape[-1], device=self.device), pos_embed], dim=1)
+                checkpoint["network_weights"]["decoder.pos_embed"] = pos_embed
+        # load the checkpoint
+        super().load_checkpoint(checkpoint)
+
+    def save_checkpoint(self, filename: str, live_upload: bool = False) -> None:
+        # delete the positional embedding for the cls token
+        super().save_checkpoint(filename, live_upload)
+
+        # read the checkpoint
+        if self.local_rank == 0:
+            checkpoint = torch.load(filename, map_location=self.device)
+            if "network_weights" in checkpoint:
+                pos_embed = checkpoint["network_weights"].get("eva.pos_embed", None)
+                if pos_embed is not None:
+                    print(f"Removing one space (prefix) from positional embedding for cls token")
+                    pos_embed = pos_embed[:, 1:, :]
+                    checkpoint["network_weights"]["eva.pos_embed"] = pos_embed
+                pos_embed = checkpoint["network_weights"].get("decoder.pos_embed", None)
+                if pos_embed is not None:
+                    print(f"Removing one space (prefix) from positional embedding for cls token in decoder")
+                    pos_embed = pos_embed[:, 1:, :]
+                    checkpoint["network_weights"]["decoder.pos_embed"] = pos_embed
+
+            # save the checkpoint
+            torch.save(checkpoint, filename)
 
 class ConMAEFTEvaTrainer(AlignedMAEEvaTrainer):
 
