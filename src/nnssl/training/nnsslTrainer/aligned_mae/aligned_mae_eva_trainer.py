@@ -308,15 +308,7 @@ class AlignedMAEFTEvaTrainer(AlignedMAEEvaTrainer):
         Initialize the ConsisMAEFTEvaTrainer with the given arguments.
         """
         super().__init__(*args, **kwargs)
-        self.initial_lr = 1e-4
-        self.num_epochs = 200
-
-
-class AlignedMAEImageFTEvaTrainer(AlignedMAEEvaTrainer):
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.initial_lr = 1e-4
+        self.initial_lr = 3e-4
         self.num_epochs = 150
 
     def build_loss(self):
@@ -331,31 +323,7 @@ class AlignedMAEImageFTEvaTrainer(AlignedMAEEvaTrainer):
         )
 
 
-class AlignedMAEGImageFTEvaTrainer(AlignedMAEEvaTrainer):
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.initial_lr = 3e-4
-        self.num_epochs = 150
-
-    def build_loss(self):
-        """
-        Builds the loss function for the model.
-        This method is overridden to provide specific loss logic.
-        """
-        from nnssl.training.loss.aligned_mae_loss import AlignedMAELoss
-
-        return AlignedMAELoss(
-            device=self.device, recon_weight=5.0
-        )
-
-
-class ConMAEFTEvaTrainer(AlignedMAEEvaTrainer):
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.initial_lr = 3e-4
-        self.num_epochs = 150
+class ConMAEFTEvaTrainer(AlignedMAEFTEvaTrainer):
 
     def build_loss(self):
         """
@@ -367,42 +335,6 @@ class ConMAEFTEvaTrainer(AlignedMAEEvaTrainer):
         return AlignedMAELoss(
             device=self.device, recon_weight=5.0, fg_cos_weight=0.0, ntxent_weight=1.0
         )
-
-
-class AlignedMAEEvaSimSiamTrainer(AlignedMAEEvaTrainer):
-    """
-    Trainer for ConsisAE with a mask percentage of 10%.
-    This class is specifically designed for training ConsisMAE models with SimSiam.
-    """
-
-    def __init__(self, *args, **kwargs):
-        """
-        Initialize the ConsisMAEEvaSimSiamTrainer with the given arguments.
-        """
-        super().__init__(*args, **kwargs)
-        self.teacher_mom = 0.0
-        self.total_batch_size = 4
-        self.initial_lr = 3e-4  # Initial learning rate for the optimizer
-        self.num_epochs = 200
-        self.warmup_duration_whole_net = 10  # Warmup duration for the whole network
-
-
-class AlignedMAEEvaSimSiamFTTrainer(AlignedMAEEvaTrainer):
-    """
-    Trainer for ConsisAE with a mask percentage of 10%.
-    This class is specifically designed for training ConsisMAE models with SimSiam.
-    """
-
-    def __init__(self, *args, **kwargs):
-        """
-        Initialize the ConsisMAEEvaSimSiamTrainer with the given arguments.
-        """
-        super().__init__(*args, **kwargs)
-        self.teacher_mom = 0.0
-        self.total_batch_size = 4
-        self.initial_lr = 1e-4  # Initial learning rate for the optimizer
-        self.num_epochs = 200
-        self.warmup_duration_whole_net = 10  # Warmup duration for the whole network
 
 
 class AlignedAEEvaTrainer(AlignedMAEEvaTrainer):

@@ -362,59 +362,23 @@ class AlignedMAEFTTrainer(AlignedMAE128Trainer):
         super().__init__(*args, **kwargs)
         self.total_batch_size = 4
         self.teacher_mom = 0.995
-        self.initial_lr = 1e-2
+        self.initial_lr = 1e-3
         self.num_epochs = 250
         self.mask_percentage = 0.75  # Default mask percentage for ConMAE
         self.config_plan.patch_size = (128, 128, 128)  # Patch size for ConMAE
 
-
-class AlignedMAEGImageFTTrainer(AlignedMAE128Trainer):
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.initial_lr = 1e-3
-        self.num_epochs = 250
-
     def build_loss(self):
         """
         Builds the loss function for the model.
-        This method is overridden to provide specific loss logic for ConMAE.
+        This method is overridden to provide specific loss logic.
         """
         from nnssl.training.loss.aligned_mae_loss import AlignedMAELoss
 
-        return AlignedMAELoss(
-            device=self.device, recon_weight=5.0, fg_cos_weight=1.0, ntxent_weight=1.0
-        )
+        # Create the loss function
+        return AlignedMAELoss(device=self.device, recon_weight=5.0, fg_cos_weight=1.0, ntxent_weight=1.0)
 
 
-class AlignedMAEImageFTTrainer(AlignedMAE128Trainer):
-
-    def __init__(self, *args, **kwargs):
-        """
-        Initialize the AlignedMAEImageFTTrainer with the given arguments.
-        This class is specifically designed for training AlignedMAE with image data.
-        """
-        super().__init__(*args, **kwargs)
-        self.initial_lr = 1e-3
-        self.num_epochs = 250
-
-    def build_loss(self):
-        """
-        Builds the loss function for the model.
-        This method is overridden to provide specific loss logic for AlignedMAE with image data.
-        """
-        from nnssl.training.loss.aligned_mae_loss import AlignedMAELoss
-
-        return AlignedMAELoss(
-            device=self.device, recon_weight=5.0, fg_cos_weight=1.0, ntxent_weight=1.0
-        )
-
-class ConMAEFTTrainer(AlignedMAE128Trainer):
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.initial_lr = 1e-3
-        self.num_epochs = 250
+class ConMAEFTTrainer(AlignedMAEFTTrainer):
 
     def build_loss(self):
         """
@@ -426,38 +390,6 @@ class ConMAEFTTrainer(AlignedMAE128Trainer):
         return AlignedMAELoss(
             device=self.device, recon_weight=5.0, fg_cos_weight=0.0, ntxent_weight=1.0
         )
-
-
-class AlignedMAESimSiamTrainer(AlignedMAETrainer):
-
-    def __init__(self, *args, **kwargs):
-        """
-        Initialize the AlignedMAESimSiamTrainer with the given arguments.
-        This class is specifically designed for training AlignedMAE with SimSiam.
-        """
-        super().__init__(*args, **kwargs)
-        self.teacher_mom = 0.0
-        self.total_batch_size = 4
-        self.initial_lr = 1e-2
-        self.num_epochs = 1000
-        self.mask_percentage = 0.75  # Default mask percentage for ConMAE
-        self.config_plan.patch_size = (128, 128, 128)  # Patch size for ConMAE
-
-
-class AlignedMAESimSiamFTTrainer(AlignedMAETrainer):
-
-    def __init__(self, *args, **kwargs):
-        """
-        Initialize the AlignedMAESimSiamTrainer with the given arguments.
-        This class is specifically designed for training AlignedMAE with SimSiam.
-        """
-        super().__init__(*args, **kwargs)
-        self.teacher_mom = 0.0
-        self.total_batch_size = 4
-        self.initial_lr = 1e-3
-        self.num_epochs = 200
-        self.mask_percentage = 0.75  # Default mask percentage for ConMAE
-        self.config_plan.patch_size = (128, 128, 128)  # Patch size for ConMAE
 
 
 class AlignedAETrainer(AlignedMAETrainer):
