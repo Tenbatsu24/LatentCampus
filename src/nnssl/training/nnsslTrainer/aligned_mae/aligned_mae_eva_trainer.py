@@ -308,7 +308,7 @@ class AlignedMAEFTEvaTrainer(AlignedMAEEvaTrainer):
         Initialize the ConsisMAEFTEvaTrainer with the given arguments.
         """
         super().__init__(*args, **kwargs)
-        self.initial_lr = 3e-4
+        self.initial_lr = 1e-4
         self.num_epochs = 150
 
     def build_loss(self):
