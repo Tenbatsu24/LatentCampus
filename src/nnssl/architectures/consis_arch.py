@@ -153,7 +153,12 @@ class ConsisEvaMAE(EvaMAE):
             patch_embed_size=patch_embed_size,
             output_channels=output_channels,
             input_shape=input_shape,
+            num_register_tokens=1,
             **kwargs,
+        )
+
+        self.cls_token = nn.Parameter(
+            torch.zeros(1, 1, embed_dim), requires_grad=True,
         )
 
         if not self.use_decoder:
@@ -166,7 +171,7 @@ class ConsisEvaMAE(EvaMAE):
             ref_feat_shape=tuple(
                 [i // ds for i, ds in zip(input_shape, patch_embed_size)]
             ),
-            num_reg_tokens=kwargs.get("num_register_tokens", 0),
+            num_reg_tokens=1,
             use_rot_pos_emb=kwargs.get("use_rot_pos_emb", True),
             use_abs_pos_emb=kwargs.get("use_abs_pos_emb", True),
             mlp_ratio=kwargs.get("mlp_ratio", 4 * 2 / 3),
@@ -216,6 +221,9 @@ class ConsisEvaMAE(EvaMAE):
         x = self.down_projection(x)
         b, c, w, h, d = x.shape
         x = rearrange(x, "b c w h d -> b (w h d) c")
+        # Add class token
+        cls_tokens = self.cls_token.expand(b, -1, -1)  # b x 1 x c
+        x = torch.cat((cls_tokens, x), dim=1)  # b x (w h d + 1) x c
 
         # Encode using EVA (internally applies masking with patch_drop_rate)
         encoded, keep_indices = self.eva(x)
@@ -229,10 +237,12 @@ class ConsisEvaMAE(EvaMAE):
             restored_x = self.restore_full_sequence(encoded, keep_indices, num_patches)
             feature_decoded, _ = self.feature_decoder(restored_x)
 
+        image_latents = restored_x[:, 0, :]  # b x c
+        patch_latents = feature_decoded[:, 1:, :]  # b x (w h d - 1) x c
+
         if self.use_projector:
-            image_latents = torch.mean(feature_decoded, dim=1)  # b x c
             patch_latents = rearrange(
-                feature_decoded, "b (w h d) c -> (b w h d) c", b=b, w=w, h=h, d=d
+                patch_latents, "b (w h d) c -> (b w h d) c", b=b, w=w, h=h, d=d
             )
 
             patch_latents = self.projector(patch_latents)
@@ -252,8 +262,8 @@ class ConsisEvaMAE(EvaMAE):
         # Decode with restored sequence and rope embeddings
         decoded, _ = self.decoder(restored_x)
 
-        # Project back to output shape
-        decoded = rearrange(decoded, "b (w h d) c -> b c w h d", b=b, h=w, w=h, d=d)
+        # Project back to output shape (after getting rid of the cls token)
+        decoded = rearrange(decoded[:, 1:, :], "b (w h d) c -> b c w h d", b=b, h=w, w=h, d=d)
         decoded = self.up_projection(decoded)
 
         return {
