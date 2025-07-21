@@ -59,6 +59,7 @@ class ConsisMAE(ResidualEncoderUNet):
             deep_supervision=deep_supervision,
         )
 
+        self.i_adaptive_pool = nn.AdaptiveAvgPool3d((1, 1, 1))
         self.v_adaptive_pool = nn.AdaptiveAvgPool3d((16, 16, 16))
 
         self.use_projector = use_projector
@@ -101,27 +102,36 @@ class ConsisMAE(ResidualEncoderUNet):
                         nn.init.constant_(m.bias, 0)
 
     def forward(self, x):
+        b = x.shape[0]
         skips = self.encoder(x)
         decoded = self.decoder(skips)
 
         if self.only_last_stage_as_latent:
             skips = [skips[-1]]
-        latent = torch.concat([self.v_adaptive_pool(s) for s in skips], dim=1)
+        image_latent = torch.concat(
+            [self.i_adaptive_pool(s) for s in skips], dim=1
+        ).reshape(b, -1)
+        patch_latent = torch.concat([self.v_adaptive_pool(s) for s in skips], dim=1)
 
         if self.use_projector:
-            b = latent.shape[0]
-            latent = rearrange(latent, "b c w h d -> (b w h d) c")
-            latent = self.projector(latent)
+            patch_latent = rearrange(patch_latent, "b c w h d -> (b w h d) c")
+            patch_latent = self.projector(patch_latent)
+            image_latent = self.projector(image_latent)
 
             if self.training:
-                latent = self.predictor(latent)
+                patch_latent = self.predictor(patch_latent)
+                image_latent = self.predictor(image_latent)
 
-            latent = rearrange(
-                latent, "(b w h d) c -> b c w h d", b=b, w=16, h=16, d=16
+            patch_latent = rearrange(
+                patch_latent, "(b w h d) c -> b c w h d", b=b, w=16, h=16, d=16
             )
+        else:
+            patch_latent = None
+            image_latent = None
 
         return {
-            "proj": latent,
+            "image_latent": image_latent,
+            "proj": patch_latent,
             "recon": decoded,
         }
 
@@ -220,13 +230,16 @@ class ConsisEvaMAE(EvaMAE):
             feature_decoded, _ = self.feature_decoder(restored_x)
 
         if self.use_projector:
+            image_latents = torch.mean(feature_decoded, dim=1)  # b x c
             patch_latents = rearrange(
                 feature_decoded, "b (w h d) c -> (b w h d) c", b=b, w=w, h=h, d=d
             )
 
             patch_latents = self.projector(patch_latents)
+            image_latents = self.projector(image_latents)
             if self.training:
                 patch_latents = self.predictor(patch_latents)
+                image_latents = self.predictor(image_latents)
 
             patch_latents = rearrange(
                 patch_latents, "(b w h d) c -> b c w h d", b=b, w=w, h=h, d=d
@@ -234,6 +247,7 @@ class ConsisEvaMAE(EvaMAE):
         else:
             # projected = None
             patch_latents = None
+            image_latents = None
 
         # Decode with restored sequence and rope embeddings
         decoded, _ = self.decoder(restored_x)
@@ -244,6 +258,7 @@ class ConsisEvaMAE(EvaMAE):
 
         return {
             "proj": patch_latents,
+            "image_latent": image_latents,
             "recon": decoded,
             "keep_indices": keep_indices,
         }
@@ -295,6 +310,7 @@ if __name__ == "__main__":
     print(
         f"Input shape: {x.shape}, "
         f"Output shape: {output['recon'].shape}, "
+        f"Image latent shape: {output['image_latent'].shape if output['image_latent'] is not None else 'None'}, "
         f"Latent shape: {output['proj'].shape}, "
     )
     # del output
@@ -375,6 +391,7 @@ if __name__ == "__main__":
     print(
         f"Output shape: {output['recon'].shape}, "
         f"Keep indices shape: {output['keep_indices'].shape if output['keep_indices'] is not None else 'None'}, "
+        f"Image latent shape: {output['image_latent'].shape if output['image_latent'] is not None else 'None'}, "
         f"Latent shape: {output['proj'].shape}",
     )
 
@@ -384,5 +401,6 @@ if __name__ == "__main__":
     print(
         f"Output shape: {output['recon'].shape if output['recon'] is not None else 'None'}, "
         f"Keep indices shape: {output['keep_indices'].shape if output['keep_indices'] is not None else 'None'}, "
+        f"Image latent shape: {output['image_latent'].shape if output['image_latent'] is not None else 'None'}, "
         f"Latent shape: {output['proj'].shape if output['proj'] is not None else 'None'}",
     )

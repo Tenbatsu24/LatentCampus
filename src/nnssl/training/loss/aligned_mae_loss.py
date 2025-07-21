@@ -283,37 +283,37 @@ class AlignedMAELoss(torch.nn.Module):
         recon_loss_mse = self.mse_loss(model_output[self.recon_key], gt_recon, mask)
 
         # chunk the latents and compute the consistency loss
-        pred_latents = model_output[self.proj_key]
+        pred_latents_fg = model_output[self.proj_key]
+        tgt_latents_fg = target[self.latent_key].detach()
 
-        tgt_latents = target[self.latent_key].detach()
         cw_std = torch.std(
-            F.normalize(target[self.latent_key].detach(), dim=1, eps=eps),
-            dim=(0, 2, 3, 4),
-            keepdim=True,
+            F.normalize(target[self.image_latent_key].detach(), dim=1, eps=eps),
+            dim=(0,),
         ).mean()
-        cw_std = cw_std / (1 / target[self.latent_key].shape[1] ** 0.5)
+        cw_std = cw_std / (1 / target[self.image_latent_key].shape[1] ** 0.5)
 
         # if latents is 5d tensor, i.e. [b, c, x_p, y_p, z_p], we need to align them for better consistency
-        if pred_latents.ndim == 5:
-            pred_latents = self.align_views(pred_latents, rel_bboxes)
-            tgt_latents = self.align_views(tgt_latents, rel_bboxes)
+        if pred_latents_fg.ndim == 5:
+            pred_latents_fg = self.align_views(pred_latents_fg, rel_bboxes)
+            tgt_latents_fg = self.align_views(tgt_latents_fg, rel_bboxes)
 
-        b = pred_latents.shape[0] // 2
+        b = pred_latents_fg.shape[0] // 2
         # swap the latents. the num_views is hardcoded to 2 for this method
-        tgt_latents = tgt_latents.roll(b, 0)
+        tgt_latents_fg = tgt_latents_fg.roll(b, 0)
 
         pred_latents_fg, tgt_latents_fg = F.normalize(
-            pred_latents, dim=1, eps=eps
-        ), F.normalize(tgt_latents, dim=1, eps=eps)
+            pred_latents_fg, dim=1, eps=eps
+        ), F.normalize(tgt_latents_fg, dim=1, eps=eps)
 
         fg_cos_reg = (
             2 - 2 * (pred_latents_fg * tgt_latents_fg).sum(dim=1).mean()
         )  # already normalized
 
-        # aggregate the aligned feature maps over the spatial dimensions - image latents
-        pred_latents_aa, tgt_latents_aa = pred_latents.mean(
-            dim=(2, 3, 4)
-        ), tgt_latents.mean(dim=(2, 3, 4))
+        pred_latents_aa, tgt_latents_aa = (
+            model_output[self.image_latent_key],
+            target[self.image_latent_key].detach(),
+        )
+        tgt_latents_aa = tgt_latents_aa.roll(b, 0)
 
         contrastive_loss, acc = self.contrastive_loss(
             F.normalize(pred_latents_aa, dim=1, eps=eps),
@@ -323,11 +323,9 @@ class AlignedMAELoss(torch.nn.Module):
         )
 
         loss = (
-            self.recon_weight * recon_loss_huber  # on a random scale this is about 1.0
-            + self.fg_cos_weight
-            * fg_cos_reg  # on a random scale this is about 2.0 (hence the 0.5)
-            + self.ntxent_weight
-            * contrastive_loss  # on a random scale this is about 4.0 (hence the 0.25)
+            self.recon_weight * recon_loss_huber
+            + self.fg_cos_weight * fg_cos_reg
+            + self.ntxent_weight * contrastive_loss
         )
 
         return {
@@ -348,10 +346,12 @@ if __name__ == "__main__":
     _model_output = {
         "recon": torch.randn(8, 1, 64, 64, 64, requires_grad=True, device="cuda"),
         "proj": torch.randn(8, 2048, 16, 16, 16, requires_grad=True, device="cuda"),
+        "image_latent": torch.randn(8, 2048, requires_grad=True, device="cuda"),
     }
 
     _target = {
         "proj": torch.randn(8, 2048, 20, 20, 20, device="cuda"),
+        "image_latent": torch.randn(8, 2048, device="cuda"),
     }
 
     _gt_recon = torch.randn(

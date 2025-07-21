@@ -53,6 +53,12 @@ class BaseAlignedMAETrainer(BaseMAETrainer):
         # Create the loss function
         return AlignedMAELoss(device=self.device)
 
+    def on_validation_epoch_start(self):
+        # self.network.eval()
+
+        # the predictor part of the model requires network to be in training mode...
+        pass
+
     @override
     def build_architecture_and_adaptation_plan(
         self,
@@ -204,6 +210,8 @@ class BaseAlignedMAETrainer(BaseMAETrainer):
                 for k, v in teacher_output.items()
                 if k == "proj" or k == "image_latent"
             }
+            self.network.train()  # set the network to training mode
+
         # We use the self.batch_size as it is not identical with the plan batch_size in ddp cases.
         mask = self.mask_creation(
             2 * self.batch_size, self.config_plan.patch_size, self.mask_percentage
@@ -353,7 +361,26 @@ class AlignedMAEFTTrainer(AlignedMAE128Trainer):
         """
         super().__init__(*args, **kwargs)
         self.initial_lr = 1e-3
-        self.num_epochs = 500
+        self.num_epochs = 250
+
+
+class AlignedMAEGImageFTTrainer(AlignedMAE128Trainer):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.initial_lr = 1e-3
+        self.num_epochs = 250
+
+    def build_loss(self):
+        """
+        Builds the loss function for the model.
+        This method is overridden to provide specific loss logic for ConMAE.
+        """
+        from nnssl.training.loss.aligned_mae_loss import AlignedMAELoss
+
+        return AlignedMAELoss(
+            device=self.device, recon_weight=5.0, fg_cos_weight=1.0, ntxent_weight=1.0
+        )
 
 
 class AlignedMAESimSiamTrainer(AlignedMAETrainer):
@@ -427,6 +454,7 @@ class AlignedAETrainer(AlignedMAETrainer):
                 for k, v in teacher_output.items()
                 if k == "proj" or k == "image_latent"
             }
+            self.network.train()  # set the network to training mode
 
         mask = torch.zeros_like(data)
 

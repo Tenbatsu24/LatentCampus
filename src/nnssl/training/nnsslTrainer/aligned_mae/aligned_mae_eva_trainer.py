@@ -208,6 +208,7 @@ class BaseAlignedMAETrainer(BaseEvaMAETrainer):
                 for k, v in teacher_output.items()
                 if k == "proj" or k == "image_latent"
             }
+            self.network.train()
 
         if is_train:
             self.optimizer.zero_grad(set_to_none=True)
@@ -311,6 +312,25 @@ class AlignedMAEFTEvaTrainer(AlignedMAEEvaTrainer):
         self.num_epochs = 200
 
 
+class AlignedMAEImageFTEvaTraienr(AlignedMAEEvaTrainer):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.initial_lr = 1e-4
+        self.num_epochs = 150
+
+    def build_loss(self):
+        """
+        Builds the loss function for the model.
+        This method is overridden to provide specific loss logic.
+        """
+        from nnssl.training.loss.aligned_mae_loss import AlignedMAELoss
+
+        return AlignedMAELoss(
+            device=self.device, recon_weight=5.0, fg_cos_weight=1.0, ntxent_weight=1.0
+        )
+
+
 class AlignedMAEEvaSimSiamTrainer(AlignedMAEEvaTrainer):
     """
     Trainer for ConsisAE with a mask percentage of 10%.
@@ -382,6 +402,7 @@ class AlignedAEEvaTrainer(AlignedMAEEvaTrainer):
                 for k, v in teacher_output.items()
                 if k == "proj" or k == "image_latent"
             }
+            self.network.train()
 
         if is_train:
             self.optimizer.zero_grad(set_to_none=True)
