@@ -378,6 +378,20 @@ class AlignedMAEFTTrainer(AlignedMAE128Trainer):
         return AlignedMAELoss(device=self.device, recon_weight=5.0, fg_cos_weight=1.0, ntxent_weight=1.0)
 
 
+class AlignedMAEFTLowConTrainer(AlignedMAEFTTrainer):
+
+    def build_loss(self):
+        """
+        Builds the loss function for the model.
+        This method is overridden to provide specific loss logic for low contrast ConMAE.
+        """
+        from nnssl.training.loss.aligned_mae_loss import AlignedMAELoss
+
+        return AlignedMAELoss(
+            device=self.device, recon_weight=5.0, fg_cos_weight=1.0, ntxent_weight=0.1
+        )
+
+
 class ConMAEFTTrainer(AlignedMAEFTTrainer):
 
     def build_loss(self):
