@@ -416,7 +416,7 @@ class ConMAEFTTrainer(AlignedMAEFTTrainer):
         from nnssl.training.loss.aligned_mae_loss import AlignedMAELoss
 
         return AlignedMAELoss(
-            device=self.device, recon_weight=5.0, fg_cos_weight=0.0, ntxent_weight=1.0
+            device=self.device, recon_weight=5.0, fg_cos_weight=0.0, ntxent_weight=0.1
         )
 
 
