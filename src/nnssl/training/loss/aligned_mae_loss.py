@@ -146,6 +146,7 @@ class AlignedMAELoss(torch.nn.Module):
         recon_weight=1.0,
         fg_cos_weight=0.5,
         ntxent_weight=0.1,
+        do_variance_normalisation=False,
     ):
         """
         Initialize the KVConsisConLoss with the given parameters.
@@ -157,12 +158,14 @@ class AlignedMAELoss(torch.nn.Module):
             recon_weight (float): Weight for the reconstruction loss.
             fg_cos_weight (float): Weight for the finegrained cosine similarity loss.
             ntxent_weight (float): Weight for the NT-Xent loss.
+            do_variance_normalisation (bool): Whether to apply variance normalization.
         """
         super(AlignedMAELoss, self).__init__()
 
         self.mse_loss = MAEMSELoss()
         self.log_cosh = LogCoshError(reduction="none")
         self.huber = torch.nn.HuberLoss(reduction="none")
+        self.do_variance_normalisation = do_variance_normalisation
 
         self.recon_key = "recon"
         self.proj_key = "proj"
@@ -272,12 +275,12 @@ class AlignedMAELoss(torch.nn.Module):
 
         recon_loss_lc = self.log_cosh(model_output[self.recon_key], gt_recon)
         recon_loss_lc = torch.sum(recon_loss_lc * (1 - mask)) / (
-            torch.sum((1 - mask)) + eps
+                torch.sum((1 - mask)) + eps
         )
 
         recon_loss_huber = self.huber(model_output[self.recon_key], gt_recon)
         recon_loss_huber = torch.sum(recon_loss_huber * (1 - mask)) / (
-            torch.sum((1 - mask)) + eps
+                torch.sum((1 - mask)) + eps
         )
 
         recon_loss_mse = self.mse_loss(model_output[self.recon_key], gt_recon, mask)
@@ -286,11 +289,12 @@ class AlignedMAELoss(torch.nn.Module):
         pred_latents_fg = model_output[self.proj_key]
         tgt_latents_fg = target[self.latent_key].detach()
 
+        var_denom = 1 / target[self.image_latent_key].shape[1]
         cw_std = torch.std(
             F.normalize(target[self.image_latent_key].detach(), dim=1, eps=eps),
             dim=(0,),
         ).mean()
-        cw_std = cw_std / (1 / target[self.image_latent_key].shape[1] ** 0.5)
+        cw_std = cw_std / (var_denom ** 0.5)
 
         # if latents is 5d tensor, i.e. [b, c, x_p, y_p, z_p], we need to align them for better consistency
         if pred_latents_fg.ndim == 5:
@@ -306,8 +310,15 @@ class AlignedMAELoss(torch.nn.Module):
         ), F.normalize(tgt_latents_fg, dim=1, eps=eps)
 
         fg_cos_reg = (
-            2 - 2 * (pred_latents_fg * tgt_latents_fg).sum(dim=1).mean()
+                2 - 2 * (pred_latents_fg * tgt_latents_fg).sum(dim=1).mean()
         )  # already normalized
+        var = torch.var(pred_latents_fg, dim=(0, 2, 3, 4), unbiased=False).mean() / var_denom
+        if self.do_variance_normalisation:
+            fg_cos_reg_n = fg_cos_reg / (
+                    var + eps
+            )
+        else:
+            fg_cos_reg_n = fg_cos_reg
 
         pred_latents_aa, tgt_latents_aa = (
             model_output[self.image_latent_key],
@@ -323,9 +334,9 @@ class AlignedMAELoss(torch.nn.Module):
         )
 
         loss = (
-            self.recon_weight * recon_loss_huber
-            + self.fg_cos_weight * fg_cos_reg
-            + self.ntxent_weight * contrastive_loss
+                self.recon_weight * recon_loss_huber
+                + self.fg_cos_weight * fg_cos_reg_n
+                + self.ntxent_weight * contrastive_loss
         )
 
         return {
@@ -337,6 +348,7 @@ class AlignedMAELoss(torch.nn.Module):
             "ntxent": contrastive_loss,
             "acc": torch.tensor(acc, dtype=torch.float, device=loss.device),
             "fg_cos_reg": fg_cos_reg,
+            "var": var,
         }
 
 
@@ -375,7 +387,7 @@ if __name__ == "__main__":
         0, 2, (8, 1, 64, 64, 64), device="cuda"
     )  # Random mask for the example
 
-    loss_fn = AlignedMAELoss(torch.device("cuda"))
+    loss_fn = AlignedMAELoss(torch.device("cuda"), do_variance_normalisation=True)
     _loss_output = loss_fn(
         model_output=_model_output,
         target=_target,
