@@ -313,12 +313,12 @@ class AlignedMAELoss(torch.nn.Module):
                 2 - 2 * (pred_latents_fg * tgt_latents_fg).sum(dim=1).mean()
         )  # already normalized
         var = torch.var(pred_latents_fg, dim=(0, 2, 3, 4), unbiased=False).mean() / var_denom
-        if self.do_variance_normalisation:
-            fg_cos_reg_n = fg_cos_reg / (
-                    var + eps
-            )
-        else:
-            fg_cos_reg_n = fg_cos_reg
+        # if self.do_variance_normalisation:
+        #     fg_cos_reg_n = fg_cos_reg / (
+        #             var + eps
+        #     )
+        # else:
+        #     fg_cos_reg_n = fg_cos_reg
 
         pred_latents_aa, tgt_latents_aa = (
             model_output[self.image_latent_key],
@@ -335,9 +335,12 @@ class AlignedMAELoss(torch.nn.Module):
 
         loss = (
                 self.recon_weight * recon_loss_huber
-                + self.fg_cos_weight * fg_cos_reg_n
+                + self.fg_cos_weight * fg_cos_reg
                 + self.ntxent_weight * contrastive_loss
         )
+
+        if self.do_variance_normalisation:
+            loss = loss - var
 
         return {
             "loss": loss,
