@@ -1,5 +1,5 @@
+import gc
 import copy
-
 from typing import Union, Tuple, List
 
 import torch
@@ -258,6 +258,9 @@ class BaseAlignedMAETrainer(BaseEvaMAETrainer):
 
             with torch.no_grad():
                 self.ema(self.teacher, self.network, update_bn=False)
+
+        del data, bboxes, output, teacher_output, mask
+        gc.collect()
 
         return {k: v.detach().cpu().numpy() for k, v in loss_dict.items()}
 
