@@ -433,6 +433,18 @@ class AlignedConMAEFTTrainer(AlignedMAEFTTrainer):
         )
 
 
+class AlignedTNormConMAEFTTrainer(AlignedMAEFTTrainer):
+
+    def build_loss(self):
+        from nnssl.training.loss.aligned_mae_loss import AlignedMAELoss
+
+        return AlignedMAELoss(
+            device=self.device, recon_weight=5.0, fg_cos_weight=0.5, ntxent_weight=0.0,
+            do_variance_normalisation=False, fine_grained_contrastive=True,
+            teacher_normalisation=True
+        )
+
+
 class ConMAEFTTrainer(AlignedMAEFTTrainer):
 
     def build_loss(self):

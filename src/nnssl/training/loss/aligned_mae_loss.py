@@ -9,6 +9,42 @@ from torch import nn
 
 from nnssl.training.loss.mse_loss import MAEMSELoss
 
+
+def get_warmup_values(
+    current_iter: int,
+    total_warmup_iters: int = 250 * 10,
+    center_momentum_init: float = 0.9,
+    center_momentum_final: float = 0.99,
+    temperature_init: float = 0.2,
+    temperature_final: float = 0.07,
+):
+    """
+    Linearly warm up center momentum and decay temperature.
+    """
+    progress = min(current_iter / total_warmup_iters, 1.0)
+
+    # Linear interpolation
+    center_momentum = center_momentum_init + progress * (center_momentum_final - center_momentum_init)
+    temperature = temperature_init + progress * (temperature_final - temperature_init)
+
+    return center_momentum, temperature
+
+
+def sinkhorn_knopp(Q, n_iter=3, epsilon=1e-6):
+    with torch.no_grad():
+        Q = Q.exp()
+        Q /= Q.sum()
+
+        K, B = Q.size()
+        r = torch.ones(K, device=Q.device) / K
+        c = torch.ones(B, device=Q.device) / B
+
+        for _ in range(n_iter):
+            Q *= (r / (Q.sum(dim=1, keepdim=True) + epsilon))
+            Q *= (c / (Q.sum(dim=0, keepdim=True) + epsilon))
+        return Q.T  # (B, K)
+
+
 # Correlated mask with extra positive offsets when using_teacher = True
 @lru_cache(maxsize=5)
 def _get_correlated_mask(b, device, using_teacher, verbose=False):
@@ -37,45 +73,67 @@ def _get_correlated_mask(b, device, using_teacher, verbose=False):
 class NTXentLoss(nn.Module):
     def __init__(
         self,
+        device,
         temperature=0.5,
         similarity_function: Literal["cosine", "dot"] = "cosine",
         using_teacher=False,
+        teacher_norm: Literal["sinkhorn", "sharpen", None] = None,
+        sharpen_temperature=0.07,
+        sinkhorn_iters=3,
+        center_momentum=0.9,
+        embedding_dim=2048,  # needed for centering buffer
     ):
-        super(NTXentLoss, self).__init__()
+        super().__init__()
         self.temperature = temperature
+        self.similarity_function = similarity_function
         self.criterion = nn.CrossEntropyLoss(reduction="sum")
         self.using_teacher = using_teacher
-        self.similarity_function = similarity_function
+        self.teacher_norm = teacher_norm
+        self.sharpen_temperature = sharpen_temperature
+        self.sinkhorn_iters = sinkhorn_iters
+
+        if teacher_norm == "sharpen":
+            self.register_buffer("center", torch.zeros(1, embedding_dim, device=device))
+            self.center_momentum = center_momentum
 
     def _similarity(self, x, y):
-        return x @ y.T  # (N, N) similarity
+        return x @ y.T
+
+    def _normalize_teacher(self, zjs):
+        if self.teacher_norm is None:
+            return zjs
+        elif self.teacher_norm == "sinkhorn":
+            return sinkhorn_knopp(zjs.T, n_iter=self.sinkhorn_iters, epsilon=torch.finfo(zjs.dtype).eps).T
+        elif self.teacher_norm == "sharpen":
+            zjs_centered = zjs - self.center
+            p = F.softmax(zjs_centered / self.sharpen_temperature, dim=-1)
+            # update EMA center
+            new_center = p.mean(dim=0, keepdim=True)
+            self.center = self.center * self.center_momentum + new_center * (1 - self.center_momentum)
+            return p
+        else:
+            raise ValueError(f"Unknown teacher_norm: {self.teacher_norm}")
 
     def get_logits(self, zis, zjs):
         b = zis.size(0)
         device = zis.device
 
-        # Concatenate all representations: [zjs, zis]
+        # Normalize teacher outputs (zjs)
+        zjs = self._normalize_teacher(zjs)
+
         reps = torch.cat([zjs, zis], dim=0)  # (2B, D)
+        sim = self._similarity(reps, reps)  # (2B, 2B)
 
-        # Compute similarity matrix (2B x 2B)
-        sim = self._similarity(reps, reps)  # full similarity, (2B, 2B)
-
-        # Create the correlated mask
-        mask = _get_correlated_mask(b, device, self.using_teacher)  # (2B, 2B)
-
-        # Select positives: off-diagonal at offset ±b
+        mask = _get_correlated_mask(b, device, self.using_teacher)
         l_pos = torch.diag(sim, b)
         r_pos = torch.diag(sim, -b)
-        positives = torch.cat([l_pos, r_pos]).view(2 * b, 1)  # (2B, 1)
+        positives = torch.cat([l_pos, r_pos]).view(2 * b, 1)
 
-        # Select negatives using the mask
-        negatives = sim[mask].view(2 * b, -1)  # (2B, 2B - num_positives)
+        negatives = sim[mask].view(2 * b, -1)
 
-        logits = torch.cat([positives, negatives], dim=1)  # (2B, 1 + negs)
+        logits = torch.cat([positives, negatives], dim=1)
         logits /= self.temperature
-
-        labels = torch.zeros(2 * b, dtype=torch.long, device=device)  # correct class is always index 0
-
+        labels = torch.zeros(2 * b, dtype=torch.long, device=device)
         return logits, labels
 
     def forward(self, zis, zjs):
@@ -132,6 +190,7 @@ class AlignedMAELoss(torch.nn.Module):
         ntxent_weight=0.1,
         do_variance_normalisation=False,
         fine_grained_contrastive: bool = False,
+        teacher_normalisation: bool = True,
     ):
         """
         Initialize the KVConsisConLoss with the given parameters.
@@ -159,8 +218,12 @@ class AlignedMAELoss(torch.nn.Module):
         self.latent_key = "proj"
         self.image_latent_key = "image_latent"
 
+        self.current_iter = 0
         self.contrastive_loss = NTXentLoss(
-            temperature=0.5, similarity_function="cosine", using_teacher=True
+            device,
+            temperature=0.5, similarity_function="cosine", using_teacher=True,
+            teacher_norm="sharpen" if teacher_normalisation else None,
+            embedding_dim=2048, sharpen_temperature=0.2, center_momentum=0.9
         )
 
         self.recon_weight = recon_weight
@@ -276,10 +339,10 @@ class AlignedMAELoss(torch.nn.Module):
         pred_latents_fg = model_output[self.proj_key]
         tgt_latents_fg = target[self.latent_key].detach()
 
-        var_denom = 1 / target[self.image_latent_key].shape[1]
+        var_denom = 1 / target[self.proj_key].shape[1]
         cw_std = torch.std(
-            F.normalize(target[self.image_latent_key].detach(), dim=1, eps=eps),
-            dim=(0,),
+            F.normalize(target[self.proj_key].detach(), dim=1, eps=eps),
+            dim=(0, 2, 3, 4),
         ).mean()
         cw_std = cw_std / (var_denom ** 0.5)
 
@@ -336,6 +399,13 @@ class AlignedMAELoss(torch.nn.Module):
         if self.do_variance_normalisation and not self.fine_grained_contrastive:
             loss = loss - var
 
+        # if requires gradient, then we update the warmup values
+        if self.training:
+            self.current_iter += 1
+            center_momentum, temperature = get_warmup_values(self.current_iter)
+            self.contrastive_loss.center_momentum = center_momentum
+            self.contrastive_loss.temperature = temperature
+
         return {
             "loss": loss,
             "log_cosh": recon_loss_lc,
@@ -384,7 +454,12 @@ if __name__ == "__main__":
         0, 2, (8, 1, 64, 64, 64), device="cuda"
     )  # Random mask for the example
 
-    loss_fn = AlignedMAELoss(torch.device("cuda"), out_size=3, do_variance_normalisation=False, fine_grained_contrastive=True)
+    loss_fn = AlignedMAELoss(
+        torch.device("cuda"), out_size=5, do_variance_normalisation=False, fine_grained_contrastive=True,
+        recon_weight=1.0, fg_cos_weight=0.5, ntxent_weight=0.0, teacher_normalisation=True
+    )
+    loss_fn.train(True)
+
     _loss_output = loss_fn(
         model_output=_model_output,
         target=_target,
