@@ -391,7 +391,7 @@ class AlignedConMAEFTEvaTrainer(AlignedMAEFTLR3EvaTrainer):
 
         return AlignedMAELoss(
             device=self.device, recon_weight=5.0, fg_cos_weight=0.5, ntxent_weight=0.0,
-            do_variance_normalisation=False, fine_grained_contrastive=True
+            do_variance_normalisation=False, fine_grained_contrastive=True, out_size=5
         )
 
 
