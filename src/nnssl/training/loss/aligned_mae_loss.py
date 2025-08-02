@@ -15,8 +15,8 @@ def get_warmup_values(
     total_warmup_iters: int = 250 * 10,
     center_momentum_init: float = 0.9,
     center_momentum_final: float = 0.99,
-    temperature_init: float = 0.2,
-    temperature_final: float = 0.07,
+    temperature_init: float = 0.5,
+    temperature_final: float = 0.1,
 ):
     """
     Linearly warm up center momentum and decay temperature.
@@ -101,7 +101,7 @@ class NTXentLoss(nn.Module):
 
     def _normalize_teacher(self, zjs):
         if self.teacher_norm is None:
-            return zjs
+            return zjs / self.temperature
         elif self.teacher_norm == "sinkhorn":
             return sinkhorn_knopp(zjs.T, n_iter=self.sinkhorn_iters, epsilon=torch.finfo(zjs.dtype).eps).T
         elif self.teacher_norm == "sharpen":
@@ -118,6 +118,8 @@ class NTXentLoss(nn.Module):
         b = zis.size(0)
         device = zis.device
 
+        zis = zis / self.temperature  # Normalize student outputs (zis)
+
         # Normalize teacher outputs (zjs)
         zjs = self._normalize_teacher(zjs)
 
@@ -132,7 +134,7 @@ class NTXentLoss(nn.Module):
         negatives = sim[mask].view(2 * b, -1)
 
         logits = torch.cat([positives, negatives], dim=1)
-        logits /= self.temperature
+
         labels = torch.zeros(2 * b, dtype=torch.long, device=device)
         return logits, labels
 
@@ -422,19 +424,21 @@ class AlignedMAELoss(torch.nn.Module):
 if __name__ == "__main__":
     # _get_correlated_mask(4 * 5 * 5 * 5, torch.device("cuda"), using_teacher=True, verbose=True)
 
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
     _model_output = {
-        "recon": torch.randn(8, 1, 64, 64, 64, requires_grad=True, device="cuda"),
-        "proj": torch.randn(8, 2048, 16, 16, 16, requires_grad=True, device="cuda"),
-        "image_latent": torch.randn(8, 2048, requires_grad=True, device="cuda"),
+        "recon": torch.randn(8, 1, 64, 64, 64, requires_grad=True, device=device),
+        "proj": torch.randn(8, 2048, 16, 16, 16, requires_grad=True, device=device),
+        "image_latent": torch.randn(8, 2048, requires_grad=True, device=device),
     }
 
     _target = {
-        "proj": torch.randn(8, 2048, 20, 20, 20, device="cuda"),
-        "image_latent": torch.randn(8, 2048, device="cuda"),
+        "proj": torch.randn(8, 2048, 20, 20, 20, device=device),
+        "image_latent": torch.randn(8, 2048, device=device),
     }
 
     _gt_recon = torch.randn(
-        8, 1, 64, 64, 64, device="cuda"
+        8, 1, 64, 64, 64, device=device
     )  # Ground truth reconstruction
 
     _rel_bboxes = torch.tensor(
@@ -448,14 +452,14 @@ if __name__ == "__main__":
             [0.3, 0.3, 0.3, 0.7, 0.7, 0.7],
             [0.4, 0.4, 0.4, 0.6, 0.6, 0.6],
         ],
-        device="cuda",
+        device=device,
     )  # Example relative bounding boxes
     _mask = torch.randint(
-        0, 2, (8, 1, 64, 64, 64), device="cuda"
+        0, 2, (8, 1, 64, 64, 64), device=device
     )  # Random mask for the example
 
     loss_fn = AlignedMAELoss(
-        torch.device("cuda"), out_size=5, do_variance_normalisation=False, fine_grained_contrastive=True,
+        device, out_size=5, do_variance_normalisation=False, fine_grained_contrastive=True,
         recon_weight=1.0, fg_cos_weight=0.5, ntxent_weight=0.0, teacher_normalisation=True
     )
     loss_fn.train(True)
