@@ -1,0 +1,2153 @@
+{
+    "foreground_mean": {
+        "Dice": 0.7858693317829896,
+        "FN": 417.736,
+        "FP": 280.752,
+        "IoU": 0.6728772529007664,
+        "NSD": 0.7669418385935264,
+        "TN": 899145.832,
+        "TP": 2081.488,
+        "n_pred": 2362.24,
+        "n_ref": 2499.224
+    },
+    "mean": {
+        "1": {
+            "Dice": 0.7858693317829896,
+            "FN": 417.736,
+            "FP": 280.752,
+            "IoU": 0.6728772529007664,
+            "NSD": 0.7669418385935264,
+            "TN": 899145.832,
+            "TP": 2081.488,
+            "n_pred": 2362.24,
+            "n_ref": 2499.224
+        }
+    },
+    "metric_per_case": [
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.9372911847854022,
+                    "FN": 226,
+                    "FP": 262,
+                    "IoU": 0.8819830713422008,
+                    "NSD": 0.8744046389678493,
+                    "TN": 899033,
+                    "TP": 3647,
+                    "n_pred": 3909,
+                    "n_ref": 3873
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0003.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0003/ses-0001/sub-strokecase0003_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.7799227799227799,
+                    "FN": 223,
+                    "FP": 62,
+                    "IoU": 0.6392405063291139,
+                    "NSD": 0.7727456299448925,
+                    "TN": 902378,
+                    "TP": 505,
+                    "n_pred": 567,
+                    "n_ref": 728
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0005.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0005/ses-0001/sub-strokecase0005_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.7456647398843931,
+                    "FN": 163,
+                    "FP": 13,
+                    "IoU": 0.5944700460829493,
+                    "NSD": 0.7923508409273426,
+                    "TN": 902734,
+                    "TP": 258,
+                    "n_pred": 271,
+                    "n_ref": 421
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0010.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0010/ses-0001/sub-strokecase0010_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.7727632620744259,
+                    "FN": 423,
+                    "FP": 151,
+                    "IoU": 0.6296774193548387,
+                    "NSD": 0.7004214951569134,
+                    "TN": 914162,
+                    "TP": 976,
+                    "n_pred": 1127,
+                    "n_ref": 1399
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0011.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0011/ses-0001/sub-strokecase0011_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.6491092176607282,
+                    "FN": 711,
+                    "FP": 195,
+                    "IoU": 0.4805045871559633,
+                    "NSD": 0.6149765992691992,
+                    "TN": 913968,
+                    "TP": 838,
+                    "n_pred": 1033,
+                    "n_ref": 1549
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0014.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0014/ses-0001/sub-strokecase0014_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.9127868852459017,
+                    "FN": 259,
+                    "FP": 7,
+                    "IoU": 0.8395657418576599,
+                    "NSD": 0.8650801534115344,
+                    "TN": 901510,
+                    "TP": 1392,
+                    "n_pred": 1399,
+                    "n_ref": 1651
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0015.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0015/ses-0001/sub-strokecase0015_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.7,
+                    "FN": 12,
+                    "FP": 0,
+                    "IoU": 0.5384615384615384,
+                    "NSD": 0.8523912358129148,
+                    "TN": 903142,
+                    "TP": 14,
+                    "n_pred": 14,
+                    "n_ref": 26
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0016.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0016/ses-0001/sub-strokecase0016_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.7982062780269058,
+                    "FN": 594,
+                    "FP": 81,
+                    "IoU": 0.664179104477612,
+                    "NSD": 0.7620894676016017,
+                    "TN": 913702,
+                    "TP": 1335,
+                    "n_pred": 1416,
+                    "n_ref": 1929
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0017.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0017/ses-0001/sub-strokecase0017_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.7570093457943925,
+                    "FN": 52,
+                    "FP": 0,
+                    "IoU": 0.6090225563909775,
+                    "NSD": 0.7445010764974596,
+                    "TN": 915579,
+                    "TP": 81,
+                    "n_pred": 81,
+                    "n_ref": 133
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0018.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0018/ses-0001/sub-strokecase0018_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8814632053207466,
+                    "FN": 355,
+                    "FP": 1855,
+                    "IoU": 0.7880502541478853,
+                    "NSD": 0.7298123741375018,
+                    "TN": 892741,
+                    "TP": 8217,
+                    "n_pred": 10072,
+                    "n_ref": 8572
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0019.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0019/ses-0001/sub-strokecase0019_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8944526264113893,
+                    "FN": 196,
+                    "FP": 19,
+                    "IoU": 0.8090586145648313,
+                    "NSD": 0.85157558786788,
+                    "TN": 902042,
+                    "TP": 911,
+                    "n_pred": 930,
+                    "n_ref": 1107
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0020.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0020/ses-0001/sub-strokecase0020_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8290766208251473,
+                    "FN": 527,
+                    "FP": 169,
+                    "IoU": 0.7080536912751678,
+                    "NSD": 0.7899116546718374,
+                    "TN": 900784,
+                    "TP": 1688,
+                    "n_pred": 1857,
+                    "n_ref": 2215
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0021.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0021/ses-0001/sub-strokecase0021_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.9088145896656535,
+                    "FN": 72,
+                    "FP": 108,
+                    "IoU": 0.8328690807799443,
+                    "NSD": 0.8999382376032223,
+                    "TN": 914635,
+                    "TP": 897,
+                    "n_pred": 1005,
+                    "n_ref": 969
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0025.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0025/ses-0001/sub-strokecase0025_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8389423076923077,
+                    "FN": 102,
+                    "FP": 32,
+                    "IoU": 0.722567287784679,
+                    "NSD": 0.8707193807222641,
+                    "TN": 902685,
+                    "TP": 349,
+                    "n_pred": 381,
+                    "n_ref": 451
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0026.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0026/ses-0001/sub-strokecase0026_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.21108742004264391,
+                    "FN": 723,
+                    "FP": 17,
+                    "IoU": 0.11799761620977355,
+                    "NSD": 0.217767982392624,
+                    "TN": 902329,
+                    "TP": 99,
+                    "n_pred": 116,
+                    "n_ref": 822
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0027.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0027/ses-0001/sub-strokecase0027_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8995535714285714,
+                    "FN": 103,
+                    "FP": 77,
+                    "IoU": 0.8174442190669371,
+                    "NSD": 0.8889468886259019,
+                    "TN": 902182,
+                    "TP": 806,
+                    "n_pred": 883,
+                    "n_ref": 909
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0028.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0028/ses-0001/sub-strokecase0028_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8095238095238095,
+                    "FN": 330,
+                    "FP": 30,
+                    "IoU": 0.68,
+                    "NSD": 0.7465698235848405,
+                    "TN": 914587,
+                    "TP": 765,
+                    "n_pred": 795,
+                    "n_ref": 1095
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0029.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0029/ses-0001/sub-strokecase0029_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.9083557951482479,
+                    "FN": 1187,
+                    "FP": 921,
+                    "IoU": 0.8320987654320988,
+                    "NSD": 0.786359789175182,
+                    "TN": 903157,
+                    "TP": 10447,
+                    "n_pred": 11368,
+                    "n_ref": 11634
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0031.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0031/ses-0001/sub-strokecase0031_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8297213622291022,
+                    "FN": 21,
+                    "FP": 34,
+                    "IoU": 0.708994708994709,
+                    "NSD": 0.8631061499649094,
+                    "TN": 915523,
+                    "TP": 134,
+                    "n_pred": 168,
+                    "n_ref": 155
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0034.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0034/ses-0001/sub-strokecase0034_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8170381020848311,
+                    "FN": 48,
+                    "FP": 970,
+                    "IoU": 0.6906715284108174,
+                    "NSD": 0.5918877564891795,
+                    "TN": 912421,
+                    "TP": 2273,
+                    "n_pred": 3243,
+                    "n_ref": 2321
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0036.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0036/ses-0001/sub-strokecase0036_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.7538601271571299,
+                    "FN": 497,
+                    "FP": 45,
+                    "IoU": 0.6049562682215743,
+                    "NSD": 0.684229236915899,
+                    "TN": 901796,
+                    "TP": 830,
+                    "n_pred": 875,
+                    "n_ref": 1327
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0040.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0040/ses-0001/sub-strokecase0040_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8583765112262521,
+                    "FN": 156,
+                    "FP": 8,
+                    "IoU": 0.7518910741301059,
+                    "NSD": 0.8384005015331525,
+                    "TN": 915051,
+                    "TP": 497,
+                    "n_pred": 505,
+                    "n_ref": 653
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0041.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0041/ses-0001/sub-strokecase0041_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8563160543532964,
+                    "FN": 440,
+                    "FP": 702,
+                    "IoU": 0.7487348734873487,
+                    "NSD": 0.7734518756948944,
+                    "TN": 911167,
+                    "TP": 3403,
+                    "n_pred": 4105,
+                    "n_ref": 3843
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0043.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0043/ses-0001/sub-strokecase0043_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.7721518987341772,
+                    "FN": 35,
+                    "FP": 1,
+                    "IoU": 0.6288659793814433,
+                    "NSD": 0.8100157456790019,
+                    "TN": 915615,
+                    "TP": 61,
+                    "n_pred": 62,
+                    "n_ref": 96
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0045.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0045/ses-0001/sub-strokecase0045_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8329366355741396,
+                    "FN": 401,
+                    "FP": 2196,
+                    "IoU": 0.7137030095910043,
+                    "NSD": 0.7336294401940734,
+                    "TN": 894097,
+                    "TP": 6474,
+                    "n_pred": 8670,
+                    "n_ref": 6875
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0048.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0048/ses-0001/sub-strokecase0048_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.4945188794153471,
+                    "FN": 407,
+                    "FP": 8,
+                    "IoU": 0.3284789644012945,
+                    "NSD": 0.5332082318175856,
+                    "TN": 915094,
+                    "TP": 203,
+                    "n_pred": 211,
+                    "n_ref": 610
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0049.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0049/ses-0001/sub-strokecase0049_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.6386435888378664,
+                    "FN": 1021,
+                    "FP": 2,
+                    "IoU": 0.46912298910223144,
+                    "NSD": 0.5061932169872381,
+                    "TN": 901241,
+                    "TP": 904,
+                    "n_pred": 906,
+                    "n_ref": 1925
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0050.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0050/ses-0001/sub-strokecase0050_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8068669527896996,
+                    "FN": 108,
+                    "FP": 27,
+                    "IoU": 0.6762589928057554,
+                    "NSD": 0.8331793597458722,
+                    "TN": 902751,
+                    "TP": 282,
+                    "n_pred": 309,
+                    "n_ref": 390
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0051.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0051/ses-0001/sub-strokecase0051_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8714792899408283,
+                    "FN": 212,
+                    "FP": 331,
+                    "IoU": 0.772231543624161,
+                    "NSD": 0.8064710739074428,
+                    "TN": 913328,
+                    "TP": 1841,
+                    "n_pred": 2172,
+                    "n_ref": 2053
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0052.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0052/ses-0001/sub-strokecase0052_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8478260869565217,
+                    "FN": 12,
+                    "FP": 16,
+                    "IoU": 0.7358490566037735,
+                    "NSD": 0.9073415874750906,
+                    "TN": 915606,
+                    "TP": 78,
+                    "n_pred": 94,
+                    "n_ref": 90
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0053.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0053/ses-0001/sub-strokecase0053_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.9200876552227903,
+                    "FN": 81,
+                    "FP": 466,
+                    "IoU": 0.8520021645021645,
+                    "NSD": 0.8031502312965842,
+                    "TN": 912016,
+                    "TP": 3149,
+                    "n_pred": 3615,
+                    "n_ref": 3230
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0055.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0055/ses-0001/sub-strokecase0055_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8044692737430168,
+                    "FN": 12,
+                    "FP": 23,
+                    "IoU": 0.6728971962616822,
+                    "NSD": 0.9087140124551458,
+                    "TN": 903061,
+                    "TP": 72,
+                    "n_pred": 95,
+                    "n_ref": 84
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0056.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0056/ses-0001/sub-strokecase0056_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8184607677374914,
+                    "FN": 865,
+                    "FP": 2034,
+                    "IoU": 0.6927072291710833,
+                    "NSD": 0.7171827393501401,
+                    "TN": 906278,
+                    "TP": 6535,
+                    "n_pred": 8569,
+                    "n_ref": 7400
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0057.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0057/ses-0001/sub-strokecase0057_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.4931972789115646,
+                    "FN": 293,
+                    "FP": 5,
+                    "IoU": 0.327313769751693,
+                    "NSD": 0.5282766604996388,
+                    "TN": 915269,
+                    "TP": 145,
+                    "n_pred": 150,
+                    "n_ref": 438
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0058.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0058/ses-0001/sub-strokecase0058_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.9259503747136256,
+                    "FN": 906,
+                    "FP": 2908,
+                    "IoU": 0.8621113521330441,
+                    "NSD": 0.7918464730897247,
+                    "TN": 875508,
+                    "TP": 23846,
+                    "n_pred": 26754,
+                    "n_ref": 24752
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0062.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0062/ses-0001/sub-strokecase0062_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8888888888888888,
+                    "FN": 3,
+                    "FP": 6,
+                    "IoU": 0.8,
+                    "NSD": 0.9138275919749678,
+                    "TN": 915667,
+                    "TP": 36,
+                    "n_pred": 42,
+                    "n_ref": 39
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0067.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0067/ses-0001/sub-strokecase0067_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.2127659574468085,
+                    "FN": 406,
+                    "FP": 1,
+                    "IoU": 0.11904761904761904,
+                    "NSD": 0.29698582657757244,
+                    "TN": 902706,
+                    "TP": 55,
+                    "n_pred": 56,
+                    "n_ref": 461
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0068.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0068/ses-0001/sub-strokecase0068_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.7142857142857143,
+                    "FN": 7,
+                    "FP": 1,
+                    "IoU": 0.5555555555555556,
+                    "NSD": 0.8757147745515956,
+                    "TN": 903150,
+                    "TP": 10,
+                    "n_pred": 11,
+                    "n_ref": 17
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0069.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0069/ses-0001/sub-strokecase0069_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8132992327365729,
+                    "FN": 59,
+                    "FP": 14,
+                    "IoU": 0.6853448275862069,
+                    "NSD": 0.8706435507256153,
+                    "TN": 902936,
+                    "TP": 159,
+                    "n_pred": 173,
+                    "n_ref": 218
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0071.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0071/ses-0001/sub-strokecase0071_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.7376648754274548,
+                    "FN": 261,
+                    "FP": 276,
+                    "IoU": 0.5843653250773994,
+                    "NSD": 0.6965141938121429,
+                    "TN": 901876,
+                    "TP": 755,
+                    "n_pred": 1031,
+                    "n_ref": 1016
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0072.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0072/ses-0001/sub-strokecase0072_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.6846673095467696,
+                    "FN": 308,
+                    "FP": 19,
+                    "IoU": 0.5205278592375366,
+                    "NSD": 0.7083162865175455,
+                    "TN": 915030,
+                    "TP": 355,
+                    "n_pred": 374,
+                    "n_ref": 663
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0074.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0074/ses-0001/sub-strokecase0074_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.7901234567901234,
+                    "FN": 5,
+                    "FP": 12,
+                    "IoU": 0.6530612244897959,
+                    "NSD": 0.9283470860032287,
+                    "TN": 903119,
+                    "TP": 32,
+                    "n_pred": 44,
+                    "n_ref": 37
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0079.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0079/ses-0001/sub-strokecase0079_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.5007147232999796,
+                    "FN": 2405,
+                    "FP": 40,
+                    "IoU": 0.3339689457913375,
+                    "NSD": 0.5019320230488633,
+                    "TN": 899497,
+                    "TP": 1226,
+                    "n_pred": 1266,
+                    "n_ref": 3631
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0085.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0085/ses-0001/sub-strokecase0085_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.9378255208333334,
+                    "FN": 83,
+                    "FP": 681,
+                    "IoU": 0.8829298191847993,
+                    "NSD": 0.8313935657688685,
+                    "TN": 909186,
+                    "TP": 5762,
+                    "n_pred": 6443,
+                    "n_ref": 5845
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0086.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0086/ses-0001/sub-strokecase0086_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8026315789473685,
+                    "FN": 146,
+                    "FP": 4,
+                    "IoU": 0.6703296703296703,
+                    "NSD": 0.7608629506247923,
+                    "TN": 915257,
+                    "TP": 305,
+                    "n_pred": 309,
+                    "n_ref": 451
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0090.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0090/ses-0001/sub-strokecase0090_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.7954545454545454,
+                    "FN": 7,
+                    "FP": 11,
+                    "IoU": 0.660377358490566,
+                    "NSD": 0.9157090362770155,
+                    "TN": 903115,
+                    "TP": 35,
+                    "n_pred": 46,
+                    "n_ref": 42
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0093.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0093/ses-0001/sub-strokecase0093_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8003581020590869,
+                    "FN": 120,
+                    "FP": 103,
+                    "IoU": 0.6671641791044776,
+                    "NSD": 0.8357628055326796,
+                    "TN": 915042,
+                    "TP": 447,
+                    "n_pred": 550,
+                    "n_ref": 567
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0094.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0094/ses-0001/sub-strokecase0094_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8551483420593369,
+                    "FN": 65,
+                    "FP": 18,
+                    "IoU": 0.7469512195121951,
+                    "NSD": 0.8770094274736482,
+                    "TN": 902840,
+                    "TP": 245,
+                    "n_pred": 263,
+                    "n_ref": 310
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0095.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0095/ses-0001/sub-strokecase0095_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8417508417508418,
+                    "FN": 33,
+                    "FP": 14,
+                    "IoU": 0.7267441860465116,
+                    "NSD": 0.8619945243254235,
+                    "TN": 915540,
+                    "TP": 125,
+                    "n_pred": 139,
+                    "n_ref": 158
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0096.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0096/ses-0001/sub-strokecase0096_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8506271379703535,
+                    "FN": 94,
+                    "FP": 37,
+                    "IoU": 0.7400793650793651,
+                    "NSD": 0.8703086021168555,
+                    "TN": 915208,
+                    "TP": 373,
+                    "n_pred": 410,
+                    "n_ref": 467
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0099.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0099/ses-0001/sub-strokecase0099_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8759124087591241,
+                    "FN": 11,
+                    "FP": 6,
+                    "IoU": 0.7792207792207793,
+                    "NSD": 0.9263569492137101,
+                    "TN": 915635,
+                    "TP": 60,
+                    "n_pred": 66,
+                    "n_ref": 71
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0100.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0100/ses-0001/sub-strokecase0100_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8845705007864427,
+                    "FN": 916,
+                    "FP": 1359,
+                    "IoU": 0.7930312954876274,
+                    "NSD": 0.8354683453141281,
+                    "TN": 4773136,
+                    "TP": 8717,
+                    "n_pred": 10076,
+                    "n_ref": 9633
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0101.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0101/ses-0001/sub-strokecase0101_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.937643166200051,
+                    "FN": 434,
+                    "FP": 791,
+                    "IoU": 0.8826066123622425,
+                    "NSD": 0.8267763236923289,
+                    "TN": 905277,
+                    "TP": 9210,
+                    "n_pred": 10001,
+                    "n_ref": 9644
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0104.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0104/ses-0001/sub-strokecase0104_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8672847682119206,
+                    "FN": 45,
+                    "FP": 456,
+                    "IoU": 0.7656688493919551,
+                    "NSD": 0.7614092092836402,
+                    "TN": 1177510,
+                    "TP": 1637,
+                    "n_pred": 2093,
+                    "n_ref": 1682
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0105.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0105/ses-0001/sub-strokecase0105_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8162650602409639,
+                    "FN": 1232,
+                    "FP": 476,
+                    "IoU": 0.6895674300254453,
+                    "NSD": 0.7020776907788475,
+                    "TN": 897666,
+                    "TP": 3794,
+                    "n_pred": 4270,
+                    "n_ref": 5026
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0107.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0107/ses-0001/sub-strokecase0107_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8583609663666508,
+                    "FN": 241,
+                    "FP": 58,
+                    "IoU": 0.7518672199170124,
+                    "NSD": 0.8583670862157203,
+                    "TN": 914507,
+                    "TP": 906,
+                    "n_pred": 964,
+                    "n_ref": 1147
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0110.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0110/ses-0001/sub-strokecase0110_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.9090909090909091,
+                    "FN": 3,
+                    "FP": 1,
+                    "IoU": 0.8333333333333334,
+                    "NSD": 0.9587323499196811,
+                    "TN": 903144,
+                    "TP": 20,
+                    "n_pred": 21,
+                    "n_ref": 23
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0111.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0111/ses-0001/sub-strokecase0111_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.89697559788231,
+                    "FN": 480,
+                    "FP": 1213,
+                    "IoU": 0.8131965132958182,
+                    "NSD": 0.7499911257275669,
+                    "TN": 906649,
+                    "TP": 7370,
+                    "n_pred": 8583,
+                    "n_ref": 7850
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0113.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0113/ses-0001/sub-strokecase0113_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.7137192704203014,
+                    "FN": 348,
+                    "FP": 13,
+                    "IoU": 0.5548705302096177,
+                    "NSD": 0.5954578571075327,
+                    "TN": 914901,
+                    "TP": 450,
+                    "n_pred": 463,
+                    "n_ref": 798
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0118.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0118/ses-0001/sub-strokecase0118_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.9390125847047435,
+                    "FN": 27,
+                    "FP": 36,
+                    "IoU": 0.885036496350365,
+                    "NSD": 0.9533688217755318,
+                    "TN": 915164,
+                    "TP": 485,
+                    "n_pred": 521,
+                    "n_ref": 512
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0121.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0121/ses-0001/sub-strokecase0121_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.9413276231263383,
+                    "FN": 613,
+                    "FP": 757,
+                    "IoU": 0.88915857605178,
+                    "NSD": 0.8269362713321575,
+                    "TN": 903352,
+                    "TP": 10990,
+                    "n_pred": 11747,
+                    "n_ref": 11603
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0123.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0123/ses-0001/sub-strokecase0123_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.729064039408867,
+                    "FN": 54,
+                    "FP": 1,
+                    "IoU": 0.5736434108527132,
+                    "NSD": 0.8260121015418621,
+                    "TN": 915583,
+                    "TP": 74,
+                    "n_pred": 75,
+                    "n_ref": 128
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0128.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0128/ses-0001/sub-strokecase0128_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.759825327510917,
+                    "FN": 48,
+                    "FP": 7,
+                    "IoU": 0.6126760563380281,
+                    "NSD": 0.7896190936370743,
+                    "TN": 915570,
+                    "TP": 87,
+                    "n_pred": 94,
+                    "n_ref": 135
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0129.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0129/ses-0001/sub-strokecase0129_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.7863881401617251,
+                    "FN": 130,
+                    "FP": 504,
+                    "IoU": 0.6479733481399222,
+                    "NSD": 0.7546964449122799,
+                    "TN": 901367,
+                    "TP": 1167,
+                    "n_pred": 1671,
+                    "n_ref": 1297
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0131.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0131/ses-0001/sub-strokecase0131_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.7869674185463659,
+                    "FN": 109,
+                    "FP": 61,
+                    "IoU": 0.6487603305785123,
+                    "NSD": 0.7566597683928117,
+                    "TN": 902684,
+                    "TP": 314,
+                    "n_pred": 375,
+                    "n_ref": 423
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0133.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0133/ses-0001/sub-strokecase0133_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.7548387096774194,
+                    "FN": 65,
+                    "FP": 11,
+                    "IoU": 0.6062176165803109,
+                    "NSD": 0.8202275363933358,
+                    "TN": 928063,
+                    "TP": 117,
+                    "n_pred": 128,
+                    "n_ref": 182
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0135.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0135/ses-0001/sub-strokecase0135_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.3684210526315789,
+                    "FN": 18,
+                    "FP": 6,
+                    "IoU": 0.22580645161290322,
+                    "NSD": 0.5235531656155631,
+                    "TN": 903137,
+                    "TP": 7,
+                    "n_pred": 13,
+                    "n_ref": 25
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0136.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0136/ses-0001/sub-strokecase0136_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.7041036717062635,
+                    "FN": 118,
+                    "FP": 19,
+                    "IoU": 0.5433333333333333,
+                    "NSD": 0.6794072417379019,
+                    "TN": 953400,
+                    "TP": 163,
+                    "n_pred": 182,
+                    "n_ref": 281
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0137.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0137/ses-0001/sub-strokecase0137_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.4295917925630925,
+                    "FN": 12709,
+                    "FP": 468,
+                    "IoU": 0.27355422018854403,
+                    "NSD": 0.3788470768574384,
+                    "TN": 897573,
+                    "TP": 4962,
+                    "n_pred": 5430,
+                    "n_ref": 17671
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0140.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0140/ses-0001/sub-strokecase0140_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.6111111111111112,
+                    "FN": 4,
+                    "FP": 10,
+                    "IoU": 0.44,
+                    "NSD": 0.7283684972051336,
+                    "TN": 915687,
+                    "TP": 11,
+                    "n_pred": 21,
+                    "n_ref": 15
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0141.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0141/ses-0001/sub-strokecase0141_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8611599297012302,
+                    "FN": 76,
+                    "FP": 3,
+                    "IoU": 0.7561728395061729,
+                    "NSD": 0.8266149576185672,
+                    "TN": 925426,
+                    "TP": 245,
+                    "n_pred": 248,
+                    "n_ref": 321
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0142.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0142/ses-0001/sub-strokecase0142_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8859649122807017,
+                    "FN": 101,
+                    "FP": 29,
+                    "IoU": 0.7952755905511811,
+                    "NSD": 0.8688967677006771,
+                    "TN": 902533,
+                    "TP": 505,
+                    "n_pred": 534,
+                    "n_ref": 606
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0145.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0145/ses-0001/sub-strokecase0145_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.685143570536829,
+                    "FN": 1255,
+                    "FP": 6,
+                    "IoU": 0.5210786175465248,
+                    "NSD": 0.5794656970810638,
+                    "TN": 913079,
+                    "TP": 1372,
+                    "n_pred": 1378,
+                    "n_ref": 2627
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0146.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0146/ses-0001/sub-strokecase0146_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.7905604719764012,
+                    "FN": 17,
+                    "FP": 125,
+                    "IoU": 0.6536585365853659,
+                    "NSD": 0.7681033443674702,
+                    "TN": 915302,
+                    "TP": 268,
+                    "n_pred": 393,
+                    "n_ref": 285
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0148.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0148/ses-0001/sub-strokecase0148_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.76,
+                    "FN": 8,
+                    "FP": 16,
+                    "IoU": 0.6129032258064516,
+                    "NSD": 0.8019557856893583,
+                    "TN": 915650,
+                    "TP": 38,
+                    "n_pred": 54,
+                    "n_ref": 46
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0149.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0149/ses-0001/sub-strokecase0149_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": NaN,
+                    "FN": 0,
+                    "FP": 0,
+                    "IoU": NaN,
+                    "NSD": NaN,
+                    "TN": 915712,
+                    "TP": 0,
+                    "n_pred": 0,
+                    "n_ref": 0
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0151.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0151/ses-0001/sub-strokecase0151_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.9072753209700428,
+                    "FN": 23,
+                    "FP": 42,
+                    "IoU": 0.8302872062663186,
+                    "NSD": 0.9127136389921071,
+                    "TN": 1105537,
+                    "TP": 318,
+                    "n_pred": 360,
+                    "n_ref": 341
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0154.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0154/ses-0001/sub-strokecase0154_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8993576017130621,
+                    "FN": 22,
+                    "FP": 72,
+                    "IoU": 0.8171206225680934,
+                    "NSD": 0.901492248610172,
+                    "TN": 915198,
+                    "TP": 420,
+                    "n_pred": 492,
+                    "n_ref": 442
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0157.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0157/ses-0001/sub-strokecase0157_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.798219584569733,
+                    "FN": 93,
+                    "FP": 43,
+                    "IoU": 0.6641975308641975,
+                    "NSD": 0.8410022037974484,
+                    "TN": 902763,
+                    "TP": 269,
+                    "n_pred": 312,
+                    "n_ref": 362
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0158.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0158/ses-0001/sub-strokecase0158_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.5097087378640777,
+                    "FN": 344,
+                    "FP": 60,
+                    "IoU": 0.34201954397394135,
+                    "NSD": 0.5758829662035385,
+                    "TN": 902554,
+                    "TP": 210,
+                    "n_pred": 270,
+                    "n_ref": 554
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0160.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0160/ses-0001/sub-strokecase0160_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.9516876240900066,
+                    "FN": 380,
+                    "FP": 204,
+                    "IoU": 0.9078282828282829,
+                    "NSD": 0.8996201456981318,
+                    "TN": 403264,
+                    "TP": 5752,
+                    "n_pred": 5956,
+                    "n_ref": 6132
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0161.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0161/ses-0001/sub-strokecase0161_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.9024770483284255,
+                    "FN": 369,
+                    "FP": 194,
+                    "IoU": 0.8222853535353535,
+                    "NSD": 0.8327855842718453,
+                    "TN": 406432,
+                    "TP": 2605,
+                    "n_pred": 2799,
+                    "n_ref": 2974
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0162.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0162/ses-0001/sub-strokecase0162_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8753757225433526,
+                    "FN": 64,
+                    "FP": 1014,
+                    "IoU": 0.7783717105263158,
+                    "NSD": 0.756682750876243,
+                    "TN": 404736,
+                    "TP": 3786,
+                    "n_pred": 4800,
+                    "n_ref": 3850
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0166.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0166/ses-0001/sub-strokecase0166_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8828509011469142,
+                    "FN": 584,
+                    "FP": 274,
+                    "IoU": 0.7902713273038376,
+                    "NSD": 0.8124361604078355,
+                    "TN": 899077,
+                    "TP": 3233,
+                    "n_pred": 3507,
+                    "n_ref": 3817
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0168.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0168/ses-0001/sub-strokecase0168_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.813986013986014,
+                    "FN": 115,
+                    "FP": 18,
+                    "IoU": 0.6863207547169812,
+                    "NSD": 0.8083091384515144,
+                    "TN": 915288,
+                    "TP": 291,
+                    "n_pred": 309,
+                    "n_ref": 406
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0169.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0169/ses-0001/sub-strokecase0169_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8934426229508197,
+                    "FN": 606,
+                    "FP": 174,
+                    "IoU": 0.8074074074074075,
+                    "NSD": 0.842560718604676,
+                    "TN": 899118,
+                    "TP": 3270,
+                    "n_pred": 3444,
+                    "n_ref": 3876
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0171.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0171/ses-0001/sub-strokecase0171_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8564715933361812,
+                    "FN": 306,
+                    "FP": 1038,
+                    "IoU": 0.748972730668659,
+                    "NSD": 0.7282452235719611,
+                    "TN": 897814,
+                    "TP": 4010,
+                    "n_pred": 5048,
+                    "n_ref": 4316
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0173.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0173/ses-0001/sub-strokecase0173_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.0,
+                    "FN": 108,
+                    "FP": 0,
+                    "IoU": 0.0,
+                    "NSD": 0.0,
+                    "TN": 903060,
+                    "TP": 0,
+                    "n_pred": 0,
+                    "n_ref": 108
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0174.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0174/ses-0001/sub-strokecase0174_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.9710144927536232,
+                    "FN": 32,
+                    "FP": 132,
+                    "IoU": 0.9436619718309859,
+                    "NSD": 0.9491493091141266,
+                    "TN": 406689,
+                    "TP": 2747,
+                    "n_pred": 2879,
+                    "n_ref": 2779
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0176.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0176/ses-0001/sub-strokecase0176_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8859504132231405,
+                    "FN": 312,
+                    "FP": 102,
+                    "IoU": 0.7952522255192879,
+                    "NSD": 0.8857683800764793,
+                    "TN": 901146,
+                    "TP": 1608,
+                    "n_pred": 1710,
+                    "n_ref": 1920
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0178.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0178/ses-0001/sub-strokecase0178_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.9497772377480761,
+                    "FN": 126,
+                    "FP": 122,
+                    "IoU": 0.9043578866178172,
+                    "NSD": 0.9358495721106432,
+                    "TN": 900575,
+                    "TP": 2345,
+                    "n_pred": 2467,
+                    "n_ref": 2471
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0180.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0180/ses-0001/sub-strokecase0180_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.2572402044293015,
+                    "FN": 1724,
+                    "FP": 20,
+                    "IoU": 0.14760508308895406,
+                    "NSD": 0.20366353920327476,
+                    "TN": 951298,
+                    "TP": 302,
+                    "n_pred": 322,
+                    "n_ref": 2026
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0181.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0181/ses-0001/sub-strokecase0181_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.24817518248175183,
+                    "FN": 88,
+                    "FP": 15,
+                    "IoU": 0.14166666666666666,
+                    "NSD": 0.36251880146703036,
+                    "TN": 409480,
+                    "TP": 17,
+                    "n_pred": 32,
+                    "n_ref": 105
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0182.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0182/ses-0001/sub-strokecase0182_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.889584964761159,
+                    "FN": 84,
+                    "FP": 57,
+                    "IoU": 0.8011283497884344,
+                    "NSD": 0.9054005699338237,
+                    "TN": 902459,
+                    "TP": 568,
+                    "n_pred": 625,
+                    "n_ref": 652
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0183.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0183/ses-0001/sub-strokecase0183_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.6428571428571429,
+                    "FN": 376,
+                    "FP": 4,
+                    "IoU": 0.47368421052631576,
+                    "NSD": 0.67543964035663,
+                    "TN": 408878,
+                    "TP": 342,
+                    "n_pred": 346,
+                    "n_ref": 718
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0186.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0186/ses-0001/sub-strokecase0186_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8936170212765957,
+                    "FN": 63,
+                    "FP": 17,
+                    "IoU": 0.8076923076923077,
+                    "NSD": 0.9167843853244362,
+                    "TN": 409184,
+                    "TP": 336,
+                    "n_pred": 353,
+                    "n_ref": 399
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0187.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0187/ses-0001/sub-strokecase0187_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8228404099560761,
+                    "FN": 472,
+                    "FP": 12,
+                    "IoU": 0.6990049751243781,
+                    "NSD": 0.7760409836437986,
+                    "TN": 1104312,
+                    "TP": 1124,
+                    "n_pred": 1136,
+                    "n_ref": 1596
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0188.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0188/ses-0001/sub-strokecase0188_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.9304157549234136,
+                    "FN": 134,
+                    "FP": 25,
+                    "IoU": 0.869885433715221,
+                    "NSD": 0.925272401404518,
+                    "TN": 408378,
+                    "TP": 1063,
+                    "n_pred": 1088,
+                    "n_ref": 1197
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0192.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0192/ses-0001/sub-strokecase0192_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.9207920792079208,
+                    "FN": 103,
+                    "FP": 169,
+                    "IoU": 0.8532110091743119,
+                    "NSD": 0.8806036540006141,
+                    "TN": 913859,
+                    "TP": 1581,
+                    "n_pred": 1750,
+                    "n_ref": 1684
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0196.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0196/ses-0001/sub-strokecase0196_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8030534351145038,
+                    "FN": 117,
+                    "FP": 12,
+                    "IoU": 0.6709183673469388,
+                    "NSD": 0.840934846562468,
+                    "TN": 409208,
+                    "TP": 263,
+                    "n_pred": 275,
+                    "n_ref": 380
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0197.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0197/ses-0001/sub-strokecase0197_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.7258064516129032,
+                    "FN": 169,
+                    "FP": 1,
+                    "IoU": 0.569620253164557,
+                    "NSD": 0.7974233924851779,
+                    "TN": 409205,
+                    "TP": 225,
+                    "n_pred": 226,
+                    "n_ref": 394
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0198.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0198/ses-0001/sub-strokecase0198_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8766010621680724,
+                    "FN": 145,
+                    "FP": 250,
+                    "IoU": 0.7803114571746385,
+                    "NSD": 0.8192565261538012,
+                    "TN": 1104122,
+                    "TP": 1403,
+                    "n_pred": 1653,
+                    "n_ref": 1548
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0199.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0199/ses-0001/sub-strokecase0199_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8749432646138411,
+                    "FN": 731,
+                    "FP": 4504,
+                    "IoU": 0.7776881263801597,
+                    "NSD": 0.7246274080788493,
+                    "TN": 914144,
+                    "TP": 18313,
+                    "n_pred": 22817,
+                    "n_ref": 19044
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0201.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0201/ses-0001/sub-strokecase0201_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8941626363738612,
+                    "FN": 633,
+                    "FP": 308,
+                    "IoU": 0.8085842148087876,
+                    "NSD": 0.8238125507326736,
+                    "TN": 898252,
+                    "TP": 3975,
+                    "n_pred": 4283,
+                    "n_ref": 4608
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0205.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0205/ses-0001/sub-strokecase0205_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8629032258064516,
+                    "FN": 155,
+                    "FP": 49,
+                    "IoU": 0.7588652482269503,
+                    "NSD": 0.8538030507410769,
+                    "TN": 1105074,
+                    "TP": 642,
+                    "n_pred": 691,
+                    "n_ref": 797
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0206.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0206/ses-0001/sub-strokecase0206_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.9077932098765432,
+                    "FN": 367,
+                    "FP": 111,
+                    "IoU": 0.8311550688802544,
+                    "NSD": 0.8483152559854404,
+                    "TN": 1103089,
+                    "TP": 2353,
+                    "n_pred": 2464,
+                    "n_ref": 2720
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0207.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0207/ses-0001/sub-strokecase0207_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.9136712749615975,
+                    "FN": 131,
+                    "FP": 150,
+                    "IoU": 0.8410633484162896,
+                    "NSD": 0.9000492879304771,
+                    "TN": 407832,
+                    "TP": 1487,
+                    "n_pred": 1637,
+                    "n_ref": 1618
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0210.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0210/ses-0001/sub-strokecase0210_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.40437158469945356,
+                    "FN": 101,
+                    "FP": 8,
+                    "IoU": 0.2534246575342466,
+                    "NSD": 0.4940194839194499,
+                    "TN": 903022,
+                    "TP": 37,
+                    "n_pred": 45,
+                    "n_ref": 138
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0212.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0212/ses-0001/sub-strokecase0212_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8325225851285615,
+                    "FN": 205,
+                    "FP": 36,
+                    "IoU": 0.7130952380952381,
+                    "NSD": 0.8146748353987882,
+                    "TN": 914872,
+                    "TP": 599,
+                    "n_pred": 635,
+                    "n_ref": 804
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0213.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0213/ses-0001/sub-strokecase0213_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.716636197440585,
+                    "FN": 141,
+                    "FP": 14,
+                    "IoU": 0.5584045584045584,
+                    "NSD": 0.7042487794716025,
+                    "TN": 902817,
+                    "TP": 196,
+                    "n_pred": 210,
+                    "n_ref": 337
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0214.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0214/ses-0001/sub-strokecase0214_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.9056179775280899,
+                    "FN": 350,
+                    "FP": 70,
+                    "IoU": 0.8275154004106776,
+                    "NSD": 0.8426462256504061,
+                    "TN": 1103485,
+                    "TP": 2015,
+                    "n_pred": 2085,
+                    "n_ref": 2365
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0215.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0215/ses-0001/sub-strokecase0215_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8416924353269477,
+                    "FN": 510,
+                    "FP": 1589,
+                    "IoU": 0.7266571168120849,
+                    "NSD": 0.7444546905961864,
+                    "TN": 895489,
+                    "TP": 5580,
+                    "n_pred": 7169,
+                    "n_ref": 6090
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0217.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0217/ses-0001/sub-strokecase0217_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8156424581005587,
+                    "FN": 263,
+                    "FP": 1,
+                    "IoU": 0.6886792452830188,
+                    "NSD": 0.8103388031009853,
+                    "TN": 408752,
+                    "TP": 584,
+                    "n_pred": 585,
+                    "n_ref": 847
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0219.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0219/ses-0001/sub-strokecase0219_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.7539353769676885,
+                    "FN": 225,
+                    "FP": 72,
+                    "IoU": 0.6050531914893617,
+                    "NSD": 0.6215696436849788,
+                    "TN": 902416,
+                    "TP": 455,
+                    "n_pred": 527,
+                    "n_ref": 680
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0220.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0220/ses-0001/sub-strokecase0220_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8637220012560184,
+                    "FN": 384,
+                    "FP": 267,
+                    "IoU": 0.760132645541636,
+                    "NSD": 0.8496245514213511,
+                    "TN": 912998,
+                    "TP": 2063,
+                    "n_pred": 2330,
+                    "n_ref": 2447
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0224.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0224/ses-0001/sub-strokecase0224_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8487972508591065,
+                    "FN": 83,
+                    "FP": 5,
+                    "IoU": 0.7373134328358208,
+                    "NSD": 0.8961244209104241,
+                    "TN": 902833,
+                    "TP": 247,
+                    "n_pred": 252,
+                    "n_ref": 330
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0225.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0225/ses-0001/sub-strokecase0225_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.6775014685725474,
+                    "FN": 1621,
+                    "FP": 26,
+                    "IoU": 0.5122890139176784,
+                    "NSD": 0.5951895145867535,
+                    "TN": 1102543,
+                    "TP": 1730,
+                    "n_pred": 1756,
+                    "n_ref": 3351
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0229.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0229/ses-0001/sub-strokecase0229_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.7879481311975591,
+                    "FN": 469,
+                    "FP": 87,
+                    "IoU": 0.6500943989930774,
+                    "NSD": 0.7776893678136968,
+                    "TN": 901579,
+                    "TP": 1033,
+                    "n_pred": 1120,
+                    "n_ref": 1502
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0235.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0235/ses-0001/sub-strokecase0235_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.9038146501287152,
+                    "FN": 111,
+                    "FP": 300,
+                    "IoU": 0.8245089666951324,
+                    "NSD": 0.904712961022342,
+                    "TN": 1103578,
+                    "TP": 1931,
+                    "n_pred": 2231,
+                    "n_ref": 2042
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0238.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0238/ses-0001/sub-strokecase0238_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.9426297007960472,
+                    "FN": 2513,
+                    "FP": 413,
+                    "IoU": 0.891484942886812,
+                    "NSD": 0.771252163847339,
+                    "TN": 888748,
+                    "TP": 24038,
+                    "n_pred": 24451,
+                    "n_ref": 26551
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0240.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0240/ses-0001/sub-strokecase0240_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.9284928492849285,
+                    "FN": 35,
+                    "FP": 160,
+                    "IoU": 0.86652977412731,
+                    "NSD": 0.9214724857321549,
+                    "TN": 1104459,
+                    "TP": 1266,
+                    "n_pred": 1426,
+                    "n_ref": 1301
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0243.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0243/ses-0001/sub-strokecase0243_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.7936439768091046,
+                    "FN": 643,
+                    "FP": 1279,
+                    "IoU": 0.6578853684585262,
+                    "NSD": 0.7460027097682328,
+                    "TN": 910094,
+                    "TP": 3696,
+                    "n_pred": 4975,
+                    "n_ref": 4339
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0244.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0244/ses-0001/sub-strokecase0244_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.85053581500282,
+                    "FN": 213,
+                    "FP": 52,
+                    "IoU": 0.7399411187438666,
+                    "NSD": 0.8080349521717726,
+                    "TN": 408581,
+                    "TP": 754,
+                    "n_pred": 806,
+                    "n_ref": 967
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0245.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0245/ses-0001/sub-strokecase0245_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.9041860465116279,
+                    "FN": 338,
+                    "FP": 74,
+                    "IoU": 0.8251273344651953,
+                    "NSD": 0.8586405279210518,
+                    "TN": 900812,
+                    "TP": 1944,
+                    "n_pred": 2018,
+                    "n_ref": 2282
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0247.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0247/ses-0001/sub-strokecase0247_ses-0001_msk.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.7586206896551724,
+                    "FN": 199,
+                    "FP": 4,
+                    "IoU": 0.6111111111111112,
+                    "NSD": 0.7701086298802162,
+                    "TN": 409078,
+                    "TP": 319,
+                    "n_pred": 323,
+                    "n_ref": 518
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/CNN_VarAligned2MAEFT/validation/sub-strokecase0250.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/ISLES/gt/sub-strokecase0250/ses-0001/sub-strokecase0250_ses-0001_msk.nii.gz"
+        }
+    ]
+}

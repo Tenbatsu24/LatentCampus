@@ -1,0 +1,3950 @@
+{
+    "foreground_mean": {
+        "Dice": 0.62748634884802,
+        "FN": 3803.0766666666664,
+        "FP": 2985.3266666666664,
+        "IoU": 0.5093073050563719,
+        "NSD": 0.7143872522816667,
+        "TN": 8904485.936666666,
+        "TP": 16725.66,
+        "n_pred": 19710.986666666668,
+        "n_ref": 20528.736666666668
+    },
+    "mean": {
+        "1": {
+            "Dice": 0.550850753948901,
+            "FN": 1014.1,
+            "FP": 501.46,
+            "IoU": 0.44085112616609784,
+            "NSD": 0.6716764037284821,
+            "TN": 8923967.36,
+            "TP": 2517.08,
+            "n_pred": 3018.54,
+            "n_ref": 3531.18
+        },
+        "2": {
+            "Dice": 0.625784618698634,
+            "FN": 8323.76,
+            "FP": 7086.29,
+            "IoU": 0.5155894826098263,
+            "NSD": 0.6429131259653492,
+            "TN": 8870008.87,
+            "TP": 42581.08,
+            "n_pred": 49667.37,
+            "n_ref": 50904.84
+        },
+        "3": {
+            "Dice": 0.7058236738965249,
+            "FN": 2071.37,
+            "FP": 1368.23,
+            "IoU": 0.5714813063931916,
+            "NSD": 0.8285722271511691,
+            "TN": 8919481.58,
+            "TP": 5078.82,
+            "n_pred": 6447.05,
+            "n_ref": 7150.19
+        }
+    },
+    "metric_per_case": [
+        {
+            "metrics": {
+                "1": {
+                    "Dice": NaN,
+                    "FN": 0,
+                    "FP": 0,
+                    "IoU": NaN,
+                    "NSD": NaN,
+                    "TN": 8928000,
+                    "TP": 0,
+                    "n_pred": 0,
+                    "n_ref": 0
+                },
+                "2": {
+                    "Dice": 0.12608695652173912,
+                    "FN": 113,
+                    "FP": 289,
+                    "IoU": 0.06728538283062645,
+                    "NSD": 0.25643569698569724,
+                    "TN": 8927569,
+                    "TP": 29,
+                    "n_pred": 318,
+                    "n_ref": 142
+                },
+                "3": {
+                    "Dice": 0.75,
+                    "FN": 1,
+                    "FP": 39,
+                    "IoU": 0.6,
+                    "NSD": 0.9042780703490955,
+                    "TN": 8927900,
+                    "TP": 60,
+                    "n_pred": 99,
+                    "n_ref": 61
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00090-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00090-000/BraTS-MET-00090-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.7682952400922626,
+                    "FN": 998,
+                    "FP": 107,
+                    "IoU": 0.623765747361253,
+                    "NSD": 0.7226959015252576,
+                    "TN": 8925063,
+                    "TP": 1832,
+                    "n_pred": 1939,
+                    "n_ref": 2830
+                },
+                "2": {
+                    "Dice": 0.4519273371732388,
+                    "FN": 3382,
+                    "FP": 329,
+                    "IoU": 0.2919290211791643,
+                    "NSD": 0.5702498446918869,
+                    "TN": 8922759,
+                    "TP": 1530,
+                    "n_pred": 1859,
+                    "n_ref": 4912
+                },
+                "3": {
+                    "Dice": 0.5897771952817824,
+                    "FN": 1117,
+                    "FP": 448,
+                    "IoU": 0.41821561338289964,
+                    "NSD": 0.791818185224795,
+                    "TN": 8925310,
+                    "TP": 1125,
+                    "n_pred": 1573,
+                    "n_ref": 2242
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00097-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00097-000/BraTS-MET-00097-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8392132375897596,
+                    "FN": 463,
+                    "FP": 52,
+                    "IoU": 0.7229693383539537,
+                    "NSD": 0.917586018264858,
+                    "TN": 8926141,
+                    "TP": 1344,
+                    "n_pred": 1396,
+                    "n_ref": 1807
+                },
+                "2": {
+                    "Dice": 0.8865107287840711,
+                    "FN": 7039,
+                    "FP": 7638,
+                    "IoU": 0.7961556089498757,
+                    "NSD": 0.7988658547506559,
+                    "TN": 8855999,
+                    "TP": 57324,
+                    "n_pred": 64962,
+                    "n_ref": 64363
+                },
+                "3": {
+                    "Dice": 0.8149545532498714,
+                    "FN": 243,
+                    "FP": 836,
+                    "IoU": 0.687698986975398,
+                    "NSD": 0.96658632447835,
+                    "TN": 8924545,
+                    "TP": 2376,
+                    "n_pred": 3212,
+                    "n_ref": 2619
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00104-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00104-000/BraTS-MET-00104-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.7296266992735381,
+                    "FN": 3167,
+                    "FP": 592,
+                    "IoU": 0.574340391801608,
+                    "NSD": 0.8697649714358383,
+                    "TN": 8919169,
+                    "TP": 5072,
+                    "n_pred": 5664,
+                    "n_ref": 8239
+                },
+                "2": {
+                    "Dice": 0.8484705133162,
+                    "FN": 11354,
+                    "FP": 21959,
+                    "IoU": 0.7368204836505265,
+                    "NSD": 0.7523990113102998,
+                    "TN": 8801421,
+                    "TP": 93266,
+                    "n_pred": 115225,
+                    "n_ref": 104620
+                },
+                "3": {
+                    "Dice": 0.8377887622314133,
+                    "FN": 2617,
+                    "FP": 3815,
+                    "IoU": 0.7208575644475306,
+                    "NSD": 0.952062001658716,
+                    "TN": 8904958,
+                    "TP": 16610,
+                    "n_pred": 20425,
+                    "n_ref": 19227
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00105-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00105-000/BraTS-MET-00105-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": NaN,
+                    "FN": 0,
+                    "FP": 0,
+                    "IoU": NaN,
+                    "NSD": NaN,
+                    "TN": 8928000,
+                    "TP": 0,
+                    "n_pred": 0,
+                    "n_ref": 0
+                },
+                "2": {
+                    "Dice": 0.672645739910314,
+                    "FN": 116,
+                    "FP": 30,
+                    "IoU": 0.5067567567567568,
+                    "NSD": 0.9322638389383476,
+                    "TN": 8927704,
+                    "TP": 150,
+                    "n_pred": 180,
+                    "n_ref": 266
+                },
+                "3": {
+                    "Dice": 0.803921568627451,
+                    "FN": 9,
+                    "FP": 51,
+                    "IoU": 0.6721311475409836,
+                    "NSD": 0.9906222494145954,
+                    "TN": 8927817,
+                    "TP": 123,
+                    "n_pred": 174,
+                    "n_ref": 132
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00106-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00106-000/BraTS-MET-00106-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.0,
+                    "FN": 0,
+                    "FP": 69,
+                    "IoU": 0.0,
+                    "NSD": 0.0,
+                    "TN": 8927931,
+                    "TP": 0,
+                    "n_pred": 69,
+                    "n_ref": 0
+                },
+                "2": {
+                    "Dice": 0.7712617009360749,
+                    "FN": 566,
+                    "FP": 2293,
+                    "IoU": 0.62768589660112,
+                    "NSD": 0.8495128271820879,
+                    "TN": 8920321,
+                    "TP": 4820,
+                    "n_pred": 7113,
+                    "n_ref": 5386
+                },
+                "3": {
+                    "Dice": 0.9153261445996111,
+                    "FN": 225,
+                    "FP": 254,
+                    "IoU": 0.8438722294654498,
+                    "NSD": 0.9505024512665856,
+                    "TN": 8924932,
+                    "TP": 2589,
+                    "n_pred": 2843,
+                    "n_ref": 2814
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00109-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00109-000/BraTS-MET-00109-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": NaN,
+                    "FN": 0,
+                    "FP": 0,
+                    "IoU": NaN,
+                    "NSD": NaN,
+                    "TN": 8928000,
+                    "TP": 0,
+                    "n_pred": 0,
+                    "n_ref": 0
+                },
+                "2": {
+                    "Dice": 0.6266804550155118,
+                    "FN": 93,
+                    "FP": 268,
+                    "IoU": 0.4563253012048193,
+                    "NSD": 0.8810659501572317,
+                    "TN": 8927336,
+                    "TP": 303,
+                    "n_pred": 571,
+                    "n_ref": 396
+                },
+                "3": {
+                    "Dice": 0.6577181208053692,
+                    "FN": 36,
+                    "FP": 66,
+                    "IoU": 0.49,
+                    "NSD": 0.8906117865257414,
+                    "TN": 8927800,
+                    "TP": 98,
+                    "n_pred": 164,
+                    "n_ref": 134
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00111-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00111-000/BraTS-MET-00111-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.6287461773700306,
+                    "FN": 407,
+                    "FP": 2628,
+                    "IoU": 0.45851917930419267,
+                    "NSD": 0.8335536797146029,
+                    "TN": 8922395,
+                    "TP": 2570,
+                    "n_pred": 5198,
+                    "n_ref": 2977
+                },
+                "2": {
+                    "Dice": 0.8123811236125174,
+                    "FN": 4216,
+                    "FP": 35438,
+                    "IoU": 0.6840419428862825,
+                    "NSD": 0.6795669364086288,
+                    "TN": 8802496,
+                    "TP": 85850,
+                    "n_pred": 121288,
+                    "n_ref": 90066
+                },
+                "3": {
+                    "Dice": 0.7067876421270243,
+                    "FN": 1696,
+                    "FP": 3410,
+                    "IoU": 0.5465364120781527,
+                    "NSD": 0.8197858607262789,
+                    "TN": 8916740,
+                    "TP": 6154,
+                    "n_pred": 9564,
+                    "n_ref": 7850
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00112-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00112-000/BraTS-MET-00112-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": NaN,
+                    "FN": 0,
+                    "FP": 0,
+                    "IoU": NaN,
+                    "NSD": NaN,
+                    "TN": 8928000,
+                    "TP": 0,
+                    "n_pred": 0,
+                    "n_ref": 0
+                },
+                "2": {
+                    "Dice": 0.0,
+                    "FN": 0,
+                    "FP": 44,
+                    "IoU": 0.0,
+                    "NSD": 0.0,
+                    "TN": 8927956,
+                    "TP": 0,
+                    "n_pred": 44,
+                    "n_ref": 0
+                },
+                "3": {
+                    "Dice": 0.5244215938303342,
+                    "FN": 338,
+                    "FP": 32,
+                    "IoU": 0.3554006968641115,
+                    "NSD": 0.627662548631052,
+                    "TN": 8927426,
+                    "TP": 204,
+                    "n_pred": 236,
+                    "n_ref": 542
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00113-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00113-000/BraTS-MET-00113-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.0,
+                    "FN": 152,
+                    "FP": 469,
+                    "IoU": 0.0,
+                    "NSD": 0.0,
+                    "TN": 8927379,
+                    "TP": 0,
+                    "n_pred": 469,
+                    "n_ref": 152
+                },
+                "2": {
+                    "Dice": 0.8360958956459708,
+                    "FN": 17024,
+                    "FP": 15143,
+                    "IoU": 0.7183546243356594,
+                    "NSD": 0.7534365813382772,
+                    "TN": 8813789,
+                    "TP": 82044,
+                    "n_pred": 97187,
+                    "n_ref": 99068
+                },
+                "3": {
+                    "Dice": 0.7740286298568507,
+                    "FN": 2750,
+                    "FP": 1228,
+                    "IoU": 0.6313594662218516,
+                    "NSD": 0.7747905730944046,
+                    "TN": 8917209,
+                    "TP": 6813,
+                    "n_pred": 8041,
+                    "n_ref": 9563
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00114-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00114-000/BraTS-MET-00114-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.1111111111111111,
+                    "FN": 14,
+                    "FP": 2,
+                    "IoU": 0.058823529411764705,
+                    "NSD": 0.7766193702198748,
+                    "TN": 8927983,
+                    "TP": 1,
+                    "n_pred": 3,
+                    "n_ref": 15
+                },
+                "2": {
+                    "Dice": 0.7689594356261023,
+                    "FN": 797,
+                    "FP": 1823,
+                    "IoU": 0.6246418338108882,
+                    "NSD": 0.8276687109905602,
+                    "TN": 8921020,
+                    "TP": 4360,
+                    "n_pred": 6183,
+                    "n_ref": 5157
+                },
+                "3": {
+                    "Dice": 0.853566958698373,
+                    "FN": 272,
+                    "FP": 79,
+                    "IoU": 0.7445414847161572,
+                    "NSD": 0.9730786411485459,
+                    "TN": 8926626,
+                    "TP": 1023,
+                    "n_pred": 1102,
+                    "n_ref": 1295
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00115-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00115-000/BraTS-MET-00115-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.3763837638376384,
+                    "FN": 745,
+                    "FP": 100,
+                    "IoU": 0.2318181818181818,
+                    "NSD": 0.5807264249356064,
+                    "TN": 8926900,
+                    "TP": 255,
+                    "n_pred": 355,
+                    "n_ref": 1000
+                },
+                "2": {
+                    "Dice": 0.9026229373427174,
+                    "FN": 5148,
+                    "FP": 16173,
+                    "IoU": 0.8225276143069995,
+                    "NSD": 0.7742298252191622,
+                    "TN": 8807863,
+                    "TP": 98816,
+                    "n_pred": 114989,
+                    "n_ref": 103964
+                },
+                "3": {
+                    "Dice": 0.7063031947699518,
+                    "FN": 1705,
+                    "FP": 676,
+                    "IoU": 0.545957284515637,
+                    "NSD": 0.7823056044502011,
+                    "TN": 8922756,
+                    "TP": 2863,
+                    "n_pred": 3539,
+                    "n_ref": 4568
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00116-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00116-000/BraTS-MET-00116-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": NaN,
+                    "FN": 0,
+                    "FP": 0,
+                    "IoU": NaN,
+                    "NSD": NaN,
+                    "TN": 8928000,
+                    "TP": 0,
+                    "n_pred": 0,
+                    "n_ref": 0
+                },
+                "2": {
+                    "Dice": 0.0,
+                    "FN": 70,
+                    "FP": 0,
+                    "IoU": 0.0,
+                    "NSD": 0.0,
+                    "TN": 8927930,
+                    "TP": 0,
+                    "n_pred": 0,
+                    "n_ref": 70
+                },
+                "3": {
+                    "Dice": 0.0,
+                    "FN": 50,
+                    "FP": 0,
+                    "IoU": 0.0,
+                    "NSD": 0.0,
+                    "TN": 8927950,
+                    "TP": 0,
+                    "n_pred": 0,
+                    "n_ref": 50
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00120-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00120-000/BraTS-MET-00120-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.038860103626943004,
+                    "FN": 1411,
+                    "FP": 73,
+                    "IoU": 0.019815059445178335,
+                    "NSD": 0.09353400739227626,
+                    "TN": 8926486,
+                    "TP": 30,
+                    "n_pred": 103,
+                    "n_ref": 1441
+                },
+                "2": {
+                    "Dice": 0.7907168672984434,
+                    "FN": 3502,
+                    "FP": 11206,
+                    "IoU": 0.6538724025133551,
+                    "NSD": 0.7295531089812277,
+                    "TN": 8885507,
+                    "TP": 27785,
+                    "n_pred": 38991,
+                    "n_ref": 31287
+                },
+                "3": {
+                    "Dice": 0.7259103019538188,
+                    "FN": 4531,
+                    "FP": 407,
+                    "IoU": 0.5697481920362464,
+                    "NSD": 0.6664275831770501,
+                    "TN": 8916523,
+                    "TP": 6539,
+                    "n_pred": 6946,
+                    "n_ref": 11070
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00121-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00121-000/BraTS-MET-00121-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.9319023648969513,
+                    "FN": 1049,
+                    "FP": 1102,
+                    "IoU": 0.8724879957318158,
+                    "NSD": 0.9836496094620426,
+                    "TN": 8911131,
+                    "TP": 14718,
+                    "n_pred": 15820,
+                    "n_ref": 15767
+                },
+                "2": {
+                    "Dice": 0.8143691144563491,
+                    "FN": 14566,
+                    "FP": 10331,
+                    "IoU": 0.6868656378523186,
+                    "NSD": 0.7933244651469583,
+                    "TN": 8848491,
+                    "TP": 54612,
+                    "n_pred": 64943,
+                    "n_ref": 69178
+                },
+                "3": {
+                    "Dice": 0.798115311297342,
+                    "FN": 3500,
+                    "FP": 2113,
+                    "IoU": 0.6640531481924826,
+                    "NSD": 0.9752837173698029,
+                    "TN": 8911292,
+                    "TP": 11095,
+                    "n_pred": 13208,
+                    "n_ref": 14595
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00123-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00123-000/BraTS-MET-00123-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.0,
+                    "FN": 0,
+                    "FP": 50,
+                    "IoU": 0.0,
+                    "NSD": 0.0,
+                    "TN": 8927950,
+                    "TP": 0,
+                    "n_pred": 50,
+                    "n_ref": 0
+                },
+                "2": {
+                    "Dice": 0.8627339578666012,
+                    "FN": 7493,
+                    "FP": 13768,
+                    "IoU": 0.7586034629577065,
+                    "NSD": 0.8478091057115483,
+                    "TN": 8839925,
+                    "TP": 66814,
+                    "n_pred": 80582,
+                    "n_ref": 74307
+                },
+                "3": {
+                    "Dice": 0.8467834031214313,
+                    "FN": 2177,
+                    "FP": 1043,
+                    "IoU": 0.7342795840897838,
+                    "NSD": 0.9007831593575532,
+                    "TN": 8915882,
+                    "TP": 8898,
+                    "n_pred": 9941,
+                    "n_ref": 11075
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00124-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00124-000/BraTS-MET-00124-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8936206263590409,
+                    "FN": 571,
+                    "FP": 3196,
+                    "IoU": 0.8076981979682475,
+                    "NSD": 0.8110771846419593,
+                    "TN": 8908411,
+                    "TP": 15822,
+                    "n_pred": 19018,
+                    "n_ref": 16393
+                },
+                "2": {
+                    "Dice": 0.8898465770471403,
+                    "FN": 12127,
+                    "FP": 21510,
+                    "IoU": 0.8015527931988602,
+                    "NSD": 0.7878154887174859,
+                    "TN": 8758499,
+                    "TP": 135864,
+                    "n_pred": 157374,
+                    "n_ref": 147991
+                },
+                "3": {
+                    "Dice": 0.7272886629563083,
+                    "FN": 3795,
+                    "FP": 2428,
+                    "IoU": 0.5714482473658838,
+                    "NSD": 0.9243267076070606,
+                    "TN": 8913479,
+                    "TP": 8298,
+                    "n_pred": 10726,
+                    "n_ref": 12093
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00129-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00129-000/BraTS-MET-00129-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.23009708737864076,
+                    "FN": 1538,
+                    "FP": 48,
+                    "IoU": 0.13000548546352167,
+                    "NSD": 0.5240991047662191,
+                    "TN": 8926177,
+                    "TP": 237,
+                    "n_pred": 285,
+                    "n_ref": 1775
+                },
+                "2": {
+                    "Dice": 0.43262879788639363,
+                    "FN": 1000,
+                    "FP": 718,
+                    "IoU": 0.27602191319005476,
+                    "NSD": 0.7408243671321663,
+                    "TN": 8925627,
+                    "TP": 655,
+                    "n_pred": 1373,
+                    "n_ref": 1655
+                },
+                "3": {
+                    "Dice": 0.7111749222301986,
+                    "FN": 683,
+                    "FP": 1731,
+                    "IoU": 0.551800965466023,
+                    "NSD": 0.8023324082254604,
+                    "TN": 8922614,
+                    "TP": 2972,
+                    "n_pred": 4703,
+                    "n_ref": 3655
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00131-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00131-000/BraTS-MET-00131-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.5024154589371981,
+                    "FN": 12,
+                    "FP": 297,
+                    "IoU": 0.33548387096774196,
+                    "NSD": 0.6544093316284754,
+                    "TN": 8927535,
+                    "TP": 156,
+                    "n_pred": 453,
+                    "n_ref": 168
+                },
+                "2": {
+                    "Dice": 0.9057909628740461,
+                    "FN": 16626,
+                    "FP": 10843,
+                    "IoU": 0.8278043153922343,
+                    "NSD": 0.7839958596340929,
+                    "TN": 8768478,
+                    "TP": 132053,
+                    "n_pred": 142896,
+                    "n_ref": 148679
+                },
+                "3": {
+                    "Dice": 0.9208592157048698,
+                    "FN": 1134,
+                    "FP": 535,
+                    "IoU": 0.8533263028385623,
+                    "NSD": 0.9188109494107972,
+                    "TN": 8916621,
+                    "TP": 9710,
+                    "n_pred": 10245,
+                    "n_ref": 10844
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00135-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00135-000/BraTS-MET-00135-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": NaN,
+                    "FN": 0,
+                    "FP": 0,
+                    "IoU": NaN,
+                    "NSD": NaN,
+                    "TN": 8928000,
+                    "TP": 0,
+                    "n_pred": 0,
+                    "n_ref": 0
+                },
+                "2": {
+                    "Dice": 0.5419977298524404,
+                    "FN": 2403,
+                    "FP": 825,
+                    "IoU": 0.3717399766446088,
+                    "NSD": 0.5484919530524366,
+                    "TN": 8922862,
+                    "TP": 1910,
+                    "n_pred": 2735,
+                    "n_ref": 4313
+                },
+                "3": {
+                    "Dice": 0.6777901371894698,
+                    "FN": 715,
+                    "FP": 154,
+                    "IoU": 0.5126191811553561,
+                    "NSD": 0.6857658786992029,
+                    "TN": 8926217,
+                    "TP": 914,
+                    "n_pred": 1068,
+                    "n_ref": 1629
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00136-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00136-000/BraTS-MET-00136-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.78072696534235,
+                    "FN": 986,
+                    "FP": 311,
+                    "IoU": 0.6403216860787576,
+                    "NSD": 0.8089742481803073,
+                    "TN": 8924394,
+                    "TP": 2309,
+                    "n_pred": 2620,
+                    "n_ref": 3295
+                },
+                "2": {
+                    "Dice": 0.537441163885323,
+                    "FN": 4024,
+                    "FP": 2462,
+                    "IoU": 0.36746635459332944,
+                    "NSD": 0.6119483474239544,
+                    "TN": 8917746,
+                    "TP": 3768,
+                    "n_pred": 6230,
+                    "n_ref": 7792
+                },
+                "3": {
+                    "Dice": 0.3473650037874689,
+                    "FN": 1248,
+                    "FP": 4783,
+                    "IoU": 0.2101885804085909,
+                    "NSD": 0.5932597903231386,
+                    "TN": 8920364,
+                    "TP": 1605,
+                    "n_pred": 6388,
+                    "n_ref": 2853
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00138-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00138-000/BraTS-MET-00138-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8189415041782729,
+                    "FN": 488,
+                    "FP": 422,
+                    "IoU": 0.6933962264150944,
+                    "NSD": 0.8970741298767567,
+                    "TN": 8925032,
+                    "TP": 2058,
+                    "n_pred": 2480,
+                    "n_ref": 2546
+                },
+                "2": {
+                    "Dice": 0.8418363406272837,
+                    "FN": 17228,
+                    "FP": 9393,
+                    "IoU": 0.7268716591256528,
+                    "NSD": 0.7961113039096872,
+                    "TN": 8830533,
+                    "TP": 70846,
+                    "n_pred": 80239,
+                    "n_ref": 88074
+                },
+                "3": {
+                    "Dice": 0.7954857404300747,
+                    "FN": 1006,
+                    "FP": 1676,
+                    "IoU": 0.660420359584705,
+                    "NSD": 0.9525072055593636,
+                    "TN": 8920102,
+                    "TP": 5216,
+                    "n_pred": 6892,
+                    "n_ref": 6222
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00141-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00141-000/BraTS-MET-00141-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": NaN,
+                    "FN": 0,
+                    "FP": 0,
+                    "IoU": NaN,
+                    "NSD": NaN,
+                    "TN": 8928000,
+                    "TP": 0,
+                    "n_pred": 0,
+                    "n_ref": 0
+                },
+                "2": {
+                    "Dice": 0.8360696080154685,
+                    "FN": 2874,
+                    "FP": 1789,
+                    "IoU": 0.7183158149087834,
+                    "NSD": 0.8598494031648438,
+                    "TN": 8911446,
+                    "TP": 11891,
+                    "n_pred": 13680,
+                    "n_ref": 14765
+                },
+                "3": {
+                    "Dice": 0.8267942583732057,
+                    "FN": 142,
+                    "FP": 220,
+                    "IoU": 0.7047308319738989,
+                    "NSD": 0.9394960392296876,
+                    "TN": 8926774,
+                    "TP": 864,
+                    "n_pred": 1084,
+                    "n_ref": 1006
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00143-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00143-000/BraTS-MET-00143-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.0,
+                    "FN": 2,
+                    "FP": 0,
+                    "IoU": 0.0,
+                    "NSD": 0.0,
+                    "TN": 8927998,
+                    "TP": 0,
+                    "n_pred": 0,
+                    "n_ref": 2
+                },
+                "2": {
+                    "Dice": 0.0,
+                    "FN": 2581,
+                    "FP": 0,
+                    "IoU": 0.0,
+                    "NSD": 0.0,
+                    "TN": 8925419,
+                    "TP": 0,
+                    "n_pred": 0,
+                    "n_ref": 2581
+                },
+                "3": {
+                    "Dice": 0.21390374331550802,
+                    "FN": 731,
+                    "FP": 4,
+                    "IoU": 0.11976047904191617,
+                    "NSD": 0.2807241284342332,
+                    "TN": 8927165,
+                    "TP": 100,
+                    "n_pred": 104,
+                    "n_ref": 831
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00144-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00144-000/BraTS-MET-00144-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8902600264433671,
+                    "FN": 126,
+                    "FP": 123,
+                    "IoU": 0.8022239872915012,
+                    "NSD": 0.9919177601635497,
+                    "TN": 8926741,
+                    "TP": 1010,
+                    "n_pred": 1133,
+                    "n_ref": 1136
+                },
+                "2": {
+                    "Dice": 0.8429086283654865,
+                    "FN": 1737,
+                    "FP": 2709,
+                    "IoU": 0.728471967753756,
+                    "NSD": 0.8581193330832935,
+                    "TN": 8911626,
+                    "TP": 11928,
+                    "n_pred": 14637,
+                    "n_ref": 13665
+                },
+                "3": {
+                    "Dice": 0.8415755682804095,
+                    "FN": 457,
+                    "FP": 456,
+                    "IoU": 0.7264829239065309,
+                    "NSD": 0.9573258556274152,
+                    "TN": 8924662,
+                    "TP": 2425,
+                    "n_pred": 2881,
+                    "n_ref": 2882
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00147-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00147-000/BraTS-MET-00147-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": NaN,
+                    "FN": 0,
+                    "FP": 0,
+                    "IoU": NaN,
+                    "NSD": NaN,
+                    "TN": 8928000,
+                    "TP": 0,
+                    "n_pred": 0,
+                    "n_ref": 0
+                },
+                "2": {
+                    "Dice": 0.5433186490455213,
+                    "FN": 55,
+                    "FP": 256,
+                    "IoU": 0.37298387096774194,
+                    "NSD": 0.8101542225336994,
+                    "TN": 8927504,
+                    "TP": 185,
+                    "n_pred": 441,
+                    "n_ref": 240
+                },
+                "3": {
+                    "Dice": 0.5399568034557235,
+                    "FN": 168,
+                    "FP": 45,
+                    "IoU": 0.3698224852071006,
+                    "NSD": 0.6431826069626876,
+                    "TN": 8927662,
+                    "TP": 125,
+                    "n_pred": 170,
+                    "n_ref": 293
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00148-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00148-000/BraTS-MET-00148-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": NaN,
+                    "FN": 0,
+                    "FP": 0,
+                    "IoU": NaN,
+                    "NSD": NaN,
+                    "TN": 8928000,
+                    "TP": 0,
+                    "n_pred": 0,
+                    "n_ref": 0
+                },
+                "2": {
+                    "Dice": 0.009324009324009324,
+                    "FN": 366,
+                    "FP": 59,
+                    "IoU": 0.00468384074941452,
+                    "NSD": 0.0997705550568728,
+                    "TN": 8927573,
+                    "TP": 2,
+                    "n_pred": 61,
+                    "n_ref": 368
+                },
+                "3": {
+                    "Dice": 0.47433035714285715,
+                    "FN": 787,
+                    "FP": 155,
+                    "IoU": 0.3108997805413314,
+                    "NSD": 0.6387306195769326,
+                    "TN": 8926633,
+                    "TP": 425,
+                    "n_pred": 580,
+                    "n_ref": 1212
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00149-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00149-000/BraTS-MET-00149-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8153607447633825,
+                    "FN": 199,
+                    "FP": 1229,
+                    "IoU": 0.6882776686313032,
+                    "NSD": 0.887678442481499,
+                    "TN": 8923419,
+                    "TP": 3153,
+                    "n_pred": 4382,
+                    "n_ref": 3352
+                },
+                "2": {
+                    "Dice": 0.8808271084706892,
+                    "FN": 8392,
+                    "FP": 16863,
+                    "IoU": 0.7870339919215429,
+                    "NSD": 0.8146919526356494,
+                    "TN": 8809413,
+                    "TP": 93332,
+                    "n_pred": 110195,
+                    "n_ref": 101724
+                },
+                "3": {
+                    "Dice": 0.8663298853339748,
+                    "FN": 1787,
+                    "FP": 1547,
+                    "IoU": 0.7641816381383505,
+                    "NSD": 0.9558344543960025,
+                    "TN": 8913862,
+                    "TP": 10804,
+                    "n_pred": 12351,
+                    "n_ref": 12591
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00151-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00151-000/BraTS-MET-00151-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": NaN,
+                    "FN": 0,
+                    "FP": 0,
+                    "IoU": NaN,
+                    "NSD": NaN,
+                    "TN": 8928000,
+                    "TP": 0,
+                    "n_pred": 0,
+                    "n_ref": 0
+                },
+                "2": {
+                    "Dice": 0.0,
+                    "FN": 133,
+                    "FP": 0,
+                    "IoU": 0.0,
+                    "NSD": 0.0,
+                    "TN": 8927867,
+                    "TP": 0,
+                    "n_pred": 0,
+                    "n_ref": 133
+                },
+                "3": {
+                    "Dice": 0.0,
+                    "FN": 336,
+                    "FP": 0,
+                    "IoU": 0.0,
+                    "NSD": 0.0,
+                    "TN": 8927664,
+                    "TP": 0,
+                    "n_pred": 0,
+                    "n_ref": 336
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00152-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00152-000/BraTS-MET-00152-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8919487809156288,
+                    "FN": 394,
+                    "FP": 838,
+                    "IoU": 0.8049707139464936,
+                    "NSD": 0.9273770604183641,
+                    "TN": 8921683,
+                    "TP": 5085,
+                    "n_pred": 5923,
+                    "n_ref": 5479
+                },
+                "2": {
+                    "Dice": 0.6311998564581037,
+                    "FN": 27104,
+                    "FP": 1672,
+                    "IoU": 0.46113368663508175,
+                    "NSD": 0.4712093355611167,
+                    "TN": 8874599,
+                    "TP": 24625,
+                    "n_pred": 26297,
+                    "n_ref": 51729
+                },
+                "3": {
+                    "Dice": 0.8290000931879601,
+                    "FN": 2373,
+                    "FP": 1297,
+                    "IoU": 0.7079420658920897,
+                    "NSD": 0.9466236950558654,
+                    "TN": 8915434,
+                    "TP": 8896,
+                    "n_pred": 10193,
+                    "n_ref": 11269
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00153-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00153-000/BraTS-MET-00153-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.4018236501647014,
+                    "FN": 24960,
+                    "FP": 100,
+                    "IoU": 0.2514263524210652,
+                    "NSD": 0.20335971670573533,
+                    "TN": 8894523,
+                    "TP": 8417,
+                    "n_pred": 8517,
+                    "n_ref": 33377
+                },
+                "2": {
+                    "Dice": 0.8026832248572355,
+                    "FN": 4301,
+                    "FP": 35262,
+                    "IoU": 0.6704017195128047,
+                    "NSD": 0.6649581604505777,
+                    "TN": 8807966,
+                    "TP": 80471,
+                    "n_pred": 115733,
+                    "n_ref": 84772
+                },
+                "3": {
+                    "Dice": 0.5809202951085334,
+                    "FN": 12123,
+                    "FP": 7531,
+                    "IoU": 0.409364106262772,
+                    "NSD": 0.6165342200569275,
+                    "TN": 8894724,
+                    "TP": 13622,
+                    "n_pred": 21153,
+                    "n_ref": 25745
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00157-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00157-000/BraTS-MET-00157-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": NaN,
+                    "FN": 0,
+                    "FP": 0,
+                    "IoU": NaN,
+                    "NSD": NaN,
+                    "TN": 8928000,
+                    "TP": 0,
+                    "n_pred": 0,
+                    "n_ref": 0
+                },
+                "2": {
+                    "Dice": 0.40749414519906324,
+                    "FN": 174,
+                    "FP": 79,
+                    "IoU": 0.25588235294117645,
+                    "NSD": 0.8157947103747292,
+                    "TN": 8927660,
+                    "TP": 87,
+                    "n_pred": 166,
+                    "n_ref": 261
+                },
+                "3": {
+                    "Dice": 0.707037643207856,
+                    "FN": 22,
+                    "FP": 157,
+                    "IoU": 0.5468354430379747,
+                    "NSD": 0.8715130459100138,
+                    "TN": 8927605,
+                    "TP": 216,
+                    "n_pred": 373,
+                    "n_ref": 238
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00158-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00158-000/BraTS-MET-00158-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.35492736552807225,
+                    "FN": 2648,
+                    "FP": 638,
+                    "IoU": 0.21575178997613365,
+                    "NSD": 0.5972530007282607,
+                    "TN": 8923810,
+                    "TP": 904,
+                    "n_pred": 1542,
+                    "n_ref": 3552
+                },
+                "2": {
+                    "Dice": 0.21466007600784917,
+                    "FN": 31494,
+                    "FP": 123,
+                    "IoU": 0.12023484890645,
+                    "NSD": 0.14221466127659774,
+                    "TN": 8892062,
+                    "TP": 4321,
+                    "n_pred": 4444,
+                    "n_ref": 35815
+                },
+                "3": {
+                    "Dice": 0.6072542901716068,
+                    "FN": 12954,
+                    "FP": 1144,
+                    "IoU": 0.43601232147857744,
+                    "NSD": 0.6754881737922757,
+                    "TN": 8903003,
+                    "TP": 10899,
+                    "n_pred": 12043,
+                    "n_ref": 23853
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00164-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00164-000/BraTS-MET-00164-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.44381061038220193,
+                    "FN": 371,
+                    "FP": 604,
+                    "IoU": 0.28519061583577715,
+                    "NSD": 0.44592737036174057,
+                    "TN": 8926636,
+                    "TP": 389,
+                    "n_pred": 993,
+                    "n_ref": 760
+                },
+                "2": {
+                    "Dice": 0.6502284825929241,
+                    "FN": 25536,
+                    "FP": 11587,
+                    "IoU": 0.48173225928045904,
+                    "NSD": 0.7215909033888177,
+                    "TN": 8856371,
+                    "TP": 34506,
+                    "n_pred": 46093,
+                    "n_ref": 60042
+                },
+                "3": {
+                    "Dice": 0.6886390615180504,
+                    "FN": 9769,
+                    "FP": 8067,
+                    "IoU": 0.5251331203407881,
+                    "NSD": 0.7573186749543432,
+                    "TN": 8890440,
+                    "TP": 19724,
+                    "n_pred": 27791,
+                    "n_ref": 29493
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00165-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00165-000/BraTS-MET-00165-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8649419433693216,
+                    "FN": 250,
+                    "FP": 413,
+                    "IoU": 0.7620244077530509,
+                    "NSD": 0.981937859906138,
+                    "TN": 8925214,
+                    "TP": 2123,
+                    "n_pred": 2536,
+                    "n_ref": 2373
+                },
+                "2": {
+                    "Dice": 0.8299083647627379,
+                    "FN": 13419,
+                    "FP": 10303,
+                    "IoU": 0.7092678383214452,
+                    "NSD": 0.7949694328276824,
+                    "TN": 8846406,
+                    "TP": 57872,
+                    "n_pred": 68175,
+                    "n_ref": 71291
+                },
+                "3": {
+                    "Dice": 0.8304650311241304,
+                    "FN": 1200,
+                    "FP": 1115,
+                    "IoU": 0.7100814026299311,
+                    "NSD": 0.9724720549085917,
+                    "TN": 8920015,
+                    "TP": 5670,
+                    "n_pred": 6785,
+                    "n_ref": 6870
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00166-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00166-000/BraTS-MET-00166-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.0,
+                    "FN": 0,
+                    "FP": 52,
+                    "IoU": 0.0,
+                    "NSD": 0.0,
+                    "TN": 8927948,
+                    "TP": 0,
+                    "n_pred": 52,
+                    "n_ref": 0
+                },
+                "2": {
+                    "Dice": 0.9086472026361478,
+                    "FN": 6523,
+                    "FP": 14103,
+                    "IoU": 0.8325879631508462,
+                    "NSD": 0.8519983352080056,
+                    "TN": 8804795,
+                    "TP": 102579,
+                    "n_pred": 116682,
+                    "n_ref": 109102
+                },
+                "3": {
+                    "Dice": 0.8988491823137492,
+                    "FN": 732,
+                    "FP": 437,
+                    "IoU": 0.8162816281628162,
+                    "NSD": 0.9254572398366727,
+                    "TN": 8921637,
+                    "TP": 5194,
+                    "n_pred": 5631,
+                    "n_ref": 5926
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00167-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00167-000/BraTS-MET-00167-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.6451612903225806,
+                    "FN": 43,
+                    "FP": 1,
+                    "IoU": 0.47619047619047616,
+                    "NSD": 0.9387516799240705,
+                    "TN": 8927916,
+                    "TP": 40,
+                    "n_pred": 41,
+                    "n_ref": 83
+                },
+                "2": {
+                    "Dice": 0.11790393013100436,
+                    "FN": 293,
+                    "FP": 111,
+                    "IoU": 0.06264501160092807,
+                    "NSD": 0.40007878242209854,
+                    "TN": 8927569,
+                    "TP": 27,
+                    "n_pred": 138,
+                    "n_ref": 320
+                },
+                "3": {
+                    "Dice": 0.6296928327645052,
+                    "FN": 300,
+                    "FP": 134,
+                    "IoU": 0.45952677459526775,
+                    "NSD": 0.8317534859968478,
+                    "TN": 8927197,
+                    "TP": 369,
+                    "n_pred": 503,
+                    "n_ref": 669
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00171-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00171-000/BraTS-MET-00171-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8056818181818182,
+                    "FN": 202,
+                    "FP": 140,
+                    "IoU": 0.6745956232159848,
+                    "NSD": 0.9527564439015107,
+                    "TN": 8926949,
+                    "TP": 709,
+                    "n_pred": 849,
+                    "n_ref": 911
+                },
+                "2": {
+                    "Dice": 0.8032545659136155,
+                    "FN": 38512,
+                    "FP": 2402,
+                    "IoU": 0.6711991899320121,
+                    "NSD": 0.5278616045577181,
+                    "TN": 8803566,
+                    "TP": 83520,
+                    "n_pred": 85922,
+                    "n_ref": 122032
+                },
+                "3": {
+                    "Dice": 0.8698955365622032,
+                    "FN": 356,
+                    "FP": 466,
+                    "IoU": 0.7697478991596639,
+                    "NSD": 0.9834212681521771,
+                    "TN": 8924430,
+                    "TP": 2748,
+                    "n_pred": 3214,
+                    "n_ref": 3104
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00176-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00176-000/BraTS-MET-00176-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.5752771151957345,
+                    "FN": 2788,
+                    "FP": 239,
+                    "IoU": 0.40378176088241086,
+                    "NSD": 0.6590159564532624,
+                    "TN": 8922923,
+                    "TP": 2050,
+                    "n_pred": 2289,
+                    "n_ref": 4838
+                },
+                "2": {
+                    "Dice": 0.8411754101316027,
+                    "FN": 21382,
+                    "FP": 3286,
+                    "IoU": 0.7258867454884879,
+                    "NSD": 0.7069671002060895,
+                    "TN": 8838008,
+                    "TP": 65324,
+                    "n_pred": 68610,
+                    "n_ref": 86706
+                },
+                "3": {
+                    "Dice": 0.6984387838948234,
+                    "FN": 1193,
+                    "FP": 3211,
+                    "IoU": 0.5366161616161617,
+                    "NSD": 0.8677930906606851,
+                    "TN": 8918496,
+                    "TP": 5100,
+                    "n_pred": 8311,
+                    "n_ref": 6293
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00177-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00177-000/BraTS-MET-00177-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.40052571053063907,
+                    "FN": 7168,
+                    "FP": 130,
+                    "IoU": 0.25041084634346755,
+                    "NSD": 0.5502089724110044,
+                    "TN": 8918264,
+                    "TP": 2438,
+                    "n_pred": 2568,
+                    "n_ref": 9606
+                },
+                "2": {
+                    "Dice": 0.8790533496717085,
+                    "FN": 17744,
+                    "FP": 8708,
+                    "IoU": 0.7842062326643825,
+                    "NSD": 0.8576958805064435,
+                    "TN": 8805420,
+                    "TP": 96128,
+                    "n_pred": 104836,
+                    "n_ref": 113872
+                },
+                "3": {
+                    "Dice": 0.5522271169848262,
+                    "FN": 844,
+                    "FP": 8304,
+                    "IoU": 0.38143214551355736,
+                    "NSD": 0.8494736342446555,
+                    "TN": 8913211,
+                    "TP": 5641,
+                    "n_pred": 13945,
+                    "n_ref": 6485
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00183-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00183-000/BraTS-MET-00183-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8657770800627943,
+                    "FN": 3026,
+                    "FP": 394,
+                    "IoU": 0.7633217993079585,
+                    "NSD": 0.8316500756921802,
+                    "TN": 8913550,
+                    "TP": 11030,
+                    "n_pred": 11424,
+                    "n_ref": 14056
+                },
+                "2": {
+                    "Dice": 0.6866334672627469,
+                    "FN": 18413,
+                    "FP": 3737,
+                    "IoU": 0.5228041450330698,
+                    "NSD": 0.6012519266106939,
+                    "TN": 8881583,
+                    "TP": 24267,
+                    "n_pred": 28004,
+                    "n_ref": 42680
+                },
+                "3": {
+                    "Dice": 0.6362905387295631,
+                    "FN": 1815,
+                    "FP": 3613,
+                    "IoU": 0.46658805031446543,
+                    "NSD": 0.8799261462179623,
+                    "TN": 8917824,
+                    "TP": 4748,
+                    "n_pred": 8361,
+                    "n_ref": 6563
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00188-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00188-000/BraTS-MET-00188-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.4582417582417582,
+                    "FN": 648,
+                    "FP": 338,
+                    "IoU": 0.2972202423378475,
+                    "NSD": 0.6772216925184324,
+                    "TN": 8926597,
+                    "TP": 417,
+                    "n_pred": 755,
+                    "n_ref": 1065
+                },
+                "2": {
+                    "Dice": 0.8683153368708227,
+                    "FN": 18512,
+                    "FP": 11318,
+                    "IoU": 0.7672767557615191,
+                    "NSD": 0.7392806412374812,
+                    "TN": 8799822,
+                    "TP": 98348,
+                    "n_pred": 109666,
+                    "n_ref": 116860
+                },
+                "3": {
+                    "Dice": 0.7369742623979912,
+                    "FN": 2003,
+                    "FP": 511,
+                    "IoU": 0.5834990059642147,
+                    "NSD": 0.7989558765781726,
+                    "TN": 8921964,
+                    "TP": 3522,
+                    "n_pred": 4033,
+                    "n_ref": 5525
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00191-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00191-000/BraTS-MET-00191-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": NaN,
+                    "FN": 0,
+                    "FP": 0,
+                    "IoU": NaN,
+                    "NSD": NaN,
+                    "TN": 8928000,
+                    "TP": 0,
+                    "n_pred": 0,
+                    "n_ref": 0
+                },
+                "2": {
+                    "Dice": 0.7634749524413443,
+                    "FN": 235,
+                    "FP": 138,
+                    "IoU": 0.6174358974358974,
+                    "NSD": 0.9453328970329189,
+                    "TN": 8927025,
+                    "TP": 602,
+                    "n_pred": 740,
+                    "n_ref": 837
+                },
+                "3": {
+                    "Dice": 0.8447837150127226,
+                    "FN": 5,
+                    "FP": 56,
+                    "IoU": 0.7312775330396476,
+                    "NSD": 0.9697200222662108,
+                    "TN": 8927773,
+                    "TP": 166,
+                    "n_pred": 222,
+                    "n_ref": 171
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00192-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00192-000/BraTS-MET-00192-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.07476635514018691,
+                    "FN": 90,
+                    "FP": 9,
+                    "IoU": 0.038834951456310676,
+                    "NSD": 0.2373035254661275,
+                    "TN": 8927897,
+                    "TP": 4,
+                    "n_pred": 13,
+                    "n_ref": 94
+                },
+                "2": {
+                    "Dice": 0.446048632218845,
+                    "FN": 2271,
+                    "FP": 645,
+                    "IoU": 0.287041564792176,
+                    "NSD": 0.6438232091157776,
+                    "TN": 8923910,
+                    "TP": 1174,
+                    "n_pred": 1819,
+                    "n_ref": 3445
+                },
+                "3": {
+                    "Dice": 0.695744230362058,
+                    "FN": 1924,
+                    "FP": 950,
+                    "IoU": 0.5334415584415585,
+                    "NSD": 0.786105823196029,
+                    "TN": 8921840,
+                    "TP": 3286,
+                    "n_pred": 4236,
+                    "n_ref": 5210
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00193-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00193-000/BraTS-MET-00193-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.3346303501945525,
+                    "FN": 463,
+                    "FP": 50,
+                    "IoU": 0.20093457943925233,
+                    "NSD": 0.6688040086073982,
+                    "TN": 8927358,
+                    "TP": 129,
+                    "n_pred": 179,
+                    "n_ref": 592
+                },
+                "2": {
+                    "Dice": 0.8799524328609653,
+                    "FN": 20265,
+                    "FP": 3963,
+                    "IoU": 0.7856384484711212,
+                    "NSD": 0.7044136889371958,
+                    "TN": 8814976,
+                    "TP": 88796,
+                    "n_pred": 92759,
+                    "n_ref": 109061
+                },
+                "3": {
+                    "Dice": 0.9017876848377842,
+                    "FN": 299,
+                    "FP": 1036,
+                    "IoU": 0.8211414790996785,
+                    "NSD": 0.9017870952328237,
+                    "TN": 8920536,
+                    "TP": 6129,
+                    "n_pred": 7165,
+                    "n_ref": 6428
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00194-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00194-000/BraTS-MET-00194-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.0,
+                    "FN": 0,
+                    "FP": 125,
+                    "IoU": 0.0,
+                    "NSD": 0.0,
+                    "TN": 8927875,
+                    "TP": 0,
+                    "n_pred": 125,
+                    "n_ref": 0
+                },
+                "2": {
+                    "Dice": 0.8839425543967212,
+                    "FN": 1654,
+                    "FP": 8795,
+                    "IoU": 0.7920224517824088,
+                    "NSD": 0.7891102933410588,
+                    "TN": 8877759,
+                    "TP": 39792,
+                    "n_pred": 48587,
+                    "n_ref": 41446
+                },
+                "3": {
+                    "Dice": 0.6794636556104446,
+                    "FN": 2025,
+                    "FP": 246,
+                    "IoU": 0.5145361265498076,
+                    "NSD": 0.5829058231418338,
+                    "TN": 8923322,
+                    "TP": 2407,
+                    "n_pred": 2653,
+                    "n_ref": 4432
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00197-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00197-000/BraTS-MET-00197-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.6038781163434903,
+                    "FN": 107,
+                    "FP": 36,
+                    "IoU": 0.43253968253968256,
+                    "NSD": 0.9806369246811528,
+                    "TN": 8927748,
+                    "TP": 109,
+                    "n_pred": 145,
+                    "n_ref": 216
+                },
+                "2": {
+                    "Dice": 0.7324009324009324,
+                    "FN": 297,
+                    "FP": 851,
+                    "IoU": 0.5777859507171754,
+                    "NSD": 0.9063431534953631,
+                    "TN": 8925281,
+                    "TP": 1571,
+                    "n_pred": 2422,
+                    "n_ref": 1868
+                },
+                "3": {
+                    "Dice": 0.7986977753662506,
+                    "FN": 178,
+                    "FP": 193,
+                    "IoU": 0.6648599819331527,
+                    "NSD": 0.9922761844246307,
+                    "TN": 8926893,
+                    "TP": 736,
+                    "n_pred": 929,
+                    "n_ref": 914
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00199-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00199-000/BraTS-MET-00199-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.527768649359185,
+                    "FN": 1117,
+                    "FP": 320,
+                    "IoU": 0.35848214285714286,
+                    "NSD": 0.7971400834037623,
+                    "TN": 8925760,
+                    "TP": 803,
+                    "n_pred": 1123,
+                    "n_ref": 1920
+                },
+                "2": {
+                    "Dice": 0.7524234651387455,
+                    "FN": 13366,
+                    "FP": 1498,
+                    "IoU": 0.603108061199968,
+                    "NSD": 0.6318703275976908,
+                    "TN": 8890549,
+                    "TP": 22587,
+                    "n_pred": 24085,
+                    "n_ref": 35953
+                },
+                "3": {
+                    "Dice": 0.8541379988205229,
+                    "FN": 974,
+                    "FP": 1994,
+                    "IoU": 0.7454108766512266,
+                    "NSD": 0.9251856476439647,
+                    "TN": 8916342,
+                    "TP": 8690,
+                    "n_pred": 10684,
+                    "n_ref": 9664
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00201-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00201-000/BraTS-MET-00201-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.08537258509659613,
+                    "FN": 15,
+                    "FP": 4956,
+                    "IoU": 0.04458965981164713,
+                    "NSD": 0.13262771366205142,
+                    "TN": 8922797,
+                    "TP": 232,
+                    "n_pred": 5188,
+                    "n_ref": 247
+                },
+                "2": {
+                    "Dice": 0.7355386992555134,
+                    "FN": 10079,
+                    "FP": 27575,
+                    "IoU": 0.5817012342113156,
+                    "NSD": 0.6206122971323035,
+                    "TN": 8837983,
+                    "TP": 52363,
+                    "n_pred": 79938,
+                    "n_ref": 62442
+                },
+                "3": {
+                    "Dice": 0.5159853812843586,
+                    "FN": 29193,
+                    "FP": 2327,
+                    "IoU": 0.3476956188820596,
+                    "NSD": 0.4676505478819783,
+                    "TN": 8879679,
+                    "TP": 16801,
+                    "n_pred": 19128,
+                    "n_ref": 45994
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00202-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00202-000/BraTS-MET-00202-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.42857142857142855,
+                    "FN": 49,
+                    "FP": 55,
+                    "IoU": 0.2727272727272727,
+                    "NSD": 0.7961809322011163,
+                    "TN": 8927857,
+                    "TP": 39,
+                    "n_pred": 94,
+                    "n_ref": 88
+                },
+                "2": {
+                    "Dice": 0.8132668064694965,
+                    "FN": 3904,
+                    "FP": 3843,
+                    "IoU": 0.6852987772677418,
+                    "NSD": 0.7621536519739874,
+                    "TN": 8903383,
+                    "TP": 16870,
+                    "n_pred": 20713,
+                    "n_ref": 20774
+                },
+                "3": {
+                    "Dice": 0.8071654373024236,
+                    "FN": 381,
+                    "FP": 168,
+                    "IoU": 0.676678445229682,
+                    "NSD": 0.946651335337064,
+                    "TN": 8926302,
+                    "TP": 1149,
+                    "n_pred": 1317,
+                    "n_ref": 1530
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00203-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00203-000/BraTS-MET-00203-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": NaN,
+                    "FN": 0,
+                    "FP": 0,
+                    "IoU": NaN,
+                    "NSD": NaN,
+                    "TN": 8928000,
+                    "TP": 0,
+                    "n_pred": 0,
+                    "n_ref": 0
+                },
+                "2": {
+                    "Dice": 0.5507170795306389,
+                    "FN": 1070,
+                    "FP": 653,
+                    "IoU": 0.3799928031666067,
+                    "NSD": 0.7496215840298924,
+                    "TN": 8925221,
+                    "TP": 1056,
+                    "n_pred": 1709,
+                    "n_ref": 2126
+                },
+                "3": {
+                    "Dice": 0.7227272727272728,
+                    "FN": 679,
+                    "FP": 297,
+                    "IoU": 0.5658362989323843,
+                    "NSD": 0.8330886691500204,
+                    "TN": 8925752,
+                    "TP": 1272,
+                    "n_pred": 1569,
+                    "n_ref": 1951
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00205-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00205-000/BraTS-MET-00205-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8214929679047962,
+                    "FN": 1059,
+                    "FP": 921,
+                    "IoU": 0.697062423500612,
+                    "NSD": 0.8987819123152474,
+                    "TN": 8921464,
+                    "TP": 4556,
+                    "n_pred": 5477,
+                    "n_ref": 5615
+                },
+                "2": {
+                    "Dice": 0.8872020411327723,
+                    "FN": 37053,
+                    "FP": 10959,
+                    "IoU": 0.7972714490201791,
+                    "NSD": 0.7380003086014818,
+                    "TN": 8691171,
+                    "TP": 188817,
+                    "n_pred": 199776,
+                    "n_ref": 225870
+                },
+                "3": {
+                    "Dice": 0.8055300479542904,
+                    "FN": 1526,
+                    "FP": 2286,
+                    "IoU": 0.6743828478687964,
+                    "NSD": 0.9781698509133069,
+                    "TN": 8916293,
+                    "TP": 7895,
+                    "n_pred": 10181,
+                    "n_ref": 9421
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00208-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00208-000/BraTS-MET-00208-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": NaN,
+                    "FN": 0,
+                    "FP": 0,
+                    "IoU": NaN,
+                    "NSD": NaN,
+                    "TN": 8928000,
+                    "TP": 0,
+                    "n_pred": 0,
+                    "n_ref": 0
+                },
+                "2": {
+                    "Dice": 0.0,
+                    "FN": 0,
+                    "FP": 2,
+                    "IoU": 0.0,
+                    "NSD": 0.0,
+                    "TN": 8927998,
+                    "TP": 0,
+                    "n_pred": 2,
+                    "n_ref": 0
+                },
+                "3": {
+                    "Dice": 0.29831932773109243,
+                    "FN": 322,
+                    "FP": 12,
+                    "IoU": 0.17530864197530865,
+                    "NSD": 0.5180813865290403,
+                    "TN": 8927595,
+                    "TP": 71,
+                    "n_pred": 83,
+                    "n_ref": 393
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00209-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00209-000/BraTS-MET-00209-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": NaN,
+                    "FN": 0,
+                    "FP": 0,
+                    "IoU": NaN,
+                    "NSD": NaN,
+                    "TN": 8928000,
+                    "TP": 0,
+                    "n_pred": 0,
+                    "n_ref": 0
+                },
+                "2": {
+                    "Dice": 0.2043343653250774,
+                    "FN": 58,
+                    "FP": 199,
+                    "IoU": 0.11379310344827587,
+                    "NSD": 0.49295698312488967,
+                    "TN": 8927710,
+                    "TP": 33,
+                    "n_pred": 232,
+                    "n_ref": 91
+                },
+                "3": {
+                    "Dice": 0.5579399141630901,
+                    "FN": 88,
+                    "FP": 15,
+                    "IoU": 0.3869047619047619,
+                    "NSD": 0.6395384928639565,
+                    "TN": 8927832,
+                    "TP": 65,
+                    "n_pred": 80,
+                    "n_ref": 153
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00210-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00210-000/BraTS-MET-00210-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.7236403995560489,
+                    "FN": 248,
+                    "FP": 1,
+                    "IoU": 0.5669565217391305,
+                    "NSD": 0.9095278446687551,
+                    "TN": 8927425,
+                    "TP": 326,
+                    "n_pred": 327,
+                    "n_ref": 574
+                },
+                "2": {
+                    "Dice": 0.8984836802878438,
+                    "FN": 1380,
+                    "FP": 2570,
+                    "IoU": 0.8156789547363509,
+                    "NSD": 0.9007789281391492,
+                    "TN": 8906570,
+                    "TP": 17480,
+                    "n_pred": 20050,
+                    "n_ref": 18860
+                },
+                "3": {
+                    "Dice": 0.7386030949393559,
+                    "FN": 327,
+                    "FP": 298,
+                    "IoU": 0.5855437665782494,
+                    "NSD": 0.8902406769348501,
+                    "TN": 8926492,
+                    "TP": 883,
+                    "n_pred": 1181,
+                    "n_ref": 1210
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00215-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00215-000/BraTS-MET-00215-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.21428571428571427,
+                    "FN": 22,
+                    "FP": 0,
+                    "IoU": 0.12,
+                    "NSD": 0.7327102657025313,
+                    "TN": 8927975,
+                    "TP": 3,
+                    "n_pred": 3,
+                    "n_ref": 25
+                },
+                "2": {
+                    "Dice": 0.2599118942731278,
+                    "FN": 23,
+                    "FP": 313,
+                    "IoU": 0.14936708860759493,
+                    "NSD": 0.48051672562366443,
+                    "TN": 8927605,
+                    "TP": 59,
+                    "n_pred": 372,
+                    "n_ref": 82
+                },
+                "3": {
+                    "Dice": 0.7377690802348337,
+                    "FN": 10,
+                    "FP": 258,
+                    "IoU": 0.5844961240310077,
+                    "NSD": 0.8902164627593495,
+                    "TN": 8927355,
+                    "TP": 377,
+                    "n_pred": 635,
+                    "n_ref": 387
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00216-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00216-000/BraTS-MET-00216-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.5344095157179269,
+                    "FN": 1070,
+                    "FP": 26,
+                    "IoU": 0.3646376811594203,
+                    "NSD": 0.6770732762570244,
+                    "TN": 8926275,
+                    "TP": 629,
+                    "n_pred": 655,
+                    "n_ref": 1699
+                },
+                "2": {
+                    "Dice": 0.784915202990572,
+                    "FN": 4645,
+                    "FP": 3180,
+                    "IoU": 0.6459756594127494,
+                    "NSD": 0.7242467040871304,
+                    "TN": 8905897,
+                    "TP": 14278,
+                    "n_pred": 17458,
+                    "n_ref": 18923
+                },
+                "3": {
+                    "Dice": 0.7421755049013818,
+                    "FN": 645,
+                    "FP": 1538,
+                    "IoU": 0.5900469483568075,
+                    "NSD": 0.8755784808917967,
+                    "TN": 8922675,
+                    "TP": 3142,
+                    "n_pred": 4680,
+                    "n_ref": 3787
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00220-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00220-000/BraTS-MET-00220-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.6157303370786517,
+                    "FN": 304,
+                    "FP": 38,
+                    "IoU": 0.4448051948051948,
+                    "NSD": 0.9111896931344896,
+                    "TN": 8927384,
+                    "TP": 274,
+                    "n_pred": 312,
+                    "n_ref": 578
+                },
+                "2": {
+                    "Dice": 0.9106304654755657,
+                    "FN": 14150,
+                    "FP": 10030,
+                    "IoU": 0.8359242998961803,
+                    "NSD": 0.7712932078708367,
+                    "TN": 8780629,
+                    "TP": 123191,
+                    "n_pred": 133221,
+                    "n_ref": 137341
+                },
+                "3": {
+                    "Dice": 0.8376024590163934,
+                    "FN": 266,
+                    "FP": 368,
+                    "IoU": 0.7205817540766858,
+                    "NSD": 0.9877036458183721,
+                    "TN": 8925731,
+                    "TP": 1635,
+                    "n_pred": 2003,
+                    "n_ref": 1901
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00222-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00222-000/BraTS-MET-00222-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": NaN,
+                    "FN": 0,
+                    "FP": 0,
+                    "IoU": NaN,
+                    "NSD": NaN,
+                    "TN": 8928000,
+                    "TP": 0,
+                    "n_pred": 0,
+                    "n_ref": 0
+                },
+                "2": {
+                    "Dice": 0.48344370860927155,
+                    "FN": 123,
+                    "FP": 33,
+                    "IoU": 0.31877729257641924,
+                    "NSD": 0.8655658239206403,
+                    "TN": 8927771,
+                    "TP": 73,
+                    "n_pred": 106,
+                    "n_ref": 196
+                },
+                "3": {
+                    "Dice": 0.647887323943662,
+                    "FN": 14,
+                    "FP": 61,
+                    "IoU": 0.4791666666666667,
+                    "NSD": 0.9538453924755912,
+                    "TN": 8927856,
+                    "TP": 69,
+                    "n_pred": 130,
+                    "n_ref": 83
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00225-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00225-000/BraTS-MET-00225-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.7862068965517242,
+                    "FN": 14,
+                    "FP": 48,
+                    "IoU": 0.6477272727272727,
+                    "NSD": 0.9973034858488551,
+                    "TN": 8927824,
+                    "TP": 114,
+                    "n_pred": 162,
+                    "n_ref": 128
+                },
+                "2": {
+                    "Dice": 0.5174251742517425,
+                    "FN": 198,
+                    "FP": 979,
+                    "IoU": 0.34900442477876104,
+                    "NSD": 0.6901354602794054,
+                    "TN": 8926192,
+                    "TP": 631,
+                    "n_pred": 1610,
+                    "n_ref": 829
+                },
+                "3": {
+                    "Dice": 0.8714285714285714,
+                    "FN": 120,
+                    "FP": 96,
+                    "IoU": 0.7721518987341772,
+                    "NSD": 0.9987187912868069,
+                    "TN": 8927052,
+                    "TP": 732,
+                    "n_pred": 828,
+                    "n_ref": 852
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00227-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00227-000/BraTS-MET-00227-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.7145403615991851,
+                    "FN": 516,
+                    "FP": 605,
+                    "IoU": 0.555863708399366,
+                    "NSD": 0.6931499444497804,
+                    "TN": 8925476,
+                    "TP": 1403,
+                    "n_pred": 2008,
+                    "n_ref": 1919
+                },
+                "2": {
+                    "Dice": 0.3386943503128754,
+                    "FN": 36708,
+                    "FP": 175,
+                    "IoU": 0.20387238818856848,
+                    "NSD": 0.17151635524977912,
+                    "TN": 8881672,
+                    "TP": 9445,
+                    "n_pred": 9620,
+                    "n_ref": 46153
+                },
+                "3": {
+                    "Dice": 0.5057193829362997,
+                    "FN": 8751,
+                    "FP": 669,
+                    "IoU": 0.3384366879696608,
+                    "NSD": 0.5585234563005306,
+                    "TN": 8913761,
+                    "TP": 4819,
+                    "n_pred": 5488,
+                    "n_ref": 13570
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00229-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00229-000/BraTS-MET-00229-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.951578097588996,
+                    "FN": 1971,
+                    "FP": 1148,
+                    "IoU": 0.90762897589291,
+                    "NSD": 0.952059520690917,
+                    "TN": 8894234,
+                    "TP": 30647,
+                    "n_pred": 31795,
+                    "n_ref": 32618
+                },
+                "2": {
+                    "Dice": 0.8873309868015654,
+                    "FN": 14081,
+                    "FP": 20842,
+                    "IoU": 0.7974797323157932,
+                    "NSD": 0.7643456628632688,
+                    "TN": 8755558,
+                    "TP": 137519,
+                    "n_pred": 158361,
+                    "n_ref": 151600
+                },
+                "3": {
+                    "Dice": 0.803419297080313,
+                    "FN": 3444,
+                    "FP": 3363,
+                    "IoU": 0.6714292609933871,
+                    "NSD": 0.9578740717616447,
+                    "TN": 8907283,
+                    "TP": 13910,
+                    "n_pred": 17273,
+                    "n_ref": 17354
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00231-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00231-000/BraTS-MET-00231-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8623253047873922,
+                    "FN": 825,
+                    "FP": 564,
+                    "IoU": 0.7579717720857292,
+                    "NSD": 0.9004517234038967,
+                    "TN": 8922261,
+                    "TP": 4350,
+                    "n_pred": 4914,
+                    "n_ref": 5175
+                },
+                "2": {
+                    "Dice": 0.8017678562965069,
+                    "FN": 6864,
+                    "FP": 9866,
+                    "IoU": 0.6691256452346578,
+                    "NSD": 0.7046367715504189,
+                    "TN": 8877437,
+                    "TP": 33833,
+                    "n_pred": 43699,
+                    "n_ref": 40697
+                },
+                "3": {
+                    "Dice": 0.6867005076142132,
+                    "FN": 2287,
+                    "FP": 2342,
+                    "IoU": 0.5228818800247371,
+                    "NSD": 0.8683726957053833,
+                    "TN": 8918298,
+                    "TP": 5073,
+                    "n_pred": 7415,
+                    "n_ref": 7360
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00233-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00233-000/BraTS-MET-00233-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8932038834951457,
+                    "FN": 407,
+                    "FP": 220,
+                    "IoU": 0.8070175438596491,
+                    "NSD": 0.9830657546159042,
+                    "TN": 8924751,
+                    "TP": 2622,
+                    "n_pred": 2842,
+                    "n_ref": 3029
+                },
+                "2": {
+                    "Dice": 0.5708056252044043,
+                    "FN": 948,
+                    "FP": 2989,
+                    "IoU": 0.39938977879481313,
+                    "NSD": 0.7313683526659887,
+                    "TN": 8921445,
+                    "TP": 2618,
+                    "n_pred": 5607,
+                    "n_ref": 3566
+                },
+                "3": {
+                    "Dice": 0.7475192943770672,
+                    "FN": 880,
+                    "FP": 723,
+                    "IoU": 0.596830985915493,
+                    "NSD": 0.9754815251748058,
+                    "TN": 8924024,
+                    "TP": 2373,
+                    "n_pred": 3096,
+                    "n_ref": 3253
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00235-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00235-000/BraTS-MET-00235-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.6285333437879798,
+                    "FN": 6415,
+                    "FP": 3060,
+                    "IoU": 0.4582928363158196,
+                    "NSD": 0.7007408148806512,
+                    "TN": 8910509,
+                    "TP": 8016,
+                    "n_pred": 11076,
+                    "n_ref": 14431
+                },
+                "2": {
+                    "Dice": 0.8119546764578152,
+                    "FN": 46371,
+                    "FP": 25074,
+                    "IoU": 0.6834374584607205,
+                    "NSD": 0.6823683351491939,
+                    "TN": 8702310,
+                    "TP": 154245,
+                    "n_pred": 179319,
+                    "n_ref": 200616
+                },
+                "3": {
+                    "Dice": 0.5564518784366665,
+                    "FN": 9036,
+                    "FP": 4435,
+                    "IoU": 0.38547511518635097,
+                    "NSD": 0.807162235320037,
+                    "TN": 8906079,
+                    "TP": 8450,
+                    "n_pred": 12885,
+                    "n_ref": 17486
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00237-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00237-000/BraTS-MET-00237-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.6813186813186813,
+                    "FN": 53,
+                    "FP": 5,
+                    "IoU": 0.5166666666666667,
+                    "NSD": 0.9369192573585776,
+                    "TN": 8927880,
+                    "TP": 62,
+                    "n_pred": 67,
+                    "n_ref": 115
+                },
+                "2": {
+                    "Dice": 0.6428075052119527,
+                    "FN": 953,
+                    "FP": 75,
+                    "IoU": 0.47363031233998976,
+                    "NSD": 0.7675640623235275,
+                    "TN": 8926047,
+                    "TP": 925,
+                    "n_pred": 1000,
+                    "n_ref": 1878
+                },
+                "3": {
+                    "Dice": 0.8565891472868217,
+                    "FN": 53,
+                    "FP": 95,
+                    "IoU": 0.7491525423728813,
+                    "NSD": 0.9935412899425573,
+                    "TN": 8927410,
+                    "TP": 442,
+                    "n_pred": 537,
+                    "n_ref": 495
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00238-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00238-000/BraTS-MET-00238-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.9008130081300812,
+                    "FN": 212,
+                    "FP": 337,
+                    "IoU": 0.8195266272189349,
+                    "NSD": 0.9664342439233248,
+                    "TN": 8924958,
+                    "TP": 2493,
+                    "n_pred": 2830,
+                    "n_ref": 2705
+                },
+                "2": {
+                    "Dice": 0.8793081192719763,
+                    "FN": 9099,
+                    "FP": 7731,
+                    "IoU": 0.7846118405897259,
+                    "NSD": 0.8343804625944413,
+                    "TN": 8849862,
+                    "TP": 61308,
+                    "n_pred": 69039,
+                    "n_ref": 70407
+                },
+                "3": {
+                    "Dice": 0.8670551322277006,
+                    "FN": 839,
+                    "FP": 644,
+                    "IoU": 0.7653109669251463,
+                    "NSD": 0.9891720427548014,
+                    "TN": 8921681,
+                    "TP": 4836,
+                    "n_pred": 5480,
+                    "n_ref": 5675
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00241-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00241-000/BraTS-MET-00241-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": NaN,
+                    "FN": 0,
+                    "FP": 0,
+                    "IoU": NaN,
+                    "NSD": NaN,
+                    "TN": 8928000,
+                    "TP": 0,
+                    "n_pred": 0,
+                    "n_ref": 0
+                },
+                "2": {
+                    "Dice": 0.6445783132530121,
+                    "FN": 157,
+                    "FP": 79,
+                    "IoU": 0.47555555555555556,
+                    "NSD": 0.9137313664457846,
+                    "TN": 8927550,
+                    "TP": 214,
+                    "n_pred": 293,
+                    "n_ref": 371
+                },
+                "3": {
+                    "Dice": 0.8589993502274204,
+                    "FN": 109,
+                    "FP": 108,
+                    "IoU": 0.7528473804100227,
+                    "NSD": 0.9422317345184682,
+                    "TN": 8927122,
+                    "TP": 661,
+                    "n_pred": 769,
+                    "n_ref": 770
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00242-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00242-000/BraTS-MET-00242-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": NaN,
+                    "FN": 0,
+                    "FP": 0,
+                    "IoU": NaN,
+                    "NSD": NaN,
+                    "TN": 8928000,
+                    "TP": 0,
+                    "n_pred": 0,
+                    "n_ref": 0
+                },
+                "2": {
+                    "Dice": 0.023178807947019868,
+                    "FN": 225,
+                    "FP": 365,
+                    "IoU": 0.011725293132328308,
+                    "NSD": 0.11563841395747966,
+                    "TN": 8927403,
+                    "TP": 7,
+                    "n_pred": 372,
+                    "n_ref": 232
+                },
+                "3": {
+                    "Dice": 0.3540772532188841,
+                    "FN": 574,
+                    "FP": 28,
+                    "IoU": 0.2151238591916558,
+                    "NSD": 0.40517163334480777,
+                    "TN": 8927233,
+                    "TP": 165,
+                    "n_pred": 193,
+                    "n_ref": 739
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00243-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00243-000/BraTS-MET-00243-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.0,
+                    "FN": 71,
+                    "FP": 0,
+                    "IoU": 0.0,
+                    "NSD": 0.0,
+                    "TN": 8927929,
+                    "TP": 0,
+                    "n_pred": 0,
+                    "n_ref": 71
+                },
+                "2": {
+                    "Dice": 0.3284072249589491,
+                    "FN": 325,
+                    "FP": 84,
+                    "IoU": 0.19646365422396855,
+                    "NSD": 0.5879254717392186,
+                    "TN": 8927491,
+                    "TP": 100,
+                    "n_pred": 184,
+                    "n_ref": 425
+                },
+                "3": {
+                    "Dice": 0.6415770609318996,
+                    "FN": 166,
+                    "FP": 34,
+                    "IoU": 0.47229551451187335,
+                    "NSD": 0.930972281008728,
+                    "TN": 8927621,
+                    "TP": 179,
+                    "n_pred": 213,
+                    "n_ref": 345
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00247-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00247-000/BraTS-MET-00247-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.4363905325443787,
+                    "FN": 712,
+                    "FP": 50,
+                    "IoU": 0.27909176915799433,
+                    "NSD": 0.5957038569439884,
+                    "TN": 8926943,
+                    "TP": 295,
+                    "n_pred": 345,
+                    "n_ref": 1007
+                },
+                "2": {
+                    "Dice": 0.8707867202490859,
+                    "FN": 4237,
+                    "FP": 2901,
+                    "IoU": 0.7711445976274447,
+                    "NSD": 0.8489689000972321,
+                    "TN": 8896810,
+                    "TP": 24052,
+                    "n_pred": 26953,
+                    "n_ref": 28289
+                },
+                "3": {
+                    "Dice": 0.5870006770480705,
+                    "FN": 1987,
+                    "FP": 453,
+                    "IoU": 0.415428845232391,
+                    "NSD": 0.7599822520149851,
+                    "TN": 8923826,
+                    "TP": 1734,
+                    "n_pred": 2187,
+                    "n_ref": 3721
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00248-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00248-000/BraTS-MET-00248-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.9373404288043311,
+                    "FN": 1242,
+                    "FP": 795,
+                    "IoU": 0.8820702831007932,
+                    "NSD": 0.9538061783477708,
+                    "TN": 8910727,
+                    "TP": 15236,
+                    "n_pred": 16031,
+                    "n_ref": 16478
+                },
+                "2": {
+                    "Dice": 0.7191788788090253,
+                    "FN": 5876,
+                    "FP": 3782,
+                    "IoU": 0.5614982973893303,
+                    "NSD": 0.7576215302341676,
+                    "TN": 8905975,
+                    "TP": 12367,
+                    "n_pred": 16149,
+                    "n_ref": 18243
+                },
+                "3": {
+                    "Dice": 0.6780083504704929,
+                    "FN": 2666,
+                    "FP": 2501,
+                    "IoU": 0.5128688601866692,
+                    "NSD": 0.9322566363125425,
+                    "TN": 8917393,
+                    "TP": 5440,
+                    "n_pred": 7941,
+                    "n_ref": 8106
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00251-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00251-000/BraTS-MET-00251-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": NaN,
+                    "FN": 0,
+                    "FP": 0,
+                    "IoU": NaN,
+                    "NSD": NaN,
+                    "TN": 8928000,
+                    "TP": 0,
+                    "n_pred": 0,
+                    "n_ref": 0
+                },
+                "2": {
+                    "Dice": 0.0,
+                    "FN": 57,
+                    "FP": 8,
+                    "IoU": 0.0,
+                    "NSD": 0.0,
+                    "TN": 8927935,
+                    "TP": 0,
+                    "n_pred": 8,
+                    "n_ref": 57
+                },
+                "3": {
+                    "Dice": 0.3364485981308411,
+                    "FN": 142,
+                    "FP": 0,
+                    "IoU": 0.20224719101123595,
+                    "NSD": 0.47743074704310584,
+                    "TN": 8927822,
+                    "TP": 36,
+                    "n_pred": 36,
+                    "n_ref": 178
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00252-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00252-000/BraTS-MET-00252-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": NaN,
+                    "FN": 0,
+                    "FP": 0,
+                    "IoU": NaN,
+                    "NSD": NaN,
+                    "TN": 8928000,
+                    "TP": 0,
+                    "n_pred": 0,
+                    "n_ref": 0
+                },
+                "2": {
+                    "Dice": 0.8320662111442595,
+                    "FN": 814,
+                    "FP": 931,
+                    "IoU": 0.712425840474621,
+                    "NSD": 0.8968239876405386,
+                    "TN": 8921932,
+                    "TP": 4323,
+                    "n_pred": 5254,
+                    "n_ref": 5137
+                },
+                "3": {
+                    "Dice": 0.896600566572238,
+                    "FN": 62,
+                    "FP": 84,
+                    "IoU": 0.8125802310654685,
+                    "NSD": 0.9884257281735808,
+                    "TN": 8927221,
+                    "TP": 633,
+                    "n_pred": 717,
+                    "n_ref": 695
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00258-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00258-000/BraTS-MET-00258-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.2526163364707431,
+                    "FN": 222,
+                    "FP": 11133,
+                    "IoU": 0.1445683290643363,
+                    "NSD": 0.5256240111432513,
+                    "TN": 8914726,
+                    "TP": 1919,
+                    "n_pred": 13052,
+                    "n_ref": 2141
+                },
+                "2": {
+                    "Dice": 0.88676527540919,
+                    "FN": 22064,
+                    "FP": 11268,
+                    "IoU": 0.7965663088124897,
+                    "NSD": 0.7599299804233954,
+                    "TN": 8764153,
+                    "TP": 130515,
+                    "n_pred": 141783,
+                    "n_ref": 152579
+                },
+                "3": {
+                    "Dice": 0.6071518668012109,
+                    "FN": 8969,
+                    "FP": 3489,
+                    "IoU": 0.43590672402082864,
+                    "NSD": 0.8400634837346969,
+                    "TN": 8905915,
+                    "TP": 9627,
+                    "n_pred": 13116,
+                    "n_ref": 18596
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00260-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00260-000/BraTS-MET-00260-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.7423423423423423,
+                    "FN": 55,
+                    "FP": 231,
+                    "IoU": 0.5902578796561605,
+                    "NSD": 0.9681807058773236,
+                    "TN": 8927302,
+                    "TP": 412,
+                    "n_pred": 643,
+                    "n_ref": 467
+                },
+                "2": {
+                    "Dice": 0.9081535433261272,
+                    "FN": 5585,
+                    "FP": 13406,
+                    "IoU": 0.8317593905031893,
+                    "NSD": 0.7764412612304382,
+                    "TN": 8815120,
+                    "TP": 93889,
+                    "n_pred": 107295,
+                    "n_ref": 99474
+                },
+                "3": {
+                    "Dice": 0.8524208566108007,
+                    "FN": 316,
+                    "FP": 318,
+                    "IoU": 0.7427991886409736,
+                    "NSD": 0.9911374538246649,
+                    "TN": 8925535,
+                    "TP": 1831,
+                    "n_pred": 2149,
+                    "n_ref": 2147
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00262-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00262-000/BraTS-MET-00262-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.6609375,
+                    "FN": 931,
+                    "FP": 805,
+                    "IoU": 0.4935822637106184,
+                    "NSD": 0.9047821702787651,
+                    "TN": 8924572,
+                    "TP": 1692,
+                    "n_pred": 2497,
+                    "n_ref": 2623
+                },
+                "2": {
+                    "Dice": 0.8403399869800023,
+                    "FN": 13142,
+                    "FP": 4271,
+                    "IoU": 0.7246434106075461,
+                    "NSD": 0.7699156697621077,
+                    "TN": 8864762,
+                    "TP": 45825,
+                    "n_pred": 50096,
+                    "n_ref": 58967
+                },
+                "3": {
+                    "Dice": 0.8756654802105199,
+                    "FN": 2105,
+                    "FP": 1982,
+                    "IoU": 0.7788300232696574,
+                    "NSD": 0.9608729926355346,
+                    "TN": 8909521,
+                    "TP": 14392,
+                    "n_pred": 16374,
+                    "n_ref": 16497
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00263-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00263-000/BraTS-MET-00263-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.6533242876526458,
+                    "FN": 894,
+                    "FP": 128,
+                    "IoU": 0.48513853904282117,
+                    "NSD": 0.842539193685582,
+                    "TN": 8926015,
+                    "TP": 963,
+                    "n_pred": 1091,
+                    "n_ref": 1857
+                },
+                "2": {
+                    "Dice": 0.9205522901584116,
+                    "FN": 5380,
+                    "FP": 12354,
+                    "IoU": 0.8527993359618178,
+                    "NSD": 0.7744023805318091,
+                    "TN": 8807525,
+                    "TP": 102741,
+                    "n_pred": 115095,
+                    "n_ref": 108121
+                },
+                "3": {
+                    "Dice": 0.857555411161649,
+                    "FN": 541,
+                    "FP": 1432,
+                    "IoU": 0.7506319514661274,
+                    "NSD": 0.9443746813306615,
+                    "TN": 8920088,
+                    "TP": 5939,
+                    "n_pred": 7371,
+                    "n_ref": 6480
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00264-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00264-000/BraTS-MET-00264-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": NaN,
+                    "FN": 0,
+                    "FP": 0,
+                    "IoU": NaN,
+                    "NSD": NaN,
+                    "TN": 8928000,
+                    "TP": 0,
+                    "n_pred": 0,
+                    "n_ref": 0
+                },
+                "2": {
+                    "Dice": 0.26885245901639343,
+                    "FN": 154,
+                    "FP": 69,
+                    "IoU": 0.1553030303030303,
+                    "NSD": 0.7649182625807561,
+                    "TN": 8927736,
+                    "TP": 41,
+                    "n_pred": 110,
+                    "n_ref": 195
+                },
+                "3": {
+                    "Dice": 0.71280276816609,
+                    "FN": 29,
+                    "FP": 54,
+                    "IoU": 0.553763440860215,
+                    "NSD": 0.8396085210840808,
+                    "TN": 8927814,
+                    "TP": 103,
+                    "n_pred": 157,
+                    "n_ref": 132
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00269-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00269-000/BraTS-MET-00269-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.7847714628558962,
+                    "FN": 1829,
+                    "FP": 144,
+                    "IoU": 0.6457809694793537,
+                    "NSD": 0.7967497467142423,
+                    "TN": 8922430,
+                    "TP": 3597,
+                    "n_pred": 3741,
+                    "n_ref": 5426
+                },
+                "2": {
+                    "Dice": 0.891099188558705,
+                    "FN": 14252,
+                    "FP": 25755,
+                    "IoU": 0.8035878226119231,
+                    "NSD": 0.7537374538764895,
+                    "TN": 8724311,
+                    "TP": 163682,
+                    "n_pred": 189437,
+                    "n_ref": 177934
+                },
+                "3": {
+                    "Dice": 0.8420859615666716,
+                    "FN": 809,
+                    "FP": 3497,
+                    "IoU": 0.7272439348831317,
+                    "NSD": 0.9217564114667467,
+                    "TN": 8912213,
+                    "TP": 11481,
+                    "n_pred": 14978,
+                    "n_ref": 12290
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00270-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00270-000/BraTS-MET-00270-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8776643110210114,
+                    "FN": 4904,
+                    "FP": 1553,
+                    "IoU": 0.7819980417974949,
+                    "NSD": 0.825399945240178,
+                    "TN": 8898381,
+                    "TP": 23162,
+                    "n_pred": 24715,
+                    "n_ref": 28066
+                },
+                "2": {
+                    "Dice": 0.8310817539084542,
+                    "FN": 4323,
+                    "FP": 26211,
+                    "IoU": 0.7109836437982735,
+                    "NSD": 0.7133089777994029,
+                    "TN": 8822352,
+                    "TP": 75114,
+                    "n_pred": 101325,
+                    "n_ref": 79437
+                },
+                "3": {
+                    "Dice": 0.7594917652726342,
+                    "FN": 8813,
+                    "FP": 7163,
+                    "IoU": 0.6122424213004539,
+                    "NSD": 0.8359600788398911,
+                    "TN": 8886799,
+                    "TP": 25225,
+                    "n_pred": 32388,
+                    "n_ref": 34038
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00274-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00274-000/BraTS-MET-00274-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.9040826364977865,
+                    "FN": 1657,
+                    "FP": 1853,
+                    "IoU": 0.8249551166965888,
+                    "NSD": 0.9483866299926176,
+                    "TN": 8907948,
+                    "TP": 16542,
+                    "n_pred": 18395,
+                    "n_ref": 18199
+                },
+                "2": {
+                    "Dice": 0.8775106021902336,
+                    "FN": 12352,
+                    "FP": 22221,
+                    "IoU": 0.7817540227127824,
+                    "NSD": 0.7599065211081455,
+                    "TN": 8769587,
+                    "TP": 123840,
+                    "n_pred": 146061,
+                    "n_ref": 136192
+                },
+                "3": {
+                    "Dice": 0.8117514759628901,
+                    "FN": 3912,
+                    "FP": 2784,
+                    "IoU": 0.6831495764917428,
+                    "NSD": 0.9611899352598683,
+                    "TN": 8906867,
+                    "TP": 14437,
+                    "n_pred": 17221,
+                    "n_ref": 18349
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00277-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00277-000/BraTS-MET-00277-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.8110393946138438,
+                    "FN": 1122,
+                    "FP": 576,
+                    "IoU": 0.6821415200299513,
+                    "NSD": 0.8485830545298356,
+                    "TN": 8922658,
+                    "TP": 3644,
+                    "n_pred": 4220,
+                    "n_ref": 4766
+                },
+                "2": {
+                    "Dice": 0.880701509083464,
+                    "FN": 8254,
+                    "FP": 3691,
+                    "IoU": 0.7868334642015847,
+                    "NSD": 0.7758820738883726,
+                    "TN": 8871964,
+                    "TP": 44091,
+                    "n_pred": 47782,
+                    "n_ref": 52345
+                },
+                "3": {
+                    "Dice": 0.8145149345840533,
+                    "FN": 1717,
+                    "FP": 2040,
+                    "IoU": 0.6870731301016159,
+                    "NSD": 0.925996034384765,
+                    "TN": 8915994,
+                    "TP": 8249,
+                    "n_pred": 10289,
+                    "n_ref": 9966
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00278-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00278-000/BraTS-MET-00278-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.9203494264708248,
+                    "FN": 4006,
+                    "FP": 945,
+                    "IoU": 0.8524511995231709,
+                    "NSD": 0.8502194557263602,
+                    "TN": 8894445,
+                    "TP": 28604,
+                    "n_pred": 29549,
+                    "n_ref": 32610
+                },
+                "2": {
+                    "Dice": 0.8616003510825044,
+                    "FN": 20227,
+                    "FP": 17617,
+                    "IoU": 0.7568522635278395,
+                    "NSD": 0.7433703167993307,
+                    "TN": 8772358,
+                    "TP": 117798,
+                    "n_pred": 135415,
+                    "n_ref": 138025
+                },
+                "3": {
+                    "Dice": 0.7182744866302261,
+                    "FN": 4981,
+                    "FP": 4554,
+                    "IoU": 0.5603964960811434,
+                    "NSD": 0.918910504100807,
+                    "TN": 8906310,
+                    "TP": 12155,
+                    "n_pred": 16709,
+                    "n_ref": 17136
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00280-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00280-000/BraTS-MET-00280-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": NaN,
+                    "FN": 0,
+                    "FP": 0,
+                    "IoU": NaN,
+                    "NSD": NaN,
+                    "TN": 8928000,
+                    "TP": 0,
+                    "n_pred": 0,
+                    "n_ref": 0
+                },
+                "2": {
+                    "Dice": 0.5359911406423035,
+                    "FN": 328,
+                    "FP": 91,
+                    "IoU": 0.3661119515885023,
+                    "NSD": 0.742759761096095,
+                    "TN": 8927339,
+                    "TP": 242,
+                    "n_pred": 333,
+                    "n_ref": 570
+                },
+                "3": {
+                    "Dice": 0.8170347003154574,
+                    "FN": 36,
+                    "FP": 80,
+                    "IoU": 0.6906666666666667,
+                    "NSD": 0.9471818363271147,
+                    "TN": 8927625,
+                    "TP": 259,
+                    "n_pred": 339,
+                    "n_ref": 295
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00281-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00281-000/BraTS-MET-00281-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": NaN,
+                    "FN": 0,
+                    "FP": 0,
+                    "IoU": NaN,
+                    "NSD": NaN,
+                    "TN": 8928000,
+                    "TP": 0,
+                    "n_pred": 0,
+                    "n_ref": 0
+                },
+                "2": {
+                    "Dice": 0.0,
+                    "FN": 0,
+                    "FP": 2,
+                    "IoU": 0.0,
+                    "NSD": 0.0,
+                    "TN": 8927998,
+                    "TP": 0,
+                    "n_pred": 2,
+                    "n_ref": 0
+                },
+                "3": {
+                    "Dice": 0.8,
+                    "FN": 11,
+                    "FP": 3,
+                    "IoU": 0.6666666666666666,
+                    "NSD": 0.9879166307594289,
+                    "TN": 8927958,
+                    "TP": 28,
+                    "n_pred": 31,
+                    "n_ref": 39
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00282-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00282-000/BraTS-MET-00282-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.0,
+                    "FN": 53,
+                    "FP": 0,
+                    "IoU": 0.0,
+                    "NSD": 0.0,
+                    "TN": 8927947,
+                    "TP": 0,
+                    "n_pred": 0,
+                    "n_ref": 53
+                },
+                "2": {
+                    "Dice": 0.25092798812175204,
+                    "FN": 991,
+                    "FP": 18,
+                    "IoU": 0.1434634974533107,
+                    "NSD": 0.3880036839022386,
+                    "TN": 8926822,
+                    "TP": 169,
+                    "n_pred": 187,
+                    "n_ref": 1160
+                },
+                "3": {
+                    "Dice": 0.38979963570127507,
+                    "FN": 624,
+                    "FP": 46,
+                    "IoU": 0.2420814479638009,
+                    "NSD": 0.46398375521819457,
+                    "TN": 8927116,
+                    "TP": 214,
+                    "n_pred": 260,
+                    "n_ref": 838
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00286-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00286-000/BraTS-MET-00286-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.5263157894736842,
+                    "FN": 32,
+                    "FP": 4,
+                    "IoU": 0.35714285714285715,
+                    "NSD": 0.6315633082067261,
+                    "TN": 8927944,
+                    "TP": 20,
+                    "n_pred": 24,
+                    "n_ref": 52
+                },
+                "2": {
+                    "Dice": 0.0,
+                    "FN": 0,
+                    "FP": 500,
+                    "IoU": 0.0,
+                    "NSD": 0.0,
+                    "TN": 8927500,
+                    "TP": 0,
+                    "n_pred": 500,
+                    "n_ref": 0
+                },
+                "3": {
+                    "Dice": 0.7018469656992085,
+                    "FN": 71,
+                    "FP": 155,
+                    "IoU": 0.540650406504065,
+                    "NSD": 0.938759659621564,
+                    "TN": 8927508,
+                    "TP": 266,
+                    "n_pred": 421,
+                    "n_ref": 337
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00289-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00289-000/BraTS-MET-00289-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.7905494093380836,
+                    "FN": 1944,
+                    "FP": 290,
+                    "IoU": 0.6536434108527132,
+                    "NSD": 0.8955200908086304,
+                    "TN": 8921550,
+                    "TP": 4216,
+                    "n_pred": 4506,
+                    "n_ref": 6160
+                },
+                "2": {
+                    "Dice": 0.8996491333744937,
+                    "FN": 4758,
+                    "FP": 21898,
+                    "IoU": 0.8176020582720915,
+                    "NSD": 0.7310497912973868,
+                    "TN": 8781858,
+                    "TP": 119486,
+                    "n_pred": 141384,
+                    "n_ref": 124244
+                },
+                "3": {
+                    "Dice": 0.7977013642309848,
+                    "FN": 1215,
+                    "FP": 3115,
+                    "IoU": 0.6634802207196705,
+                    "NSD": 0.9126961620601531,
+                    "TN": 8915133,
+                    "TP": 8537,
+                    "n_pred": 11652,
+                    "n_ref": 9752
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00290-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00290-000/BraTS-MET-00290-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": NaN,
+                    "FN": 0,
+                    "FP": 0,
+                    "IoU": NaN,
+                    "NSD": NaN,
+                    "TN": 8928000,
+                    "TP": 0,
+                    "n_pred": 0,
+                    "n_ref": 0
+                },
+                "2": {
+                    "Dice": 0.2073523337463858,
+                    "FN": 12977,
+                    "FP": 456,
+                    "IoU": 0.11566820276497695,
+                    "NSD": 0.25912923520535674,
+                    "TN": 8912810,
+                    "TP": 1757,
+                    "n_pred": 2213,
+                    "n_ref": 14734
+                },
+                "3": {
+                    "Dice": 0.390927284856571,
+                    "FN": 1558,
+                    "FP": 268,
+                    "IoU": 0.2429519071310116,
+                    "NSD": 0.5502587189148894,
+                    "TN": 8925588,
+                    "TP": 586,
+                    "n_pred": 854,
+                    "n_ref": 2144
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00291-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00291-000/BraTS-MET-00291-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.7821744865272282,
+                    "FN": 826,
+                    "FP": 1486,
+                    "IoU": 0.642271390994894,
+                    "NSD": 0.9616310580304434,
+                    "TN": 8921537,
+                    "TP": 4151,
+                    "n_pred": 5637,
+                    "n_ref": 4977
+                },
+                "2": {
+                    "Dice": 0.8575275362734005,
+                    "FN": 3306,
+                    "FP": 16588,
+                    "IoU": 0.7505892382528458,
+                    "NSD": 0.8229836679210564,
+                    "TN": 8848236,
+                    "TP": 59870,
+                    "n_pred": 76458,
+                    "n_ref": 63176
+                },
+                "3": {
+                    "Dice": 0.9507329916678404,
+                    "FN": 2856,
+                    "FP": 1691,
+                    "IoU": 0.9060925237505163,
+                    "NSD": 0.9816865490753274,
+                    "TN": 8879580,
+                    "TP": 43873,
+                    "n_pred": 45564,
+                    "n_ref": 46729
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00292-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00292-000/BraTS-MET-00292-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.24926085967705253,
+                    "FN": 5070,
+                    "FP": 1532,
+                    "IoU": 0.14237464276435438,
+                    "NSD": 0.315505885227377,
+                    "TN": 8920302,
+                    "TP": 1096,
+                    "n_pred": 2628,
+                    "n_ref": 6166
+                },
+                "2": {
+                    "Dice": 0.8878679771114528,
+                    "FN": 10189,
+                    "FP": 18539,
+                    "IoU": 0.7983476411419105,
+                    "NSD": 0.7679462021920006,
+                    "TN": 8785537,
+                    "TP": 113735,
+                    "n_pred": 132274,
+                    "n_ref": 123924
+                },
+                "3": {
+                    "Dice": 0.5796115709251823,
+                    "FN": 6800,
+                    "FP": 3460,
+                    "IoU": 0.4080655397219177,
+                    "NSD": 0.6909228252196264,
+                    "TN": 8910667,
+                    "TP": 7073,
+                    "n_pred": 10533,
+                    "n_ref": 13873
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00293-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00293-000/BraTS-MET-00293-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.0,
+                    "FN": 0,
+                    "FP": 6,
+                    "IoU": 0.0,
+                    "NSD": 0.0,
+                    "TN": 8927994,
+                    "TP": 0,
+                    "n_pred": 6,
+                    "n_ref": 0
+                },
+                "2": {
+                    "Dice": 0.30403309203722856,
+                    "FN": 447,
+                    "FP": 226,
+                    "IoU": 0.17926829268292682,
+                    "NSD": 0.5834915232424847,
+                    "TN": 8927180,
+                    "TP": 147,
+                    "n_pred": 373,
+                    "n_ref": 594
+                },
+                "3": {
+                    "Dice": 0.8583489681050657,
+                    "FN": 55,
+                    "FP": 247,
+                    "IoU": 0.751848808545604,
+                    "NSD": 0.9221838713259128,
+                    "TN": 8926783,
+                    "TP": 915,
+                    "n_pred": 1162,
+                    "n_ref": 970
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00295-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00295-000/BraTS-MET-00295-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.757327080890973,
+                    "FN": 544,
+                    "FP": 77,
+                    "IoU": 0.6094339622641509,
+                    "NSD": 0.9079412720477187,
+                    "TN": 8926410,
+                    "TP": 969,
+                    "n_pred": 1046,
+                    "n_ref": 1513
+                },
+                "2": {
+                    "Dice": 0.8880806770447245,
+                    "FN": 6811,
+                    "FP": 22177,
+                    "IoU": 0.798691648495118,
+                    "NSD": 0.7924423143566052,
+                    "TN": 8784002,
+                    "TP": 115010,
+                    "n_pred": 137187,
+                    "n_ref": 121821
+                },
+                "3": {
+                    "Dice": 0.8283338283338283,
+                    "FN": 1514,
+                    "FP": 798,
+                    "IoU": 0.7069708491761724,
+                    "NSD": 0.9672918683821458,
+                    "TN": 8920110,
+                    "TP": 5578,
+                    "n_pred": 6376,
+                    "n_ref": 7092
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00299-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00299-000/BraTS-MET-00299-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.6,
+                    "FN": 27,
+                    "FP": 1,
+                    "IoU": 0.42857142857142855,
+                    "NSD": 0.9129918838737308,
+                    "TN": 8927951,
+                    "TP": 21,
+                    "n_pred": 22,
+                    "n_ref": 48
+                },
+                "2": {
+                    "Dice": 0.6066031004735033,
+                    "FN": 4925,
+                    "FP": 1140,
+                    "IoU": 0.4353412159016851,
+                    "NSD": 0.6904570512457537,
+                    "TN": 8917259,
+                    "TP": 4676,
+                    "n_pred": 5816,
+                    "n_ref": 9601
+                },
+                "3": {
+                    "Dice": 0.8362445414847162,
+                    "FN": 125,
+                    "FP": 175,
+                    "IoU": 0.7185741088180112,
+                    "NSD": 0.9947699384724293,
+                    "TN": 8926934,
+                    "TP": 766,
+                    "n_pred": 941,
+                    "n_ref": 891
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00301-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00301-000/BraTS-MET-00301-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.49849411335219496,
+                    "FN": 5132,
+                    "FP": 363,
+                    "IoU": 0.3319961098954534,
+                    "NSD": 0.5441394550786764,
+                    "TN": 8919774,
+                    "TP": 2731,
+                    "n_pred": 3094,
+                    "n_ref": 7863
+                },
+                "2": {
+                    "Dice": 0.4845485889413868,
+                    "FN": 46513,
+                    "FP": 1925,
+                    "IoU": 0.3197387823888772,
+                    "NSD": 0.41806907971188306,
+                    "TN": 8856795,
+                    "TP": 22767,
+                    "n_pred": 24692,
+                    "n_ref": 69280
+                },
+                "3": {
+                    "Dice": 0.5900315457413249,
+                    "FN": 5856,
+                    "FP": 3891,
+                    "IoU": 0.41847145158403437,
+                    "NSD": 0.726986762920507,
+                    "TN": 8911239,
+                    "TP": 7014,
+                    "n_pred": 10905,
+                    "n_ref": 12870
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00304-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00304-000/BraTS-MET-00304-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.12418300653594772,
+                    "FN": 265,
+                    "FP": 3,
+                    "IoU": 0.06620209059233449,
+                    "NSD": 0.37289308544640226,
+                    "TN": 8927713,
+                    "TP": 19,
+                    "n_pred": 22,
+                    "n_ref": 284
+                },
+                "2": {
+                    "Dice": 0.4262584633500147,
+                    "FN": 1528,
+                    "FP": 421,
+                    "IoU": 0.27085671530115973,
+                    "NSD": 0.6552359588674395,
+                    "TN": 8925327,
+                    "TP": 724,
+                    "n_pred": 1145,
+                    "n_ref": 2252
+                },
+                "3": {
+                    "Dice": 0.7470854151796336,
+                    "FN": 713,
+                    "FP": 350,
+                    "IoU": 0.5962780098746677,
+                    "NSD": 0.8744359692514332,
+                    "TN": 8925367,
+                    "TP": 1570,
+                    "n_pred": 1920,
+                    "n_ref": 2283
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00305-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00305-000/BraTS-MET-00305-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.6495655771617708,
+                    "FN": 22,
+                    "FP": 825,
+                    "IoU": 0.4810049019607843,
+                    "NSD": 0.7833597015402501,
+                    "TN": 8926368,
+                    "TP": 785,
+                    "n_pred": 1610,
+                    "n_ref": 807
+                },
+                "2": {
+                    "Dice": 0.8535874778402298,
+                    "FN": 21506,
+                    "FP": 21110,
+                    "IoU": 0.7445727095095959,
+                    "NSD": 0.7261929064408323,
+                    "TN": 8761158,
+                    "TP": 124226,
+                    "n_pred": 145336,
+                    "n_ref": 145732
+                },
+                "3": {
+                    "Dice": 0.8885428022634065,
+                    "FN": 3476,
+                    "FP": 2965,
+                    "IoU": 0.7994395142456796,
+                    "NSD": 0.8401457562870399,
+                    "TN": 8895885,
+                    "TP": 25674,
+                    "n_pred": 28639,
+                    "n_ref": 29150
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00306-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00306-000/BraTS-MET-00306-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": 0.9083333333333333,
+                    "FN": 67,
+                    "FP": 65,
+                    "IoU": 0.8320610687022901,
+                    "NSD": 0.9992886519149128,
+                    "TN": 8927214,
+                    "TP": 654,
+                    "n_pred": 719,
+                    "n_ref": 721
+                },
+                "2": {
+                    "Dice": 0.9096410330888582,
+                    "FN": 6340,
+                    "FP": 8592,
+                    "IoU": 0.834258313723749,
+                    "NSD": 0.7811636725214953,
+                    "TN": 8837908,
+                    "TP": 75160,
+                    "n_pred": 83752,
+                    "n_ref": 81500
+                },
+                "3": {
+                    "Dice": 0.8674230145867099,
+                    "FN": 112,
+                    "FP": 297,
+                    "IoU": 0.7658843732112193,
+                    "NSD": 0.996228050547381,
+                    "TN": 8926253,
+                    "TP": 1338,
+                    "n_pred": 1635,
+                    "n_ref": 1450
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00307-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00307-000/BraTS-MET-00307-000-seg.nii.gz"
+        },
+        {
+            "metrics": {
+                "1": {
+                    "Dice": NaN,
+                    "FN": 0,
+                    "FP": 0,
+                    "IoU": NaN,
+                    "NSD": NaN,
+                    "TN": 8928000,
+                    "TP": 0,
+                    "n_pred": 0,
+                    "n_ref": 0
+                },
+                "2": {
+                    "Dice": 0.3701492537313433,
+                    "FN": 106,
+                    "FP": 105,
+                    "IoU": 0.2271062271062271,
+                    "NSD": 0.6928839149348288,
+                    "TN": 8927727,
+                    "TP": 62,
+                    "n_pred": 167,
+                    "n_ref": 168
+                },
+                "3": {
+                    "Dice": 0.7391304347826086,
+                    "FN": 11,
+                    "FP": 73,
+                    "IoU": 0.5862068965517241,
+                    "NSD": 0.9622155986584935,
+                    "TN": 8927797,
+                    "TP": 119,
+                    "n_pred": 192,
+                    "n_ref": 130
+                }
+            },
+            "prediction_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/CNN_ConMAEFT/validation/BraTS-MET-00309-000.nii.gz",
+            "reference_file": "/mnt/c/Users/puruv/Projects/LatentCampus/validations/BRATS-MET/gt/BraTS-MET-00309-000/BraTS-MET-00309-000-seg.nii.gz"
+        }
+    ]
+}
