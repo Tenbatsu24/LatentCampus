@@ -317,7 +317,7 @@ class AlignedMAETrainer(AlignedMAE128Trainer):
         super().__init__(*args, **kwargs)
         self.total_batch_size = 4
         self.teacher_mom = 0.995
-        self.initial_lr = 1e-2
+        self.initial_lr = 5e-3
         self.num_epochs = 1000
         self.mask_percentage = 0.75  # Default mask percentage for ConMAE
         self.config_plan.patch_size = (128, 128, 128)  # Patch size for ConMAE
