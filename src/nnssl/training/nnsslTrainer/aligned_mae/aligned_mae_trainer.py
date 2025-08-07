@@ -422,6 +422,29 @@ class VarAligned2MAEFTTrainer(AlignedMAEFTTrainer):
         )
 
 
+class AlignedConConMAETrainer(AlignedMAETrainer):
+
+    def __init__(self, *args, **kwargs):
+        """
+        Initialize the ConMAETrainer with the given arguments.
+        """
+        super().__init__(*args, **kwargs)
+        self.total_batch_size = 4
+        self.teacher_mom = 0.995
+        self.initial_lr = 5e-3
+        self.num_epochs = 1000
+        self.mask_percentage = 0.75  # Default mask percentage for ConMAE
+        self.config_plan.patch_size = (128, 128, 128)  # Patch size for ConMAE
+
+    def build_loss(self):
+        from nnssl.training.loss.aligned_mae_loss import AlignedMAELoss
+
+        return AlignedMAELoss(
+            device=self.device, recon_weight=5.0, fg_cos_weight=0.5, ntxent_weight=0.1,
+            do_variance_normalisation=False, fine_grained_contrastive=True
+        )
+
+
 class AlignedConMAEFTTrainer(AlignedMAEFTTrainer):
 
     def build_loss(self):
@@ -441,6 +464,32 @@ class AlignedConConMAEFTTrainer(AlignedMAEFTTrainer):
         return AlignedMAELoss(
             device=self.device, recon_weight=5.0, fg_cos_weight=0.2, ntxent_weight=0.1,
             do_variance_normalisation=False, fine_grained_contrastive=True
+        )
+
+class ConMAETrainer(AlignedConConMAETrainer):
+
+    def __init__(self, *args, **kwargs):
+        """
+        Initialize the ConMAETrainer with the given arguments.
+        """
+        super().__init__(*args, **kwargs)
+        self.total_batch_size = 4
+        self.teacher_mom = 0.995
+        self.initial_lr = 5e-3
+        self.num_epochs = 1000
+        self.mask_percentage = 0.75  # Default mask percentage for ConMAE
+        self.config_plan.patch_size = (128, 128, 128)  # Patch size for ConMAE
+
+    def build_loss(self):
+        """
+        Builds the loss function for the model.
+        This method is overridden to provide specific loss logic for ConMAE.
+        """
+        from nnssl.training.loss.aligned_mae_loss import AlignedMAELoss
+
+        return AlignedMAELoss(
+            device=self.device, recon_weight=5.0, fg_cos_weight=0.0, ntxent_weight=0.1,
+            do_variance_normalisation=False, fine_grained_contrastive=False
         )
 
 
