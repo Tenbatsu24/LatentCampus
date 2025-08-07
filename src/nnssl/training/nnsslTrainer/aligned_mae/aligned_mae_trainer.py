@@ -61,12 +61,12 @@ class BaseAlignedMAETrainer(BaseMAETrainer):
 
     @override
     def build_architecture_and_adaptation_plan(
-        self,
-        config_plan,
-        num_input_channels: int,
-        num_output_channels: int,
-        *args,
-        **kwargs,
+            self,
+            config_plan,
+            num_input_channels: int,
+            num_output_channels: int,
+            *args,
+            **kwargs,
     ):
         # ---------------------------- Create architecture --------------------------- #
         architecture = ConsisMAE(
@@ -94,15 +94,15 @@ class BaseAlignedMAETrainer(BaseMAETrainer):
         )
 
     def get_training_transforms(
-        self,
-        patch_size: Union[np.ndarray, Tuple[int]],
-        rotation_for_DA: dict,
-        mirror_axes: Tuple[int, ...],
-        do_dummy_2d_data_aug: bool,
-        order_resampling_data: int = 3,
-        order_resampling_seg: int = 1,
-        border_val_seg: int = -1,
-        use_mask_for_norm: List[bool] = None,
+            self,
+            patch_size: Union[np.ndarray, Tuple[int]],
+            rotation_for_DA: dict,
+            mirror_axes: Tuple[int, ...],
+            do_dummy_2d_data_aug: bool,
+            order_resampling_data: int = 3,
+            order_resampling_seg: int = 1,
+            border_val_seg: int = -1,
+            use_mask_for_norm: List[bool] = None,
     ):
         """
         Returns the training transforms for the model.
@@ -182,14 +182,14 @@ class BaseAlignedMAETrainer(BaseMAETrainer):
         if not update_bn:
             return  # update BN stat buffers if required
         for (n_s, m_s), (n_t, m_t) in zip(
-            student_model.named_modules(), teacher_model.named_modules()
+                student_model.named_modules(), teacher_model.named_modules()
         ):
             if isinstance(m_s, torch.nn.modules.batchnorm._NormBase) and n_s == n_t:
                 m_t.running_mean.data = (
-                    mom * m_t.running_mean.data + (1 - mom) * m_s.running_mean.data
+                        mom * m_t.running_mean.data + (1 - mom) * m_s.running_mean.data
                 )
                 m_t.running_var.data = (
-                    mom * m_t.running_var.data + (1 - mom) * m_s.running_var.data
+                        mom * m_t.running_var.data + (1 - mom) * m_s.running_var.data
                 )
 
     def shared_step(self, batch: dict, is_train: bool = True) -> dict:
@@ -287,12 +287,12 @@ class AlignedMAE128Trainer(BaseAlignedMAETrainer):
 
     @override
     def build_architecture_and_adaptation_plan(
-        self,
-        config_plan,
-        num_input_channels: int,
-        num_output_channels: int,
-        *args,
-        **kwargs,
+            self,
+            config_plan,
+            num_input_channels: int,
+            num_output_channels: int,
+            *args,
+            **kwargs,
     ):
         # ---------------------------- Create architecture --------------------------- #
         architecture = ConsisMAE(
@@ -317,7 +317,7 @@ class AlignedMAETrainer(AlignedMAE128Trainer):
         super().__init__(*args, **kwargs)
         self.total_batch_size = 4
         self.teacher_mom = 0.995
-        self.initial_lr = 5e-3
+        self.initial_lr = 1e-2
         self.num_epochs = 1000
         self.mask_percentage = 0.75  # Default mask percentage for ConMAE
         self.config_plan.patch_size = (128, 128, 128)  # Patch size for ConMAE
@@ -351,6 +351,16 @@ class AlignedMAETrainer(AlignedMAE128Trainer):
         # no changes to original mae since projector can be thrown away
         adapt_plan = self.save_adaption_plan(num_input_channels)
         return architecture, adapt_plan
+
+
+class AlignedMAELR5Trainer(AlignedMAETrainer):
+
+    def __init__(self, *args, **kwargs):
+        """
+        Initialize the ConMAETrainer with the given arguments.
+        """
+        super().__init__(*args, **kwargs)
+        self.initial_lr = 5e-3
 
 
 class AlignedMAEFTTrainer(AlignedMAE128Trainer):
@@ -465,6 +475,7 @@ class AlignedConConMAEFTTrainer(AlignedMAEFTTrainer):
             device=self.device, recon_weight=5.0, fg_cos_weight=0.2, ntxent_weight=0.1,
             do_variance_normalisation=False, fine_grained_contrastive=True
         )
+
 
 class ConMAETrainer(AlignedConConMAETrainer):
 
