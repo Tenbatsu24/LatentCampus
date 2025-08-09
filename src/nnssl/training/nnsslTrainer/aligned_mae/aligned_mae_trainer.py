@@ -7,7 +7,7 @@ import numpy as np
 
 from torch import autocast
 
-from nnssl.architectures.consis_arch import ConsisMAE
+from nnssl.architectures.consis_arch import ConsisMAE, ConsisDecoderMAE
 from nnssl.ssl_data.configure_basic_dummyDA import (
     configure_rotation_dummyDA_mirroring_and_inital_patch_size,
 )
@@ -515,6 +515,76 @@ class ConMAEFTTrainer(AlignedMAEFTTrainer):
 
         return AlignedMAELoss(
             device=self.device, recon_weight=5.0, fg_cos_weight=0.0, ntxent_weight=0.1
+        )
+
+
+class DecoderAlignedMAELR5Trainer(AlignedMAETrainer):
+
+    def __init__(self, *args, **kwargs):
+        """
+        Initialize the ConMAETrainer with the given arguments.
+        """
+        super().__init__(*args, **kwargs)
+        self.initial_lr = 5e-3
+        self.total_batch_size = 4
+        self.teacher_mom = 0.995
+        self.num_epochs = 1000
+        self.mask_percentage = 0.75  # Default mask percentage for ConMAE
+        self.config_plan.patch_size = (128, 128, 128)  # Patch size for ConMAE
+
+    def build_architecture_and_adaptation_plan(
+        self,
+        config_plan,
+        num_input_channels: int,
+        num_output_channels: int,
+        *args,
+        **kwargs,
+    ):
+        # ---------------------------- Create architecture --------------------------- #
+        architecture = ConsisDecoderMAE(
+            input_channels=num_input_channels,
+            num_classes=num_output_channels,
+            only_last_stage_as_latent=False,
+            use_projector=True,
+        )
+        # --------------------- Build associated adaptation plan --------------------- #
+        # no changes to original mae since projector can be thrown away
+        adapt_plan = self.save_adaption_plan(num_input_channels)
+        return architecture, adapt_plan
+
+    def build_loss(self):
+        """
+        Builds the loss function for the model.
+        This method is overridden to provide specific loss logic for ConMAE.
+        """
+        from nnssl.training.loss.aligned_mae_loss import AlignedMAELoss
+
+        return AlignedMAELoss(device=self.device, recon_weight=5.0)
+
+
+class DecoderAlignedConConMAETrainer(DecoderAlignedMAELR5Trainer):
+
+    def build_loss(self):
+        from nnssl.training.loss.aligned_mae_loss import AlignedMAELoss
+
+        return AlignedMAELoss(
+            device=self.device, recon_weight=5.0, fg_cos_weight=0.5, ntxent_weight=0.1,
+            do_variance_normalisation=False, fine_grained_contrastive=True
+        )
+
+
+class DecoderConMAETrainer(DecoderAlignedMAELR5Trainer):
+
+    def build_loss(self):
+        """
+        Builds the loss function for the model.
+        This method is overridden to provide specific loss logic for ConMAE.
+        """
+        from nnssl.training.loss.aligned_mae_loss import AlignedMAELoss
+
+        return AlignedMAELoss(
+            device=self.device, recon_weight=5.0, fg_cos_weight=0.0, ntxent_weight=0.1,
+            do_variance_normalisation=False, fine_grained_contrastive=False
         )
 
 
