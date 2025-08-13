@@ -596,8 +596,8 @@ class AlignedAETrainer(AlignedMAETrainer):
         This class is specifically designed for training ConsisAE models.
         """
         super().__init__(*args, **kwargs)
-        self.total_batch_size = 4
-        self.config_plan.patch_size = (128, 128, 128)
+        self.total_batch_size = 2
+        self.config_plan.patch_size = (160, 160, 160)
         self.num_epochs = 1000
         self.initial_lr = 5e-3
         self.teacher_mom = 0.0
