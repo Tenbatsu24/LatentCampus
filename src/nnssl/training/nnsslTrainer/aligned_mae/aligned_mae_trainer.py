@@ -680,6 +680,7 @@ class AlignedAETrainer(AlignedMAETrainer):
         return AlignedMAELoss(
             device=self.device,
             recon_weight=5.0,
+            ntxent_weight=0.0
         )
 
 
