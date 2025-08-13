@@ -596,11 +596,12 @@ class AlignedAETrainer(AlignedMAETrainer):
         This class is specifically designed for training ConsisAE models.
         """
         super().__init__(*args, **kwargs)
-        self.initial_patch_size = (256, 256, 256)
-        self.total_batch_size = 2
+        self.total_batch_size = 4
+        self.config_plan.patch_size = (128, 128, 128)
+        self.num_epochs = 1000
+        self.initial_lr = 5e-3
         self.teacher_mom = 0.0
         self.mask_percentage = 0.00  # No masking for AutoEncoder
-        self.config_plan.patch_size = (160, 160, 160)
 
     def on_validation_epoch_start(self):
         # self.network.eval()
@@ -632,6 +633,7 @@ class AlignedAETrainer(AlignedMAETrainer):
         mask = torch.zeros_like(data)
 
         if is_train:
+            self.network.train()
             self.optimizer.zero_grad(set_to_none=True)
 
         with (
@@ -667,3 +669,27 @@ class AlignedAETrainer(AlignedMAETrainer):
                 self.ema(self.teacher, self.network, update_bn=False)
 
         return {k: v.detach().cpu().numpy() for k, v in loss_dict.items()}
+
+    def build_loss(self):
+        """
+        Builds the loss function for the model.
+        This method is overridden to provide specific loss logic for ConMAE.
+        """
+        from nnssl.training.loss.aligned_mae_loss import AlignedMAELoss
+
+        return AlignedMAELoss(
+            device=self.device,
+            recon_weight=5.0,
+        )
+
+
+class AlignedAEFTTrainer(AlignedAETrainer):
+
+    def __init__(self, *args, **kwargs):
+        """
+        Initialize the ConsisAETrainer with the given arguments.
+        This class is specifically designed for training ConsisAE models.
+        """
+        super().__init__(*args, **kwargs)
+        self.num_epochs = 250
+        self.initial_lr = 5e-3
