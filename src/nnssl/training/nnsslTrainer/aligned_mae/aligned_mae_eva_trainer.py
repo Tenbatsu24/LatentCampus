@@ -427,7 +427,7 @@ class AlignedAEEvaTrainer(AlignedMAEEvaTrainer):
         from nnssl.training.loss.aligned_mae_loss import AlignedMAELoss
 
         return AlignedMAELoss(
-            device=self.device, recon_weight=5.0,
+            device=self.device, recon_weight=5.0, ntxent_weight=0.0
         )
 
     def shared_step(self, batch: dict, is_train: bool = True) -> dict:
