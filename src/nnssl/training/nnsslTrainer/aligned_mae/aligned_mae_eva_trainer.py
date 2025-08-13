@@ -416,10 +416,12 @@ class AlignedAEEvaTrainer(AlignedMAEEvaTrainer):
         Initialize the ConsisAEEvaTrainer with the given arguments.
         """
         super().__init__(*args, **kwargs)
+        self.teacher_mom = 0.0
         self.mask_percentage = 0.0
         self.total_batch_size = (
             2  # since we don't mask anything, we need to reduce the batch size
         )
+        self.mask_percentage = 0.0  # No masking for AlignedAE
 
     def build_loss(self):
         from nnssl.training.loss.aligned_mae_loss import AlignedMAELoss
@@ -451,6 +453,7 @@ class AlignedAEEvaTrainer(AlignedMAEEvaTrainer):
             self.network.train()
 
         if is_train:
+            self.network.train()
             self.optimizer.zero_grad(set_to_none=True)
 
         with (
@@ -493,3 +496,17 @@ class AlignedAEEvaTrainer(AlignedMAEEvaTrainer):
                 self.ema(self.teacher, self.network, update_bn=False)
 
         return {k: v.detach().cpu().numpy() for k, v in loss_dict.items()}
+
+
+class AlignedAEFTEvaTrainer(AlignedAEEvaTrainer):
+    """
+    Trainer for ConsisAE with a mask percentage of 10% and a learning rate of 3e-4.
+    """
+
+    def __init__(self, *args, **kwargs):
+        """
+        Initialize the AlignedAEFTEvaTrainer with the given arguments.
+        """
+        super().__init__(*args, **kwargs)
+        self.initial_lr = 3e-4
+        self.num_epochs = 150
