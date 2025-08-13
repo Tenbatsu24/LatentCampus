@@ -421,6 +421,13 @@ class AlignedAEEvaTrainer(AlignedMAEEvaTrainer):
             2  # since we don't mask anything, we need to reduce the batch size
         )
 
+    def build_loss(self):
+        from nnssl.training.loss.aligned_mae_loss import AlignedMAELoss
+
+        return AlignedMAELoss(
+            device=self.device, recon_weight=5.0,
+        )
+
     def shared_step(self, batch: dict, is_train: bool = True) -> dict:
         """
         Shared step for both training and validation.
