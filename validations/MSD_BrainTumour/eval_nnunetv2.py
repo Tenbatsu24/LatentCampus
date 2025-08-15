@@ -96,11 +96,7 @@ def eval_msd_brats():
     df = pd.DataFrame(all_metrics)
     # Save to CSV
     metrics_csv = current_dir / "msd_brats_metrics.csv"
-    if metrics_csv.exists():
-        # append to existing CSV
-        df.to_csv(metrics_csv, mode='a', header=False, index=False)
-    else:
-        df.to_csv(metrics_csv, index=False)
+    df.to_csv(metrics_csv, index=False)
     print(f"Metrics saved to {metrics_csv}")
 
 

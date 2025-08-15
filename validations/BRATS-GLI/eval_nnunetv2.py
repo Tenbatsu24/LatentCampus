@@ -92,12 +92,7 @@ def eval_runner_brats_gli():
     # Save to CSV
     metrics_csv = current_dir / "brats_gli_metrics.csv"
 
-    if metrics_csv.exists():
-        # append to existing CSV
-        df.to_csv(metrics_csv, mode='a', header=False, index=False)
-    else:
-        # create new CSV
-        df.to_csv(metrics_csv, index=False)
+    df.to_csv(metrics_csv, index=False)
     print(f"Metrics saved to {metrics_csv}")
 
 
