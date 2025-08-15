@@ -9,6 +9,7 @@ from torch import nn
 
 from nnssl.training.loss.mse_loss import MAEMSELoss
 
+
 # Correlated mask with extra positive offsets when using_teacher = True
 @lru_cache(maxsize=5)
 def _get_correlated_mask(b, device, using_teacher, verbose=False):
@@ -25,6 +26,7 @@ def _get_correlated_mask(b, device, using_teacher, verbose=False):
 
     if verbose:
         import matplotlib.pyplot as plt
+
         plt.imshow(mask.detach().cpu().numpy(), interpolation="nearest")
         plt.title("Correlated Mask")
         plt.colorbar()
@@ -74,7 +76,9 @@ class NTXentLoss(nn.Module):
         logits = torch.cat([positives, negatives], dim=1)  # (2B, 1 + negs)
         logits /= self.temperature
 
-        labels = torch.zeros(2 * b, dtype=torch.long, device=device)  # correct class is always index 0
+        labels = torch.zeros(
+            2 * b, dtype=torch.long, device=device
+        )  # correct class is always index 0
 
         return logits, labels
 
@@ -84,40 +88,6 @@ class NTXentLoss(nn.Module):
         loss = self.criterion(logits, labels)
         accuracy = (logits.argmax(dim=1) == 0).float().mean().item()
         return loss / (2 * b), accuracy
-
-
-class LogCoshError(torch.nn.Module):
-    def __init__(self, reduction: Literal["mean", "sum", "none"] = "none"):
-        """
-        Initialize the LogCoshError loss function.
-        """
-        super(LogCoshError, self).__init__()
-
-        if reduction not in ["mean", "sum", "none"]:
-            raise ValueError("Reduction must be 'mean', 'sum', or 'none'.")
-
-        self.reduction = reduction
-
-    def forward(self, input: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
-        """
-        Forward pass for the LogCoshError loss.
-
-        Args:
-            input (torch.Tensor): The predicted values.
-            target (torch.Tensor): The ground truth values.
-
-        Returns:
-            torch.Tensor: The computed Log-Cosh error.
-        """
-        eps = torch.finfo(input.dtype).eps
-        diff = input - target
-        loss = torch.log(torch.cosh(diff + eps))
-        if self.reduction == "mean":
-            return torch.mean(loss)  # (1, )
-        elif self.reduction == "sum":
-            return torch.sum(loss)  # (1,
-        else:
-            return loss  # [b, ...] shape, no reduction applied
 
 
 class AlignedMAELoss(torch.nn.Module):
@@ -130,7 +100,6 @@ class AlignedMAELoss(torch.nn.Module):
         recon_weight=1.0,
         fg_cos_weight=0.5,
         ntxent_weight=0.1,
-        do_variance_normalisation=False,
         fine_grained_contrastive: bool = False,
     ):
         """
@@ -143,16 +112,15 @@ class AlignedMAELoss(torch.nn.Module):
             recon_weight (float): Weight for the reconstruction loss.
             fg_cos_weight (float): Weight for the finegrained cosine similarity loss.
             ntxent_weight (float): Weight for the NT-Xent loss.
-            do_variance_normalisation (bool): Whether to apply variance normalization.
             fine_grained_contrastive (bool): Whether to use fine-grained contrastive loss.
         """
         super(AlignedMAELoss, self).__init__()
 
         self.mse_loss = MAEMSELoss()
-        self.log_cosh = LogCoshError(reduction="none")
         self.huber = torch.nn.HuberLoss(reduction="none")
-        self.do_variance_normalisation = do_variance_normalisation
-        self.fine_grained_contrastive = fine_grained_contrastive  # whether to use fine-grained contrastive loss
+        self.fine_grained_contrastive = (
+            fine_grained_contrastive  # whether to use fine-grained contrastive loss
+        )
 
         self.recon_key = "recon"
         self.proj_key = "proj"
@@ -260,14 +228,9 @@ class AlignedMAELoss(torch.nn.Module):
         # Compute the consistency loss
         eps = torch.finfo(model_output[self.recon_key].dtype).eps
 
-        recon_loss_lc = self.log_cosh(model_output[self.recon_key], gt_recon)
-        recon_loss_lc = torch.sum(recon_loss_lc * (1 - mask)) / (
-                torch.sum((1 - mask)) + eps
-        )
-
         recon_loss_huber = self.huber(model_output[self.recon_key], gt_recon)
         recon_loss_huber = torch.sum(recon_loss_huber * (1 - mask)) / (
-                torch.sum((1 - mask)) + eps
+            torch.sum((1 - mask)) + eps
         )
 
         recon_loss_mse = self.mse_loss(model_output[self.recon_key], gt_recon, mask)
@@ -281,7 +244,7 @@ class AlignedMAELoss(torch.nn.Module):
             F.normalize(target[self.proj_key].detach(), dim=1, eps=eps),
             dim=(0, 2, 3, 4),
         ).mean()
-        cw_std = cw_std / (var_denom ** 0.5)
+        cw_std = cw_std / (var_denom**0.5)
 
         # if latents is 5d tensor, i.e. [b, c, x_p, y_p, z_p], we need to align them for better consistency
         if pred_latents_fg.ndim == 5:
@@ -299,20 +262,19 @@ class AlignedMAELoss(torch.nn.Module):
         if self.fine_grained_contrastive:
             fg_cos_reg, var = self.contrastive_loss(
                 rearrange(pred_latents_fg, "b c x y z -> (b x y z) c"),
-                rearrange(tgt_latents_fg, "b c x y z -> (b x y z) c"),  # swapped assignment already done
+                rearrange(
+                    tgt_latents_fg, "b c x y z -> (b x y z) c"
+                ),  # swapped assignment already done
             )
             var = torch.tensor(var, dtype=torch.float, device=pred_latents_fg.device)
         else:
             fg_cos_reg = (
-                    2 - 2 * (pred_latents_fg * tgt_latents_fg).sum(dim=1).mean()
+                2 - 2 * (pred_latents_fg * tgt_latents_fg).sum(dim=1).mean()
             )  # already normalized
-            var = torch.var(pred_latents_fg, dim=(0, 2, 3, 4), unbiased=False).mean() / var_denom
-            # if self.do_variance_normalisation:
-            #     fg_cos_reg_n = fg_cos_reg / (
-            #             var + eps
-            #     )
-            # else:
-            #     fg_cos_reg_n = fg_cos_reg
+            var = (
+                torch.var(pred_latents_fg, dim=(0, 2, 3, 4), unbiased=False).mean()
+                / var_denom
+            )
 
         pred_latents_aa, tgt_latents_aa = (
             model_output[self.image_latent_key],
@@ -328,17 +290,13 @@ class AlignedMAELoss(torch.nn.Module):
         )
 
         loss = (
-                self.recon_weight * recon_loss_huber
-                + self.fg_cos_weight * fg_cos_reg
-                + self.ntxent_weight * contrastive_loss
+            self.recon_weight * recon_loss_huber
+            + self.fg_cos_weight * fg_cos_reg
+            + self.ntxent_weight * contrastive_loss
         )
-
-        if self.do_variance_normalisation and not self.fine_grained_contrastive:
-            loss = loss - var
 
         return {
             "loss": loss,
-            "log_cosh": recon_loss_lc,
             "huber": recon_loss_huber,
             "mse": recon_loss_mse,
             "cw_std": cw_std,
@@ -387,8 +345,13 @@ if __name__ == "__main__":
     )  # Random mask for the example
 
     loss_fn = AlignedMAELoss(
-        device, out_size=5, do_variance_normalisation=False, fine_grained_contrastive=True,
-        recon_weight=1.0, fg_cos_weight=0.5, ntxent_weight=0.1,
+        device,
+        out_size=5,
+        do_variance_normalisation=False,
+        fine_grained_contrastive=True,
+        recon_weight=1.0,
+        fg_cos_weight=0.5,
+        ntxent_weight=0.1,
     )
     loss_fn.train(True)
 

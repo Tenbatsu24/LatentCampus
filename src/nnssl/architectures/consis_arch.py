@@ -9,30 +9,37 @@ from torch.nn.init import trunc_normal_
 from torch.nn.modules.dropout import _DropoutNd
 from dynamic_network_architectures.building_blocks.eva import Eva
 from dynamic_network_architectures.architectures.unet import ResidualEncoderUNet
-from dynamic_network_architectures.building_blocks.simple_conv_blocks import StackedConvBlocks
+from dynamic_network_architectures.building_blocks.simple_conv_blocks import (
+    StackedConvBlocks,
+)
 from dynamic_network_architectures.building_blocks.helper import get_matching_convtransp
-from dynamic_network_architectures.building_blocks.residual_encoders import ResidualEncoder
-from dynamic_network_architectures.building_blocks.plain_conv_encoder import PlainConvEncoder
+from dynamic_network_architectures.building_blocks.residual_encoders import (
+    ResidualEncoder,
+)
+from dynamic_network_architectures.building_blocks.plain_conv_encoder import (
+    PlainConvEncoder,
+)
 
 from nnssl.architectures.evaMAE_module import EvaMAE
 
 
 class UNetDecoder(nn.Module):
-    def __init__(self,
-                 encoder: Union[PlainConvEncoder, ResidualEncoder],
-                 num_classes: int,
-                 n_conv_per_stage: Union[int, Tuple[int, ...], List[int]],
-                 deep_supervision,
-                 latents: bool = False,
-                 nonlin_first: bool = False,
-                 norm_op: Union[None, Type[nn.Module]] = None,
-                 norm_op_kwargs: dict = None,
-                 dropout_op: Union[None, Type[_DropoutNd]] = None,
-                 dropout_op_kwargs: dict = None,
-                 nonlin: Union[None, Type[torch.nn.Module]] = None,
-                 nonlin_kwargs: dict = None,
-                 conv_bias: bool = None
-                 ):
+    def __init__(
+        self,
+        encoder: Union[PlainConvEncoder, ResidualEncoder],
+        num_classes: int,
+        n_conv_per_stage: Union[int, Tuple[int, ...], List[int]],
+        deep_supervision,
+        latents: bool = False,
+        nonlin_first: bool = False,
+        norm_op: Union[None, Type[nn.Module]] = None,
+        norm_op_kwargs: dict = None,
+        dropout_op: Union[None, Type[_DropoutNd]] = None,
+        dropout_op_kwargs: dict = None,
+        nonlin: Union[None, Type[torch.nn.Module]] = None,
+        nonlin_kwargs: dict = None,
+        conv_bias: bool = None,
+    ):
         """
         This class needs the skips of the encoder as input in its forward.
 
@@ -57,19 +64,28 @@ class UNetDecoder(nn.Module):
         n_stages_encoder = len(encoder.output_channels)
         if isinstance(n_conv_per_stage, int):
             n_conv_per_stage = [n_conv_per_stage] * (n_stages_encoder - 1)
-        assert len(n_conv_per_stage) == n_stages_encoder - 1, "n_conv_per_stage must have as many entries as we have " \
-                                                          "resolution stages - 1 (n_stages in encoder - 1), " \
-                                                          "here: %d" % n_stages_encoder
+        assert len(n_conv_per_stage) == n_stages_encoder - 1, (
+            "n_conv_per_stage must have as many entries as we have "
+            "resolution stages - 1 (n_stages in encoder - 1), "
+            "here: %d" % n_stages_encoder
+        )
 
         transpconv_op = get_matching_convtransp(conv_op=encoder.conv_op)
         conv_bias = encoder.conv_bias if conv_bias is None else conv_bias
         norm_op = encoder.norm_op if norm_op is None else norm_op
-        norm_op_kwargs = encoder.norm_op_kwargs if norm_op_kwargs is None else norm_op_kwargs
+        norm_op_kwargs = (
+            encoder.norm_op_kwargs if norm_op_kwargs is None else norm_op_kwargs
+        )
         dropout_op = encoder.dropout_op if dropout_op is None else dropout_op
-        dropout_op_kwargs = encoder.dropout_op_kwargs if dropout_op_kwargs is None else dropout_op_kwargs
+        dropout_op_kwargs = (
+            encoder.dropout_op_kwargs
+            if dropout_op_kwargs is None
+            else dropout_op_kwargs
+        )
         nonlin = encoder.nonlin if nonlin is None else nonlin
-        nonlin_kwargs = encoder.nonlin_kwargs if nonlin_kwargs is None else nonlin_kwargs
-
+        nonlin_kwargs = (
+            encoder.nonlin_kwargs if nonlin_kwargs is None else nonlin_kwargs
+        )
 
         # we start with the bottleneck and work out way up
         stages = []
@@ -79,28 +95,41 @@ class UNetDecoder(nn.Module):
             input_features_below = encoder.output_channels[-s]
             input_features_skip = encoder.output_channels[-(s + 1)]
             stride_for_transpconv = encoder.strides[-s]
-            transpconvs.append(transpconv_op(
-                input_features_below, input_features_skip, stride_for_transpconv, stride_for_transpconv,
-                bias=conv_bias
-            ))
+            transpconvs.append(
+                transpconv_op(
+                    input_features_below,
+                    input_features_skip,
+                    stride_for_transpconv,
+                    stride_for_transpconv,
+                    bias=conv_bias,
+                )
+            )
             # input features to conv is 2x input_features_skip (concat input_features_skip with transpconv output)
-            stages.append(StackedConvBlocks(
-                n_conv_per_stage[s-1], encoder.conv_op, 2 * input_features_skip, input_features_skip,
-                encoder.kernel_sizes[-(s + 1)], 1,
-                conv_bias,
-                norm_op,
-                norm_op_kwargs,
-                dropout_op,
-                dropout_op_kwargs,
-                nonlin,
-                nonlin_kwargs,
-                nonlin_first
-            ))
+            stages.append(
+                StackedConvBlocks(
+                    n_conv_per_stage[s - 1],
+                    encoder.conv_op,
+                    2 * input_features_skip,
+                    input_features_skip,
+                    encoder.kernel_sizes[-(s + 1)],
+                    1,
+                    conv_bias,
+                    norm_op,
+                    norm_op_kwargs,
+                    dropout_op,
+                    dropout_op_kwargs,
+                    nonlin,
+                    nonlin_kwargs,
+                    nonlin_first,
+                )
+            )
 
             # we always build the deep supervision outputs so that we can always load parameters. If we don't do this
             # then a model trained with deep_supervision=True could not easily be loaded at inference time where
             # deep supervision is not needed. It's just a convenience thing
-            seg_layers.append(encoder.conv_op(input_features_skip, num_classes, 1, 1, 0, bias=True))
+            seg_layers.append(
+                encoder.conv_op(input_features_skip, num_classes, 1, 1, 0, bias=True)
+            )
 
         self.stages = nn.ModuleList(stages)
         self.transpconvs = nn.ModuleList(transpconvs)
@@ -116,7 +145,7 @@ class UNetDecoder(nn.Module):
         seg_outputs = []
         for s in range(len(self.stages)):
             x = self.transpconvs[s](lres_input)
-            x = torch.cat((x, skips[-(s+2)]), 1)
+            x = torch.cat((x, skips[-(s + 2)]), 1)
             x = self.stages[s](x)
             if self.deep_supervision:
                 if self.latents:
@@ -146,7 +175,9 @@ class UNetDecoder(nn.Module):
         # least have the size of the skip above that (therefore -1)
         skip_sizes = []
         for s in range(len(self.encoder.strides) - 1):
-            skip_sizes.append([i // j for i, j in zip(input_size, self.encoder.strides[s])])
+            skip_sizes.append(
+                [i // j for i, j in zip(input_size, self.encoder.strides[s])]
+            )
             input_size = skip_sizes[-1]
         # print(skip_sizes)
 
@@ -157,12 +188,17 @@ class UNetDecoder(nn.Module):
         for s in range(len(self.stages)):
             # print(skip_sizes[-(s+1)], self.encoder.output_channels[-(s+2)])
             # conv blocks
-            output += self.stages[s].compute_conv_feature_map_size(skip_sizes[-(s+1)])
+            output += self.stages[s].compute_conv_feature_map_size(skip_sizes[-(s + 1)])
             # trans conv
-            output += np.prod([self.encoder.output_channels[-(s+2)], *skip_sizes[-(s+1)]], dtype=np.int64)
+            output += np.prod(
+                [self.encoder.output_channels[-(s + 2)], *skip_sizes[-(s + 1)]],
+                dtype=np.int64,
+            )
             # segmentation
             if self.deep_supervision or (s == (len(self.stages) - 1)):
-                output += np.prod([self.num_classes, *skip_sizes[-(s+1)]], dtype=np.int64)
+                output += np.prod(
+                    [self.num_classes, *skip_sizes[-(s + 1)]], dtype=np.int64
+                )
         return output
 
 
@@ -221,10 +257,7 @@ class ConsisMAE(ResidualEncoderUNet):
         if only_last_stage_as_latent:
             proj_in_dim = features_per_stage[-1]
         else:
-            if deep_supervision:
-                proj_in_dim = sum(features_per_stage[:-1])
-            else:
-                proj_in_dim = sum(features_per_stage)
+            proj_in_dim = sum(features_per_stage)
         self.only_last_stage_as_latent = only_last_stage_as_latent
 
         if self.use_projector:
@@ -294,7 +327,7 @@ class ConsisMAE(ResidualEncoderUNet):
         }
 
 
-class ConsisDecoderMAE(ConsisMAE):
+class FeatureContrastiveDecoderAligned(ConsisMAE):
 
     def __init__(
         self,
@@ -337,8 +370,53 @@ class ConsisDecoderMAE(ConsisMAE):
             **kwargs,
         )
         self.decoder = UNetDecoder(
-            self.encoder, num_classes, n_conv_per_stage_decoder, deep_supervision=True, latents=True
+            self.encoder,
+            num_classes,
+            n_conv_per_stage_decoder,
+            deep_supervision=True,
+            latents=True,
         )
+
+        decoder_proj_in_dim = (
+            sum(features_per_stage[:-1])
+            if not only_last_stage_as_latent
+            else features_per_stage[-1]
+        )
+        if use_projector:
+            self.decoder_projector = nn.Sequential(
+                nn.Linear(
+                    decoder_proj_in_dim, 2048
+                ),  # this is technically a linear layer
+                nn.BatchNorm1d(2048, affine=False, track_running_stats=False),
+                nn.SiLU(),
+                nn.Linear(2048, 2048),
+                nn.BatchNorm1d(2048, affine=False, track_running_stats=False),
+                nn.SiLU(),
+                nn.Linear(2048, 2048),
+                nn.BatchNorm1d(2048, affine=False, track_running_stats=False),
+            )
+
+            self.decoder_predictor = nn.Sequential(
+                nn.Linear(2048, 512),
+                nn.BatchNorm1d(512, affine=False, track_running_stats=False),
+                nn.SiLU(),
+                nn.Linear(512, 2048),
+            )
+
+            # initialize the projector weights
+            for m in self.decoder_projector.modules():
+                if isinstance(m, nn.Linear):
+                    trunc_normal_(m.weight, std=0.02)
+                    if m.bias is not None:
+                        nn.init.constant_(m.bias, 0)
+            for m in self.decoder_predictor.modules():
+                if isinstance(m, nn.Linear):
+                    trunc_normal_(m.weight, std=0.02)
+                    if m.bias is not None:
+                        nn.init.constant_(m.bias, 0)
+        else:
+            self.projector = None
+            self.predictor = None
 
     def forward(self, x):
         b = x.shape[0]
@@ -347,27 +425,26 @@ class ConsisDecoderMAE(ConsisMAE):
 
         if self.only_last_stage_as_latent:
             decodeds = [decodeds[-1]]
+            skips = [skips[-1]]
 
         image_latent = torch.concat(
-            [self.i_adaptive_pool(s) for s in decodeds], dim=1
+            [self.i_adaptive_pool(s) for s in skips], dim=1
         ).reshape(b, -1)
         patch_latent = torch.concat([self.v_adaptive_pool(s) for s in decodeds], dim=1)
 
-        if self.use_projector:
-            patch_latent = rearrange(patch_latent, "b c w h d -> (b w h d) c")
-            patch_latent = self.projector(patch_latent)
-            image_latent = self.projector(image_latent)
+        patch_latent = rearrange(patch_latent, "b c w h d -> (b w h d) c")
 
-            if self.training:
-                patch_latent = self.predictor(patch_latent)
-                image_latent = self.predictor(image_latent)
+        image_latent = self.projector(image_latent)
+        if self.training:
+            image_latent = self.predictor(image_latent)
 
-            patch_latent = rearrange(
-                patch_latent, "(b w h d) c -> b c w h d", b=b, w=16, h=16, d=16
-            )
-        else:
-            patch_latent = None
-            image_latent = None
+        patch_latent = self.decoder_projector(patch_latent)
+        if self.training:
+            patch_latent = self.decoder_predictor(patch_latent)
+
+        patch_latent = rearrange(
+            patch_latent, "(b w h d) c -> b c w h d", b=b, w=16, h=16, d=16
+        )
 
         return {
             "image_latent": image_latent,
@@ -442,7 +519,7 @@ class ConsisEvaMAE(EvaMAE):
 
         # initialize the projector weights
         for m in self.projector.modules():
-            if isinstance(m, nn.Conv1d):
+            if isinstance(m, nn.Linear):
                 trunc_normal_(m.weight, std=0.02)
                 if m.bias is not None:
                     nn.init.constant_(m.bias, 0)
@@ -472,7 +549,9 @@ class ConsisEvaMAE(EvaMAE):
             feature_decoded, _ = self.feature_decoder(restored_x)
 
         image_latents = torch.matmul(
-            torch.softmax(self.attention_pooling(feature_decoded), dim=1).transpose(-1, -2),
+            torch.softmax(self.attention_pooling(feature_decoded), dim=1).transpose(
+                -1, -2
+            ),
             feature_decoded,
         ).squeeze(-2)
         patch_latents = feature_decoded
@@ -511,6 +590,102 @@ class ConsisEvaMAE(EvaMAE):
         }
 
 
+class FeatureContrastiveDecoderAlignedEva(ConsisEvaMAE):
+    """
+    This class is a variant of ConsisEvaMAE that uses a decoder with aligned feature contrastive learning.
+    It is designed to work with the EVA architecture and includes a feature decoder for aligned feature contrastive learning.
+    """
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+        self.decoder_projector = nn.Sequential(
+            nn.Linear(self.embed_dim, 2048),  # this is technically a linear layer
+            nn.BatchNorm1d(2048, affine=False, track_running_stats=False),
+            nn.SiLU(),
+            nn.Linear(2048, 2048),
+            nn.BatchNorm1d(2048, affine=False, track_running_stats=False),
+            nn.SiLU(),
+            nn.Linear(2048, 2048),
+            nn.BatchNorm1d(2048, affine=False, track_running_stats=False),
+        )
+
+        self.decoder_predictor = nn.Sequential(
+            nn.Linear(2048, 512),
+            nn.BatchNorm1d(512, affine=False, track_running_stats=False),
+            nn.SiLU(),
+            nn.Linear(512, 2048),
+        )
+
+        # initialize the projector weights
+        for m in self.decoder_projector.modules():
+            if isinstance(m, nn.Linear):
+                trunc_normal_(m.weight, std=0.02)
+                if m.bias is not None:
+                    nn.init.constant_(m.bias, 0)
+
+        for m in self.decoder_predictor.modules():
+            if isinstance(m, nn.Linear):
+                trunc_normal_(m.weight, std=0.02)
+                if m.bias is not None:
+                    nn.init.constant_(m.bias, 0)
+
+    def forward(self, x):
+        # Encode patches
+        x = self.down_projection(x)
+        b, c, w, h, d = x.shape
+        x = rearrange(x, "b c w h d -> b (w h d) c")
+
+        # Encode using EVA (internally applies masking with patch_drop_rate)
+        encoded, keep_indices = self.eva(x)
+        # print(f"Encoded shape: {encoded.shape}, Keep indices shape: {keep_indices.shape if keep_indices is not None else 'None'}")
+        num_patches = w * h * d
+
+        if keep_indices is None or not self.training:
+            feature_decoded = restored_x = encoded
+        else:
+            # Restore full sequence with mask tokens
+            restored_x = self.restore_full_sequence(encoded, keep_indices, num_patches)
+            feature_decoded, _ = self.feature_decoder(restored_x)
+
+        image_latents = torch.matmul(
+            torch.softmax(self.attention_pooling(feature_decoded), dim=1).transpose(
+                -1, -2
+            ),
+            feature_decoded,
+        ).squeeze(-2)
+
+        image_latents = self.projector(image_latents)
+        if self.training:
+            image_latents = self.predictor(image_latents)
+
+        # Decode with restored sequence and rope embeddings
+        decoded, _ = self.decoder(restored_x)
+
+        patch_latents = rearrange(
+            decoded, "b (w h d) c -> (b w h d) c", b=b, w=w, h=h, d=d
+        )
+        patch_latents = self.decoder_projector(patch_latents)
+
+        if self.training:
+            patch_latents = self.decoder_predictor(patch_latents)
+
+        patch_latents = rearrange(
+            patch_latents, "(b w h d) c -> b c w h d", b=b, w=w, h=h, d=d
+        )
+
+        # Project back to output shape
+        decoded = rearrange(decoded, "b (w h d) c -> b c w h d", b=b, h=w, w=h, d=d)
+        decoded = self.up_projection(decoded)
+
+        return {
+            "image_latent": image_latents,
+            "proj": patch_latents,
+            "recon": decoded,
+            "keep_indices": keep_indices,
+        }
+
+
 if __name__ == "__main__":
     import os
     import gc
@@ -531,164 +706,78 @@ if __name__ == "__main__":
         print(f"Current allocated memory: {mem_allocated:.2f} MB")
         print(f"Peak memory usage: {mem_peak:.2f} MB")
 
-
     def measure_memory_cpu(model, input_tensor):
         process = psutil.Process(os.getpid())
-        mem_before = process.memory_info().rss / (1024 ** 2)  # in MB
+        mem_before = process.memory_info().rss / (1024**2)  # in MB
         with torch.no_grad():
             _ = model(input_tensor)
-        mem_after = process.memory_info().rss / (1024 ** 2)  # in MB
+        mem_after = process.memory_info().rss / (1024**2)  # in MB
         print(f"Memory before: {mem_before:.2f} MB")
         print(f"Memory after: {mem_after:.2f} MB")
         print(f"Memory used by forward pass: {mem_after - mem_before:.2f} MB")
+
     #
     # Toy example for testing
     input_shape = (64, 64, 64)
+    input_tensor = torch.randn(2, 1, *input_shape).to(_device)
 
-    model = ConsisMAE(
-        input_channels=1,
-        num_classes=1,
+    # baseline - get_res_enc_l
+    model = get_res_enc_l(
+        num_input_channels=1,
+        num_output_channels=1,
         deep_supervision=False,
-        only_last_stage_as_latent=False,
-        use_projector=True,
-    ).to(_device)
-    model = model.train(True)
-    x = torch.rand((2, 1, *input_shape), device=_device)  # Batch size 2
-
-    # del output
-    if _device == "cuda":
-        measure_memory(model, x)
-    else:
-        measure_memory_cpu(model, x)
-    macs, params = thop.profile(
-        model,
-        inputs=(x,),
     )
-    print(f"MACs: {macs / 1e9:.2f} G, Params: {params / 1e6:.2f} M")
+    model = model.to(_device)
+    model.train(True)
+    if _device == "cuda":
+        measure_memory(model, input_tensor)
+    else:
+        measure_memory_cpu(model, input_tensor)
+    flops, params = thop.profile(model, inputs=(input_tensor,), verbose=False)
+    print(f"FLOPs: {flops / 1e9:.2f} GFLOPs")
+    print(f"Parameters: {params / 1e6:.2f} M")
     del model
-
     gc.collect()
+    torch.cuda.empty_cache()
 
-    # output = model(x)
-    # print(
-    #     f"Input shape: {x.shape}, "
-    #     f"Output shape: {output['recon'].shape}, "
-    #     f"Image latent shape: {output['image_latent'].shape if output['image_latent'] is not None else 'None'}, "
-    #     f"Latent shape: {output['proj'].shape}, "
-    # )
-
-    model = ConsisDecoderMAE(
+    # FeatureContrastiveDecoderAligned - CNN
+    model = FeatureContrastiveDecoderAligned(
         input_channels=1,
         num_classes=1,
-        only_last_stage_as_latent=False,
-        use_projector=True,
-    ).to(_device)
-    model = model.train(True)
-    x = torch.rand((2, 1, *input_shape), device=_device)
-    # output = model(x)
-    # print(
-    #     f"Input shape: {x.shape}, "
-    #     f"Output shape: {output['recon'].shape}, "
-    #     f"Image latent shape: {output['image_latent'].shape if output['image_latent'] is not None else 'None'}, "
-    #     f"Latent shape: {output['proj'].shape}, "
-    # )
-
-    # del output
-    if _device == "cuda":
-        measure_memory(model, x)
-    else:
-        measure_memory_cpu(model, x)
-    macs, params = thop.profile(
-        model,
-        inputs=(x,),
     )
-    print(f"MACs: {macs / 1e9:.2f} G, Params: {params / 1e6:.2f} M")
-    del model
-
-    gc.collect()
-
-    model = get_res_enc_l(1, 1, deep_supervision=False).to(_device)
+    model = model.to(_device)
+    model.train(True)
     if _device == "cuda":
-        measure_memory(model, x)
+        measure_memory(model, input_tensor)
     else:
-        measure_memory_cpu(model, x)
-    macs, params = thop.profile(
-        model,
-        inputs=(x,),
-    )
-    print(f"MACs: {macs / 1e9:.2f} G, Params: {params / 1e6:.2f} M")
-
+        measure_memory_cpu(model, input_tensor)
+    flops, params = thop.profile(model, inputs=(input_tensor,), verbose=False)
+    print(f"FLOPs: {flops / 1e9:.2f} GFLOPs")
+    print(f"Parameters: {params / 1e6:.2f} M")
     del model
     gc.collect()
+    torch.cuda.empty_cache()
 
-    exit(0)
-
-    # patch_embed_size = (8, 8, 8)
-    # model = ConsisEvaMAE(
-    #     input_channels=1,
-    #     embed_dim=192,
-    #     patch_embed_size=patch_embed_size,
-    #     output_channels=1,
-    #     input_shape=input_shape,
-    #     decoder_eva_depth=6,
-    #     decoder_eva_numheads=8,
-    #     patch_drop_rate=0.7,
-    # ).to(_device)
-    #
-    # # Random input tensor
-    # x = torch.rand((2, 1, *input_shape), device=_device)  # Batch size 2
-    #
-    # # Forward pass
-    # # measure the memory
-    #
-    # output = model(x)
-    # print("Input shape:", x.shape)
-    # print(
-    #     f"Output shape: {output['recon'].shape}, "
-    #     f"Keep indices shape: {output['keep_indices'].shape}, "
-    #     f"Latent shape: {output['proj'].shape}",
-    # )
-    # if _device == "cuda":
-    #     measure_memory(model, x)
-    # else:
-    #     measure_memory_cpu(model, x)
-    # macs, params = thop.profile(
-    #     model,
-    #     inputs=(x,),
-    # )
-    # print(f"MACs: {macs / 1e9:.2f} G, Params: {params / 1e6:.2f} M")
-
-    patch_embed_size = (8, 8, 8)
-    model = ConsisEvaMAE(
+    # FeatureContrastiveDecoderAlignedEva - EVA
+    model = FeatureContrastiveDecoderAlignedEva(
+        patch_embed_size=(8, 8, 8),
         input_channels=1,
         embed_dim=192,
-        patch_embed_size=patch_embed_size,
         output_channels=1,
         input_shape=input_shape,
         decoder_eva_depth=6,
         decoder_eva_numheads=8,
-        patch_drop_rate=0.0,
-    ).to(_device)
-    model = model.train(True)
-
-    # Random input tensor
-    x = torch.rand((2, 1, *input_shape), device=_device)  # Batch size 2
-    # Forward pass
-    output = model(x)
-    print("Input shape:", x.shape)
-    print(
-        f"Output shape: {output['recon'].shape}, "
-        f"Keep indices shape: {output['keep_indices'].shape if output['keep_indices'] is not None else 'None'}, "
-        f"Image latent shape: {output['image_latent'].shape if output['image_latent'] is not None else 'None'}, "
-        f"Latent shape: {output['proj'].shape}",
+        patch_drop_rate=0.7,
     )
-
-    model = model.train(False)
-    output = model(x)
-    print("Input shape:", x.shape)
-    print(
-        f"Output shape: {output['recon'].shape if output['recon'] is not None else 'None'}, "
-        f"Keep indices shape: {output['keep_indices'].shape if output['keep_indices'] is not None else 'None'}, "
-        f"Image latent shape: {output['image_latent'].shape if output['image_latent'] is not None else 'None'}, "
-        f"Latent shape: {output['proj'].shape if output['proj'] is not None else 'None'}",
-    )
+    model = model.to(_device)
+    model.train(True)
+    if _device == "cuda":
+        measure_memory(model, input_tensor)
+    else:
+        measure_memory_cpu(model, input_tensor)
+    flops, params = thop.profile(model, inputs=(input_tensor,), verbose=False)
+    print(f"FLOPs: {flops / 1e9:.2f} GFLOPs")
+    print(f"Parameters: {params / 1e6:.2f} M")
+    del model
+    gc.collect()
+    torch.cuda.empty_cache()

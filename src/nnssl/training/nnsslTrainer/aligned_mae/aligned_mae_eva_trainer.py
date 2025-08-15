@@ -8,7 +8,7 @@ import numpy as np
 from torch import autocast
 from typing_extensions import override
 
-from nnssl.architectures.consis_arch import ConsisEvaMAE
+from nnssl.architectures.consis_arch import ConsisEvaMAE, FeatureContrastiveDecoderAlignedEva
 from nnssl.utilities.helpers import dummy_context
 from nnssl.ssl_data.dataloading.aligned_transform import OverlapTransform
 from nnssl.training.nnsslTrainer.masked_image_modeling.BaseEvaMAETrainer import (
@@ -326,50 +326,6 @@ class AlignedMAEFTLR3EvaTrainer(AlignedMAEEvaTrainer):
         )
 
 
-class VarAlignedMAEFTEvaTrainer(AlignedMAEEvaTrainer):
-
-    def __init__(self, *args, **kwargs):
-        """
-        Initialize the ConsisMAEFTEvaTrainer with the given arguments.
-        """
-        super().__init__(*args, **kwargs)
-        self.initial_lr = 1e-4
-        self.num_epochs = 150
-
-    def build_loss(self):
-        """
-        Builds the loss function for the model.
-        This method is overridden to provide specific loss logic.
-        """
-        from nnssl.training.loss.aligned_mae_loss import AlignedMAELoss
-
-        return AlignedMAELoss(
-            device=self.device, recon_weight=5.0, fg_cos_weight=1.0, ntxent_weight=1.0, do_variance_normalisation=True
-        )
-
-
-class VarAligned2MAEFTEvaTrainer(AlignedMAEEvaTrainer):
-
-    def __init__(self, *args, **kwargs):
-        """
-        Initialize the ConsisMAEFTEvaTrainer with the given arguments.
-        """
-        super().__init__(*args, **kwargs)
-        self.initial_lr = 1e-4
-        self.num_epochs = 150
-
-    def build_loss(self):
-        """
-        Builds the loss function for the model.
-        This method is overridden to provide specific loss logic.
-        """
-        from nnssl.training.loss.aligned_mae_loss import AlignedMAELoss
-
-        return AlignedMAELoss(
-            device=self.device, recon_weight=5.0, fg_cos_weight=1.0, ntxent_weight=1.0, do_variance_normalisation=True
-        )
-
-
 class ConMAEFTEvaLR3Trainer(AlignedMAEFTLR3EvaTrainer):
 
     def build_loss(self):
@@ -384,25 +340,70 @@ class ConMAEFTEvaLR3Trainer(AlignedMAEFTLR3EvaTrainer):
         )
 
 
-class AlignedConMAEFTEvaTrainer(AlignedMAEFTLR3EvaTrainer):
-
-    def build_loss(self):
-        from nnssl.training.loss.aligned_mae_loss import AlignedMAELoss
-
-        return AlignedMAELoss(
-            device=self.device, recon_weight=5.0, fg_cos_weight=0.5, ntxent_weight=0.0,
-            do_variance_normalisation=False, fine_grained_contrastive=True, out_size=5
-        )
-
-
 class AlignedConConMAEFTEvaTrainer(AlignedMAEFTLR3EvaTrainer):
 
     def build_loss(self):
         from nnssl.training.loss.aligned_mae_loss import AlignedMAELoss
 
         return AlignedMAELoss(
-            device=self.device, recon_weight=5.0, fg_cos_weight=0.2, ntxent_weight=0.1,
-            do_variance_normalisation=False, fine_grained_contrastive=True, out_size=5
+            device=self.device,
+            recon_weight=5.0,
+            fg_cos_weight=0.2,
+            ntxent_weight=0.1,
+            do_variance_normalisation=False,
+            fine_grained_contrastive=True,
+            out_size=5,
+        )
+
+
+class FeatConDecAlignedMAEFTEvaTrainer(AlignedMAEFTLR3EvaTrainer):
+
+    def __init__(self, *args, **kwargs):
+        """
+        Initialize the FeatConDecAlignedMAEFTEvaTrainer with the given arguments.
+        This class is specifically designed for training models with feature contrastive loss.
+        """
+        super().__init__(*args, **kwargs)
+        self.teacher_mom = 0.995
+        self.total_batch_size = 4
+        self.initial_lr = 3e-4  # Initial learning rate for the optimizer
+        self.num_epochs = 100
+        self.warmup_duration_whole_net = 10  # Warmup duration for the whole network
+
+    @override
+    def build_architecture_and_adaptation_plan(
+        self, config_plan, num_input_channels, num_output_channels
+    ):
+        network = FeatureContrastiveDecoderAlignedEva(
+            input_channels=num_input_channels,
+            embed_dim=self.embed_dim,
+            patch_embed_size=self.vit_patch_size,
+            output_channels=num_output_channels,
+            input_shape=tuple(self.config_plan.patch_size),
+            encoder_eva_depth=self.encoder_eva_depth,
+            encoder_eva_numheads=self.encoder_eva_numheads,
+            decoder_eva_depth=self.decoder_eva_depth,
+            decoder_eva_numheads=self.decoder_eva_numheads,
+            patch_drop_rate=self.mask_percentage,
+            drop_path_rate=self.drop_path_rate,
+            attn_drop_rate=self.attention_drop_rate,
+            init_values=self.init_value,
+            scale_attn_inner=self.scale_attn_inner,
+        )
+        adapt_plan = self.save_adaption_plan(num_input_channels)
+        return network, adapt_plan
+
+
+    def build_loss(self):
+        from nnssl.training.loss.aligned_mae_loss import AlignedMAELoss
+
+        return AlignedMAELoss(
+            device=self.device,
+            recon_weight=5.0,
+            fg_cos_weight=0.5,
+            ntxent_weight=0.1,
+            fine_grained_contrastive=False,
+            out_size=5,
         )
 
 
@@ -426,9 +427,7 @@ class AlignedAEEvaTrainer(AlignedMAEEvaTrainer):
     def build_loss(self):
         from nnssl.training.loss.aligned_mae_loss import AlignedMAELoss
 
-        return AlignedMAELoss(
-            device=self.device, recon_weight=5.0, ntxent_weight=0.0
-        )
+        return AlignedMAELoss(device=self.device, recon_weight=5.0, ntxent_weight=0.0)
 
     def shared_step(self, batch: dict, is_train: bool = True) -> dict:
         """
@@ -509,4 +508,4 @@ class AlignedAEFTEvaTrainer(AlignedAEEvaTrainer):
         """
         super().__init__(*args, **kwargs)
         self.initial_lr = 3e-4
-        self.num_epochs = 50
+        self.num_epochs = 150
