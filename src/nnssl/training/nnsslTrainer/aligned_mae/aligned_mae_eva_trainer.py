@@ -367,8 +367,8 @@ class FeatConDecAlignedMAEFTEvaTrainer(AlignedMAEFTLR3EvaTrainer):
         self.teacher_mom = 0.995
         self.total_batch_size = 4
         self.initial_lr = 3e-4  # Initial learning rate for the optimizer
-        self.num_epochs = 100
-        self.warmup_duration_whole_net = 10  # Warmup duration for the whole network
+        self.num_epochs = 50
+        self.warmup_duration_whole_net = 5  # Warmup duration for the whole network
 
     @override
     def build_architecture_and_adaptation_plan(
