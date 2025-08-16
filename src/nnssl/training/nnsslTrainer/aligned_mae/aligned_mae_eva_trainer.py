@@ -368,6 +368,7 @@ class FeatConDecAlignedMAEFTEvaTrainer(AlignedMAEFTLR3EvaTrainer):
         self.total_batch_size = 4
         self.initial_lr = 3e-4  # Initial learning rate for the optimizer
         self.num_epochs = 50
+        self.mask_percentage = 0.75  # Mask percentage for the feature contrastive decoder
         self.warmup_duration_whole_net = 5  # Warmup duration for the whole network
 
     @override
