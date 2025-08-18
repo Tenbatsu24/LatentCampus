@@ -382,7 +382,7 @@ class FeatureContrastiveDecoderAligned(ConsisMAE):
             if not only_last_stage_as_latent
             else features_per_stage[-1]
         )
-        if use_projector:
+        if self.use_projector:
             self.decoder_projector = nn.Sequential(
                 nn.Linear(
                     decoder_proj_in_dim, 2048
@@ -415,8 +415,8 @@ class FeatureContrastiveDecoderAligned(ConsisMAE):
                     if m.bias is not None:
                         nn.init.constant_(m.bias, 0)
         else:
-            self.projector = None
-            self.predictor = None
+            self.decoder_projector = None
+            self.decoder_predictor = None
 
     def forward(self, x):
         b = x.shape[0]
