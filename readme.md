@@ -1,3 +1,37 @@
+# Usage of `consis_arch.py` in LatentCampus
+
+This repository includes the script `src/nnssl/architectures/consis_arch.py`, which implements a set of neural network architectures for consistency-based learning, including variants of UNet and EVA MAE models, as well as their feature-contrastive decoder-aligned forms. These architectures are adapted from the original repository this project was forked from, and no changes to the usage requirements have been made.
+
+## How to Use
+
+The typical way to use the models defined in `consis_arch.py` is through a trainer script that initializes and runs the training process with one of the architectures as the backbone. The primary trainer in this repository that utilizes these architectures is named similarly to the original repository and should be used in the same way.
+
+### Example: Using the Trainer
+
+If you previously used the original repository, you can use the same commands and configuration files here. Only the trainer name needs to be changed.
+
+```bash
+# ResEnc-L
+nnssl_train 745 onemmiso -tr AlignedMAELR5Trainer -p nnsslPlans -num_gpus 1 -pretrained_weights ${nnssl_results}/Dataset745_OpenMind/MAETrainer/fold_all/checkpoint_final.pth || true
+
+#Primus-M
+nnssl_train 745 onemmiso -tr AlignedMAELR3EvaTrainer -p nnsslPlans -num_gpus 1 -pretrained_weights ${nnssl_results}/Dataset745_OpenMind/MAETrainer/fold_all/checkpoint_final.pth || true
+```
+
+**Note:** Refer to your configuration to select the correct class from `consis_arch.py`, such as `ConsisMAE` and `ConsisEvaMAE`.
+
+### Requirements
+
+All requirements are the same as in the original repository, including dependencies for PyTorch, einops, thop, and other libraries.
+
+### Reference
+
+The architectures in `consis_arch.py` are designed to be drop-in replacements or additions for the original repo's trainers and workflows. No additional steps are needed beyond what the original repo requires.
+
+---
+For more detailed usage, please refer to the original repository's documentation or usage examples, as all workflow and interface conventions remain unchanged.
+
+
 ![OpenMind](assets/images/OpenMindDataset.png)
 
 ## An OpenMind for 3D medical vision self-supervised learning
@@ -158,3 +192,4 @@ This can be done via the associated [adaptation frameworks](#complimentary-resou
 
 ## Extending and Contributing
 Due to the lack of established frameworks in the domain of 3D SSL, we are open to code contributions and extensions of the current framework.
+
