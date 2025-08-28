@@ -12,10 +12,10 @@ If you previously used the original repository, you can use the same commands an
 
 ```bash
 # ResEnc-L
-nnssl_train 745 onemmiso -tr AlignedMAELR5Trainer -p nnsslPlans -num_gpus 1 -pretrained_weights ${nnssl_results}/Dataset745_OpenMind/MAETrainer/fold_all/checkpoint_final.pth || true
+nnssl_train 745 onemmiso -tr AlignedMAEFTTrainer -p nnsslPlans -num_gpus 1 -pretrained_weights ${nnssl_results}/Dataset745_OpenMind/MAETrainer/fold_all/checkpoint_final.pth || true
 
 #Primus-M
-nnssl_train 745 onemmiso -tr AlignedMAELR3EvaTrainer -p nnsslPlans -num_gpus 1 -pretrained_weights ${nnssl_results}/Dataset745_OpenMind/MAETrainer/fold_all/checkpoint_final.pth || true
+nnssl_train 745 onemmiso -tr AlignedMAEFTLR3EvaTrainer -p nnsslPlans -num_gpus 1 -pretrained_weights ${nnssl_results}/Dataset745_OpenMind/MAETrainer/fold_all/checkpoint_final.pth || true
 ```
 
 **Note:** Refer to your configuration to select the correct class from `consis_arch.py`, such as `ConsisMAE` and `ConsisEvaMAE`.
@@ -192,4 +192,5 @@ This can be done via the associated [adaptation frameworks](#complimentary-resou
 
 ## Extending and Contributing
 Due to the lack of established frameworks in the domain of 3D SSL, we are open to code contributions and extensions of the current framework.
+
 
