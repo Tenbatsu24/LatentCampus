@@ -40,6 +40,11 @@ Compared to the original repository, we introduce the following key components:
 
 ## 🏆 Challenge Overview
 
+
+### OpenMind Challenge
+
+**MICCAI Challenge: Self-Supervised Learning for 3D Medical Imaging (SSL3D Challenge)**
+
 The **Self-Supervised Learning for 3D Medical Imaging Challenge** provides a unified benchmark for evaluating SSL methods in medical imaging.
 It addresses fragmentation in the field by standardizing:
 
@@ -55,6 +60,28 @@ We participated as **The\_Latent\_Campus** and ranked:
 * **1st in Track Primus-M**
 * **2nd in Track ResEnc-L**
 
+
+### FOMO60K Challenge
+
+**MICCAI Challenge: Towards Foundation Models for the Clinic**  
+
+- **Track 1: Methods** – Pretrain on FOMO60K, a dataset of **60K+ clinical brain MRI scans** including artifacts and real-world variability.  
+- **Track 2: Open** – Pretrain on **any dataset(s)** (public or private).  
+- **Evaluation**: Few-shot learning on three clinical tasks:  
+  * Infarct detection  
+  * Meningioma segmentation  
+  * Brain age estimation  
+
+We participated **only in the Open Track**, using the **OpenMind dataset** as our pretraining source.  
+
+- ⚠️ Results for FOMO60K are **still pending**. No additional ablations were performed. 
+---
+
+## 🔗 Finetuning Code Locations
+- **Segmentation finetuning (both challenges)**: `src/nnunet_adaption`  
+- **FOMO60K classification/regression**: `src/baseline-codebase`  
+- **OpenMind classification finetuning**: [SSL3D_classification](https://github.com/constantinulrich/SSL3D_classification)  
+
 ---
 
 ## 📊 Our Testing and Ablations 
@@ -62,11 +89,21 @@ We participated as **The\_Latent\_Campus** and ranked:
 ![Challenge Results](./assets/CVA/Results.png)
 
 ## 📊 Challenge Results
+
+### SSL3D Challenge Results
+
 Please find the final challenge results at the link:
 * https://ssl3d-challenge.dkfz.de/leaderboard
 * We are The_Latent_Campus
   * ResEnc-L Track: Position 2nd
   * Primus-M Track: Position 1st
+
+### FOMO60k Challenge Results
+* FOMO60K results: pending evaluation (Open Track only).
+* We are LatentCampus
+  * Task 1 - Infraction Detection: 
+  * Task 2 - Meningioma SegmentationL: 
+  * Task 3 - Brain Age Regression: 
 
 ---
 
