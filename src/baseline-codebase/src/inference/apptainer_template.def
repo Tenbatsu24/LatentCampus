@@ -1,0 +1,43 @@
+Bootstrap: docker
+
+# Use any docker image as a base (see https://hub.docker.com/)
+# If using GPU, consider using a CUDA-enabled base image
+From: python:3.11-slim
+
+%labels
+    Author FOMO25 Challenge
+    Version v1.0.0
+    Description FOMO25 Apptainer Image Template
+
+%environment
+    export PYTHONUNBUFFERED=1
+    export LC_ALL=C.UTF-8
+
+%files
+    # Copy your files (model, predict.py, requirements.txt, ...) to the container
+    ./src/* /app/
+    ./src/inference/container_requirements.txt /app/requirements.txt
+
+    # ----> CHANGES REQUIRED <---
+    ./src/inference/predict_task2.py /app/predict.py  # <-- TODO: Change to correct task
+    /path/to/checkpoint.ckpt /app/model.ckpt # <--- TODO: Change to correct path
+
+%post
+    # Create necessary directories
+    mkdir -p /input /output /app
+
+    # Update and install system dependencies
+    apt-get update && apt-get install -y --no-install-recommends \
+        build-essential \
+        && rm -rf /var/lib/apt/lists/*
+
+    # Install Python dependencies
+    pip install --no-cache-dir -U pip setuptools wheel
+    pip install --no-cache-dir -r /app/requirements.txt
+
+    # Make predict.py executable
+    chmod +x /app/predict.py
+
+%runscript
+    # Execute the prediction script with all arguments
+    exec python /app/predict.py "$@"

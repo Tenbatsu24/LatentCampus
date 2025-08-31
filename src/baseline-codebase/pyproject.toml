@@ -1,0 +1,48 @@
+[build-system]
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fomo-code"
+version = "0.1.0"
+description = "FOMO25 Challenge Codebase - Foundation Models for Brain MRI Analysis"
+readme = "README.md"
+requires-python = ">=3.11"
+license = {text = "MIT"}
+authors = [
+    {name = "Asbjørn Munk"},
+    {name = "Jakob Ambsdorf"},
+    {name = "FOMO25 Challenge Organizers"},
+]
+dependencies = [
+    "lightning>=2.1.4",
+    "numpy>=1.23",
+    "yucca==2.2.6",
+    "opencv-python>=4.8.1.78",
+    "einops>=0.7",
+    "torch<2.3.0",
+    "nnunetv2>=2.4.2",
+    "wandb>=0.16.0",
+    "opencv-python>=4.8.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "jupyter>=1.0.0",
+]
+test = [
+    "pytest>=6.0.0",
+    "flake8>=6.1.0",
+    "black>=23.10.1",
+]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+packages = {find = {where = ["src"]}}
+
+[tool.pytest]
+testpaths = ["tests"]
+
+[tool.black]
+line-length = 88
+target-version = ["py39"]

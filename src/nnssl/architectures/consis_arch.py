@@ -728,6 +728,8 @@ if __name__ == "__main__":
         deep_supervision=False,
     )
     model = model.to(_device)
+    # make the decoder an identity function
+    model.decoder = nn.Identity()
     model.train(True)
     if _device == "cuda":
         measure_memory(model, input_tensor)
@@ -740,44 +742,44 @@ if __name__ == "__main__":
     gc.collect()
     torch.cuda.empty_cache()
 
-    # FeatureContrastiveDecoderAligned - CNN
-    model = FeatureContrastiveDecoderAligned(
-        input_channels=1,
-        num_classes=1,
-    )
-    model = model.to(_device)
-    model.train(True)
-    if _device == "cuda":
-        measure_memory(model, input_tensor)
-    else:
-        measure_memory_cpu(model, input_tensor)
-    flops, params = thop.profile(model, inputs=(input_tensor,), verbose=False)
-    print(f"FLOPs: {flops / 1e9:.2f} GFLOPs")
-    print(f"Parameters: {params / 1e6:.2f} M")
-    del model
-    gc.collect()
-    torch.cuda.empty_cache()
-
-    # FeatureContrastiveDecoderAlignedEva - EVA
-    model = FeatureContrastiveDecoderAlignedEva(
-        patch_embed_size=(8, 8, 8),
-        input_channels=1,
-        embed_dim=192,
-        output_channels=1,
-        input_shape=input_shape,
-        decoder_eva_depth=6,
-        decoder_eva_numheads=8,
-        patch_drop_rate=0.7,
-    )
-    model = model.to(_device)
-    model.train(True)
-    if _device == "cuda":
-        measure_memory(model, input_tensor)
-    else:
-        measure_memory_cpu(model, input_tensor)
-    flops, params = thop.profile(model, inputs=(input_tensor,), verbose=False)
-    print(f"FLOPs: {flops / 1e9:.2f} GFLOPs")
-    print(f"Parameters: {params / 1e6:.2f} M")
-    del model
-    gc.collect()
-    torch.cuda.empty_cache()
+    # # FeatureContrastiveDecoderAligned - CNN
+    # model = FeatureContrastiveDecoderAligned(
+    #     input_channels=1,
+    #     num_classes=1,
+    # )
+    # model = model.to(_device)
+    # model.train(True)
+    # if _device == "cuda":
+    #     measure_memory(model, input_tensor)
+    # else:
+    #     measure_memory_cpu(model, input_tensor)
+    # flops, params = thop.profile(model, inputs=(input_tensor,), verbose=False)
+    # print(f"FLOPs: {flops / 1e9:.2f} GFLOPs")
+    # print(f"Parameters: {params / 1e6:.2f} M")
+    # del model
+    # gc.collect()
+    # torch.cuda.empty_cache()
+    #
+    # # FeatureContrastiveDecoderAlignedEva - EVA
+    # model = FeatureContrastiveDecoderAlignedEva(
+    #     patch_embed_size=(8, 8, 8),
+    #     input_channels=1,
+    #     embed_dim=192,
+    #     output_channels=1,
+    #     input_shape=input_shape,
+    #     decoder_eva_depth=6,
+    #     decoder_eva_numheads=8,
+    #     patch_drop_rate=0.7,
+    # )
+    # model = model.to(_device)
+    # model.train(True)
+    # if _device == "cuda":
+    #     measure_memory(model, input_tensor)
+    # else:
+    #     measure_memory_cpu(model, input_tensor)
+    # flops, params = thop.profile(model, inputs=(input_tensor,), verbose=False)
+    # print(f"FLOPs: {flops / 1e9:.2f} GFLOPs")
+    # print(f"Parameters: {params / 1e6:.2f} M")
+    # del model
+    # gc.collect()
+    # torch.cuda.empty_cache()

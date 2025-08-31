@@ -15,6 +15,62 @@ def random_overlap_tuple(ol: float):
     return tuple(np.exp(weights * ln_ol))
 
 
+def new_make_ol_crops_w_bbox(batch, patch_size, min_overlap, max_overlap, debug=False):
+    b, c, X, Y, Z = batch.shape
+    px, py, pz = patch_size
+    vol_shape = np.array([X, Y, Z])
+    patch_shape = np.array([px, py, pz])
+
+    # Step 1: Sample total overlap and overlap_frac
+    total_overlaps = np.random.uniform(low=min_overlap, high=max_overlap, size=b)
+    overlap_fracs = np.stack(
+        [random_overlap_tuple(t) for t in total_overlaps]
+    )  # (b, 3)
+
+    # Step 2: Convert to pixel overlap per axis
+    overlaps = (patch_shape * overlap_fracs).astype(int)  # (b, 3)
+
+    # Step 3: Compute center min/max per sample and axis
+    min_centers = (overlaps // 2) + (patch_shape - overlaps) + 1  # (b, 3)
+    max_centers = vol_shape - (patch_shape - overlaps) - (overlaps // 2) - 1  # (b, 3)
+
+    # Handle invalid center range (max <= min)
+    invalid = max_centers <= min_centers
+    centers_0_1 = np.random.uniform(low=0.0, high=1.0, size=(b, 3))  # (b, 3)
+    centers = np.zeros_like(min_centers)  # Initialize centers with zeros
+    centers[~invalid] = min_centers[~invalid] + (
+        centers_0_1[~invalid] * (max_centers[~invalid] - min_centers[~invalid])
+    ).astype(int)
+
+    # Step 4: Compute crop start positions
+    starts1 = centers + (overlaps // 2) - patch_shape  # (b, 3)
+    starts2 = centers - (overlaps // 2)  # (b, 3)
+    starts1[invalid] = starts2[invalid] = 0  # Fallback for invalid cases
+
+    # Step 5: Initialize outputs
+    crops_1 = np.empty((b, c, px, py, pz), dtype=batch.dtype)
+    crops_2 = np.empty((b, c, px, py, pz), dtype=batch.dtype)
+    bboxes1 = np.empty((b, 6), dtype=np.float32)
+    bboxes2 = np.empty((b, 6), dtype=np.float32)
+
+    # Step 6: Extract crops using vectorized advanced indexing
+    for i in range(b):
+        sx1, sy1, sz1 = starts1[i]
+        sx2, sy2, sz2 = starts2[i]
+
+        crops_1[i] = batch[i, :, sx1 : sx1 + px, sy1 : sy1 + py, sz1 : sz1 + pz]
+        crops_2[i] = batch[i, :, sx2 : sx2 + px, sy2 : sy2 + py, sz2 : sz2 + pz]
+
+    # Step 7: Fill bounding boxes
+    bboxes1[:, :3] = 1 - overlap_fracs  # start
+    bboxes1[:, 3:] = 1.0  # end
+
+    bboxes2[:, :3] = 0.0  # start
+    bboxes2[:, 3:] = overlap_fracs  # end
+
+    return (crops_1, crops_2), (bboxes1, bboxes2)
+
+
 def make_overlapping_crops_w_bbox(
     batch, patch_size, min_overlap, max_overlap, debug=False
 ):
@@ -69,40 +125,6 @@ def make_overlapping_crops_w_bbox(
             start_1.append(_start1)
             start_2.append(_start2)
 
-        if debug:
-            # Debugging information
-            ol_ratio = np.prod(overlap / np.array(patch_size))
-            print(f"Overlap: {ol_ratio}, Start1: {start_1}, Start2: {start_2}")
-            print(f"{np.prod(overlap)} / {np.prod(patch_size)} = {ol_ratio}")
-
-            import matplotlib.pyplot as plt
-
-            # plot a 3d representation of the two crops by making a cuboid using the start points and patch size
-            fig = plt.figure()
-            ax = fig.add_subplot(111, projection="3d")
-            ax.set_title(
-                f"Batch {i + 1} - Overlap: {overlap}, Start1: {start_1}, Start2: {start_2}"
-            )
-            ax.set_xlabel("X")
-            ax.set_ylabel("Y")
-            ax.set_zlabel("Z")
-            # Create cuboids for the two crops
-            for start, color in zip([start_1, start_2], ["red", "blue"]):
-                ax.bar3d(
-                    start[0],
-                    start[1],
-                    start[2],
-                    patch_size[0],
-                    patch_size[1],
-                    patch_size[2],
-                    color=color,
-                    alpha=0.3,
-                    edgecolor="k",
-                )
-
-            plt.show()
-            # exit(0)
-
         # Extract crops
         crop1 = batch[
             i,
@@ -149,27 +171,55 @@ def make_overlapping_crops_w_bbox(
 
 
 if __name__ == "__main__":
+    from time import perf_counter_ns
+
     import matplotlib.pyplot as plt
 
-    print(random_overlap_tuple(0.2))
-
-    print(np.prod(random_overlap_tuple(0.2)))  # 0.2
+    # print(random_overlap_tuple(0.2))
+    #
+    # print(np.prod(random_overlap_tuple(0.2)))  # 0.2
 
     _b = 4
-    _x, _y, _z = 128, 128, 128
-    _xp, _yp, _zp = 64, 64, 64
+    _x, _y, _z = 256, 256, 256
+    _xp, _yp, _zp = 160, 160, 160
 
     _batch = np.random.rand(_b, 1, _x, _y, _z).astype(np.float32)
     _patch_size = (_xp, _yp, _zp)
     _min_ol = 0.4
     _max_ol = 0.8
 
-    (c1, c2), (bb1, bb2) = make_overlapping_crops_w_bbox(
-        _batch, _patch_size, _min_ol, _max_ol, debug=True
+    _ = make_overlapping_crops_w_bbox(
+        _batch, _patch_size, _min_ol, _max_ol, debug=False
     )
-    print(c1.shape)  # (8, 1, 64, 64, 64)
-    print(bb1[0], bb2[0])
 
+    times = []
+    for _ in range(10):
+        start_time = perf_counter_ns()
+        (c1, c2), (bb1, bb2) = make_overlapping_crops_w_bbox(
+            _batch, _patch_size, _min_ol, _max_ol, debug=False
+        )
+        end_time = perf_counter_ns()
+        print(f"Time taken: {(end_time - start_time) / 1e6} ms")
+        times.append(end_time - start_time)
+    print(f"Average time: {np.mean(times) / 1e6} ms")
+
+    _ = new_make_ol_crops_w_bbox(_batch, _patch_size, _min_ol, _max_ol, debug=False)
+
+    times = []
+    for _ in range(10):
+        start_time = perf_counter_ns()
+        (c1, c2), (bb1, bb2) = new_make_ol_crops_w_bbox(
+            _batch, _patch_size, _min_ol, _max_ol, debug=True
+        )
+        end_time = perf_counter_ns()
+        print(f"Time taken: {(end_time - start_time) / 1e6} ms")
+        times.append(end_time - start_time)
+    print(f"Average time: {np.mean(times) / 1e6} ms")
+
+    # print(c1.shape)  # (8, 1, 64, 64, 64)
+    # print(bb1[0], bb2[0])
+
+    exit(0)
     # show the bbox as rectangles for a 2d slice on each axis for all the crops
     _, _axs = plt.subplots(_b, 3 * 2, figsize=(30, 5 * _b))
     for _b_idx in range(_b):

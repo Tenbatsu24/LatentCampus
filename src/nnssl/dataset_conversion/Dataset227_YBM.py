@@ -64,7 +64,9 @@ if __name__ == "__main__":
 
         # print the sizes of all the images and the label
         label_image = sitk.ReadImage(label_path)
-        print(f"Size of label {label_path}: {sitk.GetArrayFromImage(label_image).shape}")
+        print(
+            f"Size of label {label_path}: {sitk.GetArrayFromImage(label_image).shape}"
+        )
 
         sizes.append(sitk.GetArrayFromImage(label_image).shape)
 
