@@ -358,6 +358,74 @@ class AlignedMAEFTNoConEvaLR3Trainer(AlignedMAEFTLR3EvaTrainer):
         )
 
 
+class GramAlignedMAEFTNoConEvaLR3Trainer(AlignedMAEFTLR3EvaTrainer):
+
+    def __init__(self, *args, **kwargs):
+        """
+        Initialize the FeatConDecAlignedMAEFTEvaTrainer with the given arguments.
+        This class is specifically designed for training models with feature contrastive loss.
+        """
+        super().__init__(*args, **kwargs)
+        self.teacher_mom = 0.995
+        self.total_batch_size = 4
+        self.initial_lr = 3e-4  # Initial learning rate for the optimizer
+        self.num_epochs = 50
+        self.mask_percentage = (
+            0.75  # Mask percentage for the feature contrastive decoder
+        )
+        self.warmup_duration_whole_net = 5  # Warmup duration for the whole network
+
+    def build_loss(self):
+        """
+        Builds the loss function for the model.
+        This method is overridden to provide specific loss logic.
+        """
+        from nnssl.training.loss.aligned_mae_loss import AlignedMAELoss
+
+        return AlignedMAELoss(
+            device=self.device,
+            recon_weight=5.0,
+            fg_cos_weight=2.0,
+            ntxent_weight=0.0,
+            fine_grained_contrastive=False,
+            fine_grained_cosine_regression=False,  # gram reg
+        )
+
+
+class GramAlignedMAEFTConEvaLR3Trainer(AlignedMAEFTLR3EvaTrainer):
+
+    def __init__(self, *args, **kwargs):
+        """
+        Initialize the FeatConDecAlignedMAEFTEvaTrainer with the given arguments.
+        This class is specifically designed for training models with feature contrastive loss.
+        """
+        super().__init__(*args, **kwargs)
+        self.teacher_mom = 0.995
+        self.total_batch_size = 4
+        self.initial_lr = 3e-4  # Initial learning rate for the optimizer
+        self.num_epochs = 50
+        self.mask_percentage = (
+            0.75  # Mask percentage for the feature contrastive decoder
+        )
+        self.warmup_duration_whole_net = 5  # Warmup duration for the whole network
+
+    def build_loss(self):
+        """
+        Builds the loss function for the model.
+        This method is overridden to provide specific loss logic.
+        """
+        from nnssl.training.loss.aligned_mae_loss import AlignedMAELoss
+
+        return AlignedMAELoss(
+            device=self.device,
+            recon_weight=5.0,
+            fg_cos_weight=2.0,
+            ntxent_weight=0.1,
+            fine_grained_contrastive=False,
+            fine_grained_cosine_regression=False,  # gram reg
+        )
+
+
 class ConMAEFTEvaLR3Trainer(AlignedMAEFTLR3EvaTrainer):
 
     def build_loss(self):
@@ -382,7 +450,6 @@ class AlignedConConMAEFTEvaTrainer(AlignedMAEFTLR3EvaTrainer):
             recon_weight=5.0,
             fg_cos_weight=0.2,
             ntxent_weight=0.1,
-            do_variance_normalisation=False,
             fine_grained_contrastive=True,
             out_size=5,
         )

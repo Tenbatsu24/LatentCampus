@@ -101,6 +101,7 @@ class AlignedMAELoss(torch.nn.Module):
         fg_cos_weight=0.5,
         ntxent_weight=0.1,
         fine_grained_contrastive: bool = False,
+        fine_grained_cosine_regression: bool = False,
     ):
         """
         Initialize the KVConsisConLoss with the given parameters.
@@ -121,6 +122,7 @@ class AlignedMAELoss(torch.nn.Module):
         self.fine_grained_contrastive = (
             fine_grained_contrastive  # whether to use fine-grained contrastive loss
         )
+        self.fine_grained_cosine_regression = fine_grained_cosine_regression
 
         self.recon_key = "recon"
         self.proj_key = "proj"
@@ -266,11 +268,26 @@ class AlignedMAELoss(torch.nn.Module):
                     tgt_latents_fg, "b c x y z -> (b x y z) c"
                 ),  # swapped assignment already done
             )
-            var = torch.tensor(var, dtype=torch.float, device=pred_latents_fg.device)
-        else:
+        elif self.fine_grained_cosine_regression:
             fg_cos_reg = (
                 2 - 2 * (pred_latents_fg * tgt_latents_fg).sum(dim=1).mean()
             )  # already normalized
+            var = (
+                torch.var(pred_latents_fg, dim=(0, 2, 3, 4), unbiased=False).mean()
+                / var_denom
+            )
+        else:
+            # Flatten into [B, N, C]
+            _x_p = rearrange(pred_latents_fg, "b c x y z -> b (x y z) c")  # [B, N, C]
+            _y_p = rearrange(tgt_latents_fg, "b c x y z -> b (x y z) c")  # [B, N, C]
+
+            # Compute Gram matrices for all batches in parallel
+            G_x = torch.bmm(_x_p.transpose(1, 2), _x_p)  # [B, C, C]
+            G_y = torch.bmm(_y_p.transpose(1, 2), _y_p)  # [B, C, C]
+
+            # Compute Gram regularization (mean squared difference)
+            fg_cos_reg = torch.mean((G_x - G_y) ** 2)
+
             var = (
                 torch.var(pred_latents_fg, dim=(0, 2, 3, 4), unbiased=False).mean()
                 / var_denom
@@ -347,8 +364,8 @@ if __name__ == "__main__":
     loss_fn = AlignedMAELoss(
         device,
         out_size=5,
-        do_variance_normalisation=False,
-        fine_grained_contrastive=True,
+        fine_grained_contrastive=False,
+        fine_grained_cosine_regression=False,
         recon_weight=1.0,
         fg_cos_weight=0.5,
         ntxent_weight=0.1,

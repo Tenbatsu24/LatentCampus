@@ -404,6 +404,44 @@ class AlignedMAEFTNoConTrainer(AlignedMAEFTTrainer):
         )
 
 
+class GramAlignedMAEFTNoConTrainer(AlignedMAEFTTrainer):
+
+    def build_loss(self):
+        """
+        Builds the loss function for the model.
+        This method is overridden to provide specific loss logic for low contrast ConMAE.
+        """
+        from nnssl.training.loss.aligned_mae_loss import AlignedMAELoss
+
+        return AlignedMAELoss(
+            device=self.device,
+            recon_weight=5.0,
+            fg_cos_weight=2.0,
+            ntxent_weight=0.0,
+            fine_grained_contrastive=False,
+            fine_grained_cosine_regression=False,  # gram reg
+        )
+
+
+class GramAlignedMAEFTConTrainer(AlignedMAEFTTrainer):
+
+    def build_loss(self):
+        """
+        Builds the loss function for the model.
+        This method is overridden to provide specific loss logic for low contrast ConMAE.
+        """
+        from nnssl.training.loss.aligned_mae_loss import AlignedMAELoss
+
+        return AlignedMAELoss(
+            device=self.device,
+            recon_weight=5.0,
+            fg_cos_weight=2.0,
+            ntxent_weight=0.1,
+            fine_grained_contrastive=False,
+            fine_grained_cosine_regression=False,  # gram reg
+        )
+
+
 class AlignedConConMAETrainer(AlignedMAETrainer):
 
     def __init__(self, *args, **kwargs):
@@ -426,7 +464,6 @@ class AlignedConConMAETrainer(AlignedMAETrainer):
             recon_weight=5.0,
             fg_cos_weight=0.5,
             ntxent_weight=0.1,
-            do_variance_normalisation=False,
             fine_grained_contrastive=True,
         )
 
@@ -441,7 +478,6 @@ class AlignedConConMAEFTTrainer(AlignedMAEFTTrainer):
             recon_weight=5.0,
             fg_cos_weight=0.2,
             ntxent_weight=0.1,
-            do_variance_normalisation=False,
             fine_grained_contrastive=True,
         )
 
@@ -472,7 +508,6 @@ class ConMAETrainer(AlignedConConMAETrainer):
             recon_weight=5.0,
             fg_cos_weight=0.0,
             ntxent_weight=0.1,
-            do_variance_normalisation=False,
             fine_grained_contrastive=False,
         )
 
