@@ -317,8 +317,8 @@ class ConsisMAE(ResidualEncoderUNet):
                 patch_latent, "(b w h d) c -> b c w h d", b=b, w=16, h=16, d=16
             )
         else:
-            patch_latent = None
-            image_latent = None
+            patch_latent = patch_latent
+            image_latent = image_latent
 
         return {
             "image_latent": image_latent,
@@ -382,6 +382,7 @@ class FeatureContrastiveDecoderAligned(ConsisMAE):
             if not only_last_stage_as_latent
             else features_per_stage[-1]
         )
+
         if self.use_projector:
             self.decoder_projector = nn.Sequential(
                 nn.Linear(
@@ -462,6 +463,7 @@ class ConsisEvaMAE(EvaMAE):
         patch_embed_size: Tuple[int, ...],
         output_channels: int,
         input_shape: Tuple[int, int, int] = None,
+        use_projector: bool = True,
         **kwargs,
     ):
         super().__init__(
@@ -497,38 +499,39 @@ class ConsisEvaMAE(EvaMAE):
 
         self.attention_pooling = nn.Linear(embed_dim, 1)
 
-        self.use_projector = True
+        self.use_projector = use_projector
 
-        self.projector = nn.Sequential(
-            nn.Linear(embed_dim, 2048),
-            nn.BatchNorm1d(2048),
-            nn.SiLU(),
-            nn.Linear(2048, 2048),
-            nn.BatchNorm1d(2048),
-            nn.SiLU(),
-            nn.Linear(2048, 2048),
-            nn.BatchNorm1d(2048),
-        )  # output layer
+        if self.use_projector:
+            self.projector = nn.Sequential(
+                nn.Linear(embed_dim, 2048),
+                nn.BatchNorm1d(2048),
+                nn.SiLU(),
+                nn.Linear(2048, 2048),
+                nn.BatchNorm1d(2048),
+                nn.SiLU(),
+                nn.Linear(2048, 2048),
+                nn.BatchNorm1d(2048),
+            )  # output layer
 
-        self.predictor = nn.Sequential(
-            nn.Linear(2048, 512),
-            nn.BatchNorm1d(512),
-            nn.SiLU(),
-            nn.Linear(512, 2048),
-        )
+            self.predictor = nn.Sequential(
+                nn.Linear(2048, 512),
+                nn.BatchNorm1d(512),
+                nn.SiLU(),
+                nn.Linear(512, 2048),
+            )
 
-        # initialize the projector weights
-        for m in self.projector.modules():
-            if isinstance(m, nn.Linear):
-                trunc_normal_(m.weight, std=0.02)
-                if m.bias is not None:
-                    nn.init.constant_(m.bias, 0)
+            # initialize the projector weights
+            for m in self.projector.modules():
+                if isinstance(m, nn.Linear):
+                    trunc_normal_(m.weight, std=0.02)
+                    if m.bias is not None:
+                        nn.init.constant_(m.bias, 0)
 
-        for m in self.predictor.modules():
-            if isinstance(m, nn.Linear):
-                trunc_normal_(m.weight, std=0.02)
-                if m.bias is not None:
-                    nn.init.constant_(m.bias, 0)
+            for m in self.predictor.modules():
+                if isinstance(m, nn.Linear):
+                    trunc_normal_(m.weight, std=0.02)
+                    if m.bias is not None:
+                        nn.init.constant_(m.bias, 0)
 
     def forward(self, x):
         # Encode patches
@@ -572,8 +575,8 @@ class ConsisEvaMAE(EvaMAE):
             )
         else:
             # projected = None
-            patch_latents = None
-            image_latents = None
+            patch_latents = rearrange(patch_latents, "b (w h d) c -> b c w h d", b=b, w=w, h=h, d=d)
+            # image_latents = image_latents
 
         # Decode with restored sequence and rope embeddings
         decoded, _ = self.decoder(restored_x)
