@@ -99,11 +99,11 @@ Please find the final challenge results at the link:
   * Primus-M Track: Position 1st
 
 ### FOMO60k Challenge Results
-* FOMO60K results: pending evaluation (Open Track only).
+* FOMO60K results: pending evaluation (Open Track and Segmentation only).
 * We are LatentCampus
-  * Task 1 - Infraction Detection: 
+  * Task 1 - Infraction Detection (limited attempt due to unfamiliarty): 
   * Task 2 - Meningioma SegmentationL: 
-  * Task 3 - Brain Age Regression: 
+  * Task 3 - Brain Age Regression (limited attempt due unfamiliarity): 
 
 ---
 
@@ -147,3 +147,4 @@ This repository is released under the [Creative Commons Attribution-NonCommercia
 ### Requirements
 
 All requirements are the same as in the original repository, including dependencies for PyTorch, einops, thop, and other libraries.
+
