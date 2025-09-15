@@ -467,7 +467,7 @@ class GramAlignedMAEFTConEvaLR3Trainer(AlignedMAEFTLR3EvaTrainer):
         )
 
 
-class GramAlignedMAEFTConNoProjEvaLR3Trainer(GramAlignedMAEFTNoConEvaLR3Trainer):
+class GramAlignedMAEFTConNoProjEvaLR3Trainer(GramAlignedMAEFTConEvaLR3Trainer):
 
     def __init__(self, *args, **kwargs):
         """
