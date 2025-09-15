@@ -223,6 +223,7 @@ class ConsisMAE(ResidualEncoderUNet):
         deep_supervision=False,
         only_last_stage_as_latent=False,
         use_projector=False,
+        use_projector_global=True,
         **kwargs,
     ):
         if kernel_sizes is None:
@@ -254,13 +255,15 @@ class ConsisMAE(ResidualEncoderUNet):
         self.v_adaptive_pool = nn.AdaptiveAvgPool3d((16, 16, 16))
 
         self.use_projector = use_projector
+        self.use_projector_global = use_projector_global
+
         if only_last_stage_as_latent:
             proj_in_dim = features_per_stage[-1]
         else:
             proj_in_dim = sum(features_per_stage)
         self.only_last_stage_as_latent = only_last_stage_as_latent
 
-        if self.use_projector:
+        if self.use_projector or self.use_projector_global:
             self.projector = nn.Sequential(
                 nn.Linear(proj_in_dim, 2048),  # this is technically a linear layer
                 nn.BatchNorm1d(2048, affine=False, track_running_stats=False),
@@ -316,6 +319,11 @@ class ConsisMAE(ResidualEncoderUNet):
             patch_latent = rearrange(
                 patch_latent, "(b w h d) c -> b c w h d", b=b, w=16, h=16, d=16
             )
+        elif self.use_projector_global:
+            image_latent = self.projector(image_latent)
+
+            if self.training:
+                image_latent = self.predictor(image_latent)
         else:
             patch_latent = patch_latent
             image_latent = image_latent
@@ -464,6 +472,7 @@ class ConsisEvaMAE(EvaMAE):
         output_channels: int,
         input_shape: Tuple[int, int, int] = None,
         use_projector: bool = True,
+        use_projector_global: bool = True,
         **kwargs,
     ):
         super().__init__(
@@ -500,8 +509,9 @@ class ConsisEvaMAE(EvaMAE):
         self.attention_pooling = nn.Linear(embed_dim, 1)
 
         self.use_projector = use_projector
+        self.use_projector_global = use_projector_global
 
-        if self.use_projector:
+        if self.use_projector or self.use_projector_global:
             self.projector = nn.Sequential(
                 nn.Linear(embed_dim, 2048),
                 nn.BatchNorm1d(2048),
@@ -573,6 +583,10 @@ class ConsisEvaMAE(EvaMAE):
             patch_latents = rearrange(
                 patch_latents, "(b w h d) c -> b c w h d", b=b, w=w, h=h, d=d
             )
+        elif self.use_projector_global:
+            image_latents = self.projector(image_latents)
+            if self.training:
+                image_latents = self.predictor(image_latents)
         else:
             # projected = None
             patch_latents = rearrange(patch_latents, "b (w h d) c -> b c w h d", b=b, w=w, h=h, d=d)
@@ -696,7 +710,7 @@ if __name__ == "__main__":
 
     import thop
 
-    from nnssl.architectures.architecture_registry import get_res_enc_l
+    # from nnssl.architectures.architecture_registry import get_res_enc_l
 
     _device = "cuda" if torch.cuda.is_available() else "cpu"
 
@@ -725,15 +739,16 @@ if __name__ == "__main__":
     input_tensor = torch.randn(2, 1, *input_shape).to(_device)
 
     # baseline - get_res_enc_l
-    model = get_res_enc_l(
-        num_input_channels=1,
-        num_output_channels=1,
-        deep_supervision=False,
-    )
+    # model = get_res_enc_l(
+    #     num_input_channels=1,
+    #     num_output_channels=1,
+    #     deep_supervision=False,
+    # )
+    model = ConsisMAE()
     model = model.to(_device)
     # make the decoder an identity function
     model.decoder = nn.Identity()
-    model.train(True)
+    model.train(False)
     if _device == "cuda":
         measure_memory(model, input_tensor)
     else:

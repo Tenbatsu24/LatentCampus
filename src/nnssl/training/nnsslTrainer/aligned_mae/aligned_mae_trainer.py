@@ -466,6 +466,31 @@ class GramAlignedMAEFTConTrainer(AlignedMAEFTTrainer):
         )
 
 
+class GramAlignedMAEFTConNoProjTrainer(GramAlignedMAEFTConTrainer):
+
+    def build_architecture_and_adaptation_plan(
+        self,
+        config_plan,
+        num_input_channels: int,
+        num_output_channels: int,
+        *args,
+        **kwargs,
+    ):
+        # ---------------------------- Create architecture --------------------------- #
+        architecture = ConsisMAE(
+            input_channels=num_input_channels,
+            num_classes=num_output_channels,
+            deep_supervision=False,
+            only_last_stage_as_latent=False,
+            use_projector=False,
+            use_projector_global=True,
+        )
+        # --------------------- Build associated adaptation plan --------------------- #
+        # no changes to original mae since projector can be thrown away
+        adapt_plan = self.save_adaption_plan(num_input_channels)
+        return architecture, adapt_plan
+
+
 class AlignedConConMAETrainer(AlignedMAETrainer):
 
     def __init__(self, *args, **kwargs):
