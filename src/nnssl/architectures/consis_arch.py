@@ -584,9 +584,11 @@ class ConsisEvaMAE(EvaMAE):
                 patch_latents, "(b w h d) c -> b c w h d", b=b, w=w, h=h, d=d
             )
         elif self.use_projector_global:
+            patch_latents = rearrange(patch_latents, "b (w h d) c -> b c w h d", b=b, w=w, h=h, d=d)
             image_latents = self.projector(image_latents)
             if self.training:
                 image_latents = self.predictor(image_latents)
+
         else:
             # projected = None
             patch_latents = rearrange(patch_latents, "b (w h d) c -> b c w h d", b=b, w=w, h=h, d=d)
