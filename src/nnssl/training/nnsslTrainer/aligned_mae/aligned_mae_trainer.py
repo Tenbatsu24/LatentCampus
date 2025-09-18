@@ -491,6 +491,35 @@ class GramAlignedMAEFTConNoProjTrainer(GramAlignedMAEFTConTrainer):
         return architecture, adapt_plan
 
 
+class GramAlignedMAEFTConNoProjAnisoTrainer(GramAlignedMAEFTConNoProjTrainer):
+
+    def __init__(self, *args, **kwargs):
+        super(GramAlignedMAEFTConNoProjAnisoTrainer, self).__init__(*args, **kwargs)
+        self.total_batch_size = 4
+        self.teacher_mom = 0.995
+        self.initial_lr = 1e-2
+        self.num_epochs = 250
+        self.mask_percentage = 0.75  # Default mask percentage for ConMAE
+        self.config_plan.patch_size = (256, 256, 32)
+
+    def build_loss(self):
+        """
+        Builds the loss function for the model.
+        This method is overridden to provide specific loss logic for low contrast ConMAE.
+        """
+        from nnssl.training.loss.aligned_mae_loss import AlignedMAELoss
+
+        return AlignedMAELoss(
+            out_size=(2, 7, 7),
+            device=self.device,
+            recon_weight=5.0,
+            fg_cos_weight=2.0,
+            ntxent_weight=0.1,
+            fine_grained_contrastive=False,
+            fine_grained_cosine_regression=False,  # gram reg
+        )
+
+
 class AlignedConConMAETrainer(AlignedMAETrainer):
 
     def __init__(self, *args, **kwargs):
