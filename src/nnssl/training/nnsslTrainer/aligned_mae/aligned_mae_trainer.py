@@ -390,6 +390,35 @@ class AlignedMAEFTTrainer(AlignedMAE128Trainer):
         )
 
 
+class AlignedMAEFTConAnisoTrainer(AlignedMAEFTTrainer):
+
+    def __init__(self, *args, **kwargs):
+        super(AlignedMAEFTConAnisoTrainer, self).__init__(*args, **kwargs)
+        self.total_batch_size = 4
+        self.teacher_mom = 0.995
+        self.initial_lr = 1e-2
+        self.num_epochs = 250
+        self.mask_percentage = 0.75  # Default mask percentage for ConMAE
+        self.config_plan.patch_size = (256, 256, 32)
+
+    def build_loss(self):
+        """
+        Builds the loss function for the model.
+        This method is overridden to provide specific loss logic for low contrast ConMAE.
+        """
+        from nnssl.training.loss.aligned_mae_loss import AlignedMAELoss
+
+        return AlignedMAELoss(
+            out_size=(2, 7, 7),
+            device=self.device,
+            recon_weight=5.0,
+            fg_cos_weight=1.0,
+            ntxent_weight=0.1,
+            fine_grained_contrastive=False,
+            fine_grained_cosine_regression=True,  # fine grained reg
+        )
+
+
 class AlignedMAEFTNoConTrainer(AlignedMAEFTTrainer):
 
     def build_loss(self):
@@ -601,6 +630,36 @@ class ConMAEFTTrainer(AlignedMAEFTTrainer):
 
         return AlignedMAELoss(
             device=self.device, recon_weight=5.0, fg_cos_weight=0.0, ntxent_weight=0.1
+        )
+
+
+class ConMAEFTAnisoTrainer(ConMAEFTTrainer):
+
+    def __init__(self, *args, **kwargs):
+        """
+        Initialize the ConMAETrainer with the given arguments.
+        """
+        super().__init__(*args, **kwargs)
+        self.total_batch_size = 4
+        self.teacher_mom = 0.995
+        self.initial_lr = 1e-2
+        self.num_epochs = 250
+        self.mask_percentage = 0.75  # Default mask percentage for ConMAE
+        self.config_plan.patch_size = (256, 256, 32)
+
+    def build_loss(self):
+        """
+        Builds the loss function for the model.
+        This method is overridden to provide specific loss logic for ConMAE.
+        """
+        from nnssl.training.loss.aligned_mae_loss import AlignedMAELoss
+
+        return AlignedMAELoss(
+            out_size=(2, 7, 7),
+            device=self.device,
+            recon_weight=5.0,
+            fg_cos_weight=0.0,
+            ntxent_weight=0.1,
         )
 
 
