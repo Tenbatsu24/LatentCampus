@@ -61,12 +61,12 @@ class BaseAlignedMAETrainer(BaseMAETrainer):
 
     @override
     def build_architecture_and_adaptation_plan(
-        self,
-        config_plan,
-        num_input_channels: int,
-        num_output_channels: int,
-        *args,
-        **kwargs,
+            self,
+            config_plan,
+            num_input_channels: int,
+            num_output_channels: int,
+            *args,
+            **kwargs,
     ):
         # ---------------------------- Create architecture --------------------------- #
         architecture = ConsisMAE(
@@ -94,15 +94,15 @@ class BaseAlignedMAETrainer(BaseMAETrainer):
         )
 
     def get_training_transforms(
-        self,
-        patch_size: Union[np.ndarray, Tuple[int]],
-        rotation_for_DA: dict,
-        mirror_axes: Tuple[int, ...],
-        do_dummy_2d_data_aug: bool,
-        order_resampling_data: int = 3,
-        order_resampling_seg: int = 1,
-        border_val_seg: int = -1,
-        use_mask_for_norm: List[bool] = None,
+            self,
+            patch_size: Union[np.ndarray, Tuple[int]],
+            rotation_for_DA: dict,
+            mirror_axes: Tuple[int, ...],
+            do_dummy_2d_data_aug: bool,
+            order_resampling_data: int = 3,
+            order_resampling_seg: int = 1,
+            border_val_seg: int = -1,
+            use_mask_for_norm: List[bool] = None,
     ):
         """
         Returns the training transforms for the model.
@@ -182,14 +182,14 @@ class BaseAlignedMAETrainer(BaseMAETrainer):
         if not update_bn:
             return  # update BN stat buffers if required
         for (n_s, m_s), (n_t, m_t) in zip(
-            student_model.named_modules(), teacher_model.named_modules()
+                student_model.named_modules(), teacher_model.named_modules()
         ):
             if isinstance(m_s, torch.nn.modules.batchnorm._NormBase) and n_s == n_t:
                 m_t.running_mean.data = (
-                    mom * m_t.running_mean.data + (1 - mom) * m_s.running_mean.data
+                        mom * m_t.running_mean.data + (1 - mom) * m_s.running_mean.data
                 )
                 m_t.running_var.data = (
-                    mom * m_t.running_var.data + (1 - mom) * m_s.running_var.data
+                        mom * m_t.running_var.data + (1 - mom) * m_s.running_var.data
                 )
 
     def shared_step(self, batch: dict, is_train: bool = True) -> dict:
@@ -287,12 +287,12 @@ class AlignedMAE128Trainer(BaseAlignedMAETrainer):
 
     @override
     def build_architecture_and_adaptation_plan(
-        self,
-        config_plan,
-        num_input_channels: int,
-        num_output_channels: int,
-        *args,
-        **kwargs,
+            self,
+            config_plan,
+            num_input_channels: int,
+            num_output_channels: int,
+            *args,
+            **kwargs,
     ):
         # ---------------------------- Create architecture --------------------------- #
         architecture = ConsisMAE(
@@ -332,12 +332,12 @@ class AlignedMAETrainer(AlignedMAE128Trainer):
         return AlignedMAELoss(device=self.device, recon_weight=5.0)
 
     def build_architecture_and_adaptation_plan(
-        self,
-        config_plan,
-        num_input_channels: int,
-        num_output_channels: int,
-        *args,
-        **kwargs,
+            self,
+            config_plan,
+            num_input_channels: int,
+            num_output_channels: int,
+            *args,
+            **kwargs,
     ):
         # ---------------------------- Create architecture --------------------------- #
         architecture = ConsisMAE(
@@ -419,6 +419,14 @@ class AlignedMAEFTConAnisoTrainer(AlignedMAEFTTrainer):
         )
 
 
+class AlignedMAEFTConAnisoB16Trainer(AlignedMAEFTConAnisoTrainer):
+
+    def __init__(self, *args, **kwargs):
+        super(AlignedMAEFTConAnisoB16Trainer, self).__init__(*args, **kwargs)
+        self.total_batch_size = 16
+        self.config_plan.patch_size = (128, 128, 32)
+
+
 class AlignedMAEFTNoConTrainer(AlignedMAEFTTrainer):
 
     def build_loss(self):
@@ -455,12 +463,12 @@ class GramAlignedMAEFTNoConTrainer(AlignedMAEFTTrainer):
 class GramAlignedMAEFTNoConNoProjTrainer(GramAlignedMAEFTNoConTrainer):
 
     def build_architecture_and_adaptation_plan(
-        self,
-        config_plan,
-        num_input_channels: int,
-        num_output_channels: int,
-        *args,
-        **kwargs,
+            self,
+            config_plan,
+            num_input_channels: int,
+            num_output_channels: int,
+            *args,
+            **kwargs,
     ):
         # ---------------------------- Create architecture --------------------------- #
         architecture = ConsisMAE(
@@ -498,12 +506,12 @@ class GramAlignedMAEFTConTrainer(AlignedMAEFTTrainer):
 class GramAlignedMAEFTConNoProjTrainer(GramAlignedMAEFTConTrainer):
 
     def build_architecture_and_adaptation_plan(
-        self,
-        config_plan,
-        num_input_channels: int,
-        num_output_channels: int,
-        *args,
-        **kwargs,
+            self,
+            config_plan,
+            num_input_channels: int,
+            num_output_channels: int,
+            *args,
+            **kwargs,
     ):
         # ---------------------------- Create architecture --------------------------- #
         architecture = ConsisMAE(
@@ -547,6 +555,14 @@ class GramAlignedMAEFTConNoProjAnisoTrainer(GramAlignedMAEFTConNoProjTrainer):
             fine_grained_contrastive=False,
             fine_grained_cosine_regression=False,  # gram reg
         )
+
+
+class GramAlignedMAEFTConNoProjAnisoB16Trainer(GramAlignedMAEFTConNoProjAnisoTrainer):
+
+    def __init__(self, *args, **kwargs):
+        super(GramAlignedMAEFTConNoProjAnisoB16Trainer, self).__init__(*args, **kwargs)
+        self.total_batch_size = 16
+        self.config_plan.patch_size = (128, 128, 32)
 
 
 class AlignedConConMAETrainer(AlignedMAETrainer):
@@ -663,6 +679,17 @@ class ConMAEFTAnisoTrainer(ConMAEFTTrainer):
         )
 
 
+class ConMAEFTAnisoB16Trainer(ConMAEFTAnisoTrainer):
+
+    def __init__(self, *args, **kwargs):
+        """
+        Initialize the ConMAETrainer with the given arguments.
+        """
+        super().__init__(*args, **kwargs)
+        self.total_batch_size = 16
+        self.config_plan.patch_size = (128, 128, 32)
+
+
 class FeatConDecAlignedMAEFTTrainer(ConMAETrainer):
 
     def __init__(self, *args, **kwargs):
@@ -680,12 +707,12 @@ class FeatConDecAlignedMAEFTTrainer(ConMAETrainer):
 
     @override
     def build_architecture_and_adaptation_plan(
-        self,
-        config_plan,
-        num_input_channels: int,
-        num_output_channels: int,
-        *args,
-        **kwargs,
+            self,
+            config_plan,
+            num_input_channels: int,
+            num_output_channels: int,
+            *args,
+            **kwargs,
     ):
         """
         Builds the architecture and adaptation plan for the model.
