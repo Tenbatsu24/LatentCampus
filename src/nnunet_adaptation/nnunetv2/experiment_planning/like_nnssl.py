@@ -143,6 +143,9 @@ def preprocess_like_nnssl(
     # -------------------------------- Adapt plan -------------------------------- #
     adapted_plans = deepcopy(downstream_plans_manager)
     config = list(adaptation_plan["pretrain_plan"]["configurations"].keys())[0]
+    used_patch_size = adaptation_plan["pretrain_plan"]["configurations"][config][
+        "patch_size"
+    ]
     pretrain_info = {
         "checkpoint_path": pt_ckpt,
         "checkpoint_name": pretrain_name,
@@ -151,9 +154,7 @@ def preprocess_like_nnssl(
         "keys_to_in_proj": adaptation_plan["keys_to_in_proj"],
         "key_to_lpe": adaptation_plan["key_to_lpe"],
         "pt_num_in_channels": adaptation_plan["pretrain_num_input_channels"],
-        "pt_used_patchsize": adaptation_plan["pretrain_plan"]["configurations"][config][
-            "patch_size"
-        ],
+        "pt_used_patchsize": used_patch_size,
         "pt_recommended_downstream_patchsize": adaptation_plan[
             "recommended_downstream_patchsize"
         ],
@@ -190,9 +191,7 @@ def preprocess_like_nnssl(
     # Needs to be overriden to be found lower down to call the correct preprocessor.
     adapted_config.configuration["preprocessor_name"] = "DefaultPreprocessor"
     adapted_config.configuration["architecture"] = architecture_details
-    adapted_config.configuration["patch_size"] = adaptation_plan[
-        "recommended_downstream_patchsize"
-    ]  # Overwrite patch size with pre-training patch size.
+    adapted_config.configuration["patch_size"] = used_patch_size  # Overwrite patch size with pre-training patch size.
     adapted_plans.plans["configurations"] = {"3d_fullres": adapted_config.configuration}
 
     plans_name = f"ptPlans__{pretrain_name}____{data_identifier}"
