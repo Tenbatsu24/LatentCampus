@@ -1,0 +1,40 @@
+cff-version: 1.2.0
+message: If you use this software, please cite both the article from preferred-citation and the software itself.
+authors:
+
+* family-names: Vaish
+  given-names: Puru
+* family-names: Meister
+  given-names: Felix
+* family-names: Heimann
+  given-names: Tobias
+* family-names: Brune
+  given-names: Christoph
+* family-names: Wolterink
+  given-names: Jelmer M.
+  title: 'Consistent View Alignment Improves Foundation Models for 3D Medical Image Segmentation'
+  version: 1.0.0
+  date-released: '2025-09-19'
+  preferred-citation:
+  authors:
+
+  * family-names: Vaish
+    given-names: Puru
+    orcid: "[https://orcid.org/0000-0002-5180-5293](https://orcid.org/0000-0002-5180-5293)"
+  * family-names: Meister
+    given-names: Felix
+  * family-names: Heimann
+    given-names: Tobias
+  * family-names: Brune
+    given-names: Christoph
+    orcid: "[https://orcid.org/0000-0003-0145-5069](https://orcid.org/0000-0003-0145-5069)"
+  * family-names: Wolterink
+    given-names: Jelmer M.
+    orcid: "[https://orcid.org/0000-0001-5505-475X](https://orcid.org/0000-0001-5505-475X)"
+    title: 'Consistent View Alignment Improves Foundation Models for 3D Medical Image Segmentation'
+    doi: 10.48550/arXiv.2509.13846
+    type: article
+    year: '2025'
+    month: 9
+    journal: arXiv
+    notes: 'arXiv:2509.13846'
