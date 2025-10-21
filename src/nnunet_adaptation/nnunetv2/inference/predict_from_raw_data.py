@@ -153,14 +153,26 @@ class nnUNetPredictor(object):
                 f"Unable to locate trainer class {trainer_name} in nnunetv2.training.nnUNetTrainer. "
                 f"Please place it there (in any .py file)!"
             )
-        network = trainer_class.build_network_architecture(
-            configuration_manager.network_arch_class_name,
-            configuration_manager.network_arch_init_kwargs,
-            configuration_manager.network_arch_init_kwargs_req_import,
-            num_input_channels,
-            plans_manager.get_label_manager(dataset_json).num_segmentation_heads,
-            enable_deep_supervision=False,
-        )
+
+        if "Pretrained" in trainer_name:
+            network = trainer_class.build_network_architecture(
+                configuration_manager.network_arch_class_name,
+                configuration_manager.network_arch_init_kwargs,
+                configuration_manager.network_arch_init_kwargs_req_import,
+                configuration_manager.patch_size,
+                num_input_channels,
+                plans_manager.get_label_manager(dataset_json).num_segmentation_heads,
+                enable_deep_supervision=False,
+            )
+        else:
+            network = trainer_class.build_network_architecture(
+                configuration_manager.network_arch_class_name,
+                configuration_manager.network_arch_init_kwargs,
+                configuration_manager.network_arch_init_kwargs_req_import,
+                num_input_channels,
+                plans_manager.get_label_manager(dataset_json).num_segmentation_heads,
+                enable_deep_supervision=False,
+            )
 
         self.plans_manager = plans_manager
         self.configuration_manager = configuration_manager
