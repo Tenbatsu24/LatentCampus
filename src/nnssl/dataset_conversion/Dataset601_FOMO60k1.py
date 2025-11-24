@@ -17,9 +17,9 @@ if __name__ == "__main__":
     this dataset does not copy the data into nnunet format and just links to existing data. The dataset can only be
     used from one machine because the paths in the dataset.json are hard coded
     """
-    extracted_ybm_dir = "."
-    nnunet_dataset_name = "YBM"
-    nnunet_dataset_id = 227
+    extracted_fomo_task_1_dir = str(Path(".").resolve())
+    nnunet_dataset_name = "FOMO60k1"
+    nnunet_dataset_id = 601
     dataset_name = f"Dataset{nnunet_dataset_id:03d}_{nnunet_dataset_name}"
     dataset_dir = join(nnUNet_raw, dataset_name)
     maybe_mkdir_p(dataset_dir)
@@ -28,29 +28,41 @@ if __name__ == "__main__":
     casenames = list(
         map(
             lambda _pth: str(_pth.name),
-            Path(extracted_ybm_dir).glob("BraTS-MET-*"),
+            Path(extracted_fomo_task_1_dir, "preprocessed").glob("sub_*"),
         )
     )
     for c in casenames:
+        last_modality_path = Path(extracted_fomo_task_1_dir, "preprocessed", c, "ses_1", "swi.nii.gz")
+
+        if not last_modality_path.exists():
+            # it is either a t2s or a swi file, so we check for t2s
+            last_modality_path = Path(extracted_fomo_task_1_dir, "preprocessed", c, "ses_1", "t2s.nii.gz")
+
+            if not last_modality_path.exists():
+                raise FileNotFoundError(
+                    f"Neither SWI nor T2S modality found for {c} in {extracted_fomo_task_1_dir}"
+                )
+            else:
+                last_modality = "t2s"
+
+        else:
+            last_modality = "swi"
+
         dataset[c] = {
-            "label": join(extracted_ybm_dir, c, f"{c}-seg.nii.gz"),
+            "label": join(extracted_fomo_task_1_dir, "labels", c, "ses_1", "seg.nii.gz"),
             "images": [
-                join(extracted_ybm_dir, c, f"{c}-t1c.nii.gz"),
-                join(extracted_ybm_dir, c, f"{c}-t1n.nii.gz"),
-                join(extracted_ybm_dir, c, f"{c}-t2f.nii.gz"),
-                join(extracted_ybm_dir, c, f"{c}-t2w.nii.gz"),
+                join(extracted_fomo_task_1_dir, "preprocessed", c, "ses_1", "adc.nii.gz"),
+                join(extracted_fomo_task_1_dir, "preprocessed", c, "ses_1", "dwi_b1000.nii.gz"),
+                join(extracted_fomo_task_1_dir, "preprocessed", c, "ses_1", "flair.nii.gz"),
+                join(extracted_fomo_task_1_dir, "preprocessed", c, "ses_1", f"{last_modality}.nii.gz"),
             ],
         }
 
     labels = {
         "background": 0,
-        "TumourNecrosis": 1,
-        "PeritumoralEdema": 2,
-        "ContrastEnhancingTumour": 3,
+        "infraction": 1,
     }
 
-    # resize all dwi to target spacing [1, 1, 1] and then resize all adc to dwi spacing
-    # target_spacing = np.array([1, 1, 1])
     for c in casenames:
         label_path = dataset[c]["label"]
         images = dataset[c]["images"]
@@ -63,6 +75,16 @@ if __name__ == "__main__":
             print(f"Size of {image_path}: {sizes[-1]}")
 
         # print the sizes of all the images and the label
+        if not Path(label_path).exists():
+            # create a an all zero label file since that means no infraction
+            reference_image = sitk.ReadImage(images[0])
+            empty_label = sitk.Image(reference_image.GetSize(), sitk.sitkUInt8)
+            empty_label.SetOrigin(reference_image.GetOrigin())
+            empty_label.SetSpacing(reference_image.GetSpacing())
+            empty_label.SetDirection(reference_image.GetDirection())
+            sitk.WriteImage(empty_label, label_path)
+            print(f"Created empty label for {c} at {label_path}")
+
         label_image = sitk.ReadImage(label_path)
         print(
             f"Size of label {label_path}: {sitk.GetArrayFromImage(label_image).shape}"
@@ -84,14 +106,14 @@ if __name__ == "__main__":
 
     generate_dataset_json(
         dataset_dir,
-        {0: "T1C", 1: "T1N", 2: "T2F", 3: "T2W"},
+        {0: "adc", 1: "dwi", 2: "flair", 3: "swi"},
         labels,
         num_training_cases=len(dataset),
         file_ending=".nii.gz",
         regions_class_order=None,
         dataset_name=dataset_name,
-        reference="https://www.nature.com/articles/s41597-024-03021-9",
-        license="see https://www.nature.com/articles/s41597-024-03021-9",
+        reference="https://www.synapse.org/Synapse:syn64895667/wiki/",
+        license="see https://www.synapse.org/Synapse:syn64895667/wiki/",
         dataset=dataset,
         description="This dataset does not copy the data into nnunet format and just links to existing data. "
         "The dataset can only be used from one machine because the paths in the dataset.json are hard coded",

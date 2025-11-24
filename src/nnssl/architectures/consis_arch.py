@@ -224,6 +224,7 @@ class ConsisMAE(ResidualEncoderUNet):
         only_last_stage_as_latent=False,
         use_projector=False,
         use_projector_global=True,
+        patch_latent_pooling=None,
         **kwargs,
     ):
         if kernel_sizes is None:
@@ -232,6 +233,8 @@ class ConsisMAE(ResidualEncoderUNet):
             nonlin_kwargs = {"inplace": True}
         if norm_op_kwargs is None:
             norm_op_kwargs = {"eps": 1e-5, "affine": True}
+        if patch_latent_pooling is None:
+            patch_latent_pooling = (4, 40, 40)
 
         super().__init__(
             input_channels=input_channels,
@@ -252,7 +255,8 @@ class ConsisMAE(ResidualEncoderUNet):
         )
 
         self.i_adaptive_pool = nn.AdaptiveAvgPool3d((1, 1, 1))
-        self.v_adaptive_pool = nn.AdaptiveAvgPool3d((16, 16, 16))
+        self.v_adaptive_pool = nn.AdaptiveAvgPool3d(patch_latent_pooling)
+        self.patch_latent_pooling = patch_latent_pooling
 
         self.use_projector = use_projector
         self.use_projector_global = use_projector_global
@@ -316,8 +320,9 @@ class ConsisMAE(ResidualEncoderUNet):
                 patch_latent = self.predictor(patch_latent)
                 image_latent = self.predictor(image_latent)
 
+            w, h, d = self.patch_latent_pooling
             patch_latent = rearrange(
-                patch_latent, "(b w h d) c -> b c w h d", b=b, w=16, h=16, d=16
+                patch_latent, "(b w h d) c -> b c w h d", b=b, w=w, h=h, d=d
             )
         elif self.use_projector_global:
             image_latent = self.projector(image_latent)
@@ -737,7 +742,7 @@ if __name__ == "__main__":
 
     #
     # Toy example for testing
-    input_shape = (64, 64, 64)
+    input_shape = (24, 320, 320)
     input_tensor = torch.randn(2, 1, *input_shape).to(_device)
 
     # baseline - get_res_enc_l
@@ -746,7 +751,7 @@ if __name__ == "__main__":
     #     num_output_channels=1,
     #     deep_supervision=False,
     # )
-    model = ConsisMAE()
+    model = ConsisMAE(patch_latent_pooling=(3, 36, 36))
     model = model.to(_device)
     # make the decoder an identity function
     model.decoder = nn.Identity()

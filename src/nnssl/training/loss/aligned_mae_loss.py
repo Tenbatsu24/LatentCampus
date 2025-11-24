@@ -248,7 +248,7 @@ class AlignedMAELoss(torch.nn.Module):
         ).mean()
         cw_std = cw_std / (var_denom**0.5)
 
-        # if latents is 5d tensor, i.e. [b, c, x_p, y_p, z_p], we need to align them for better consistency
+        # if latents is 5d tensor, i.e. [b, c, z_p, x_p, y_p], we need to align them for better consistency
         if pred_latents_fg.ndim == 5:
             pred_latents_fg = self.align_views(pred_latents_fg, rel_bboxes)
             tgt_latents_fg = self.align_views(tgt_latents_fg, rel_bboxes)

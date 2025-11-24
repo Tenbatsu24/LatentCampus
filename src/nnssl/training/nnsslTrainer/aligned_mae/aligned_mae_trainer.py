@@ -395,11 +395,11 @@ class AlignedMAEFTConAnisoTrainer(AlignedMAEFTTrainer):
     def __init__(self, *args, **kwargs):
         super(AlignedMAEFTConAnisoTrainer, self).__init__(*args, **kwargs)
         self.total_batch_size = 4
-        self.teacher_mom = 0.995
-        self.initial_lr = 1e-2
+        self.teacher_mom = 0.999
+        self.initial_lr = 1e-3
         self.num_epochs = 250
         self.mask_percentage = 0.75  # Default mask percentage for ConMAE
-        self.config_plan.patch_size = (256, 256, 32)
+        self.config_plan.patch_size = (24, 320, 320)
 
     def build_loss(self):
         """
@@ -409,7 +409,7 @@ class AlignedMAEFTConAnisoTrainer(AlignedMAEFTTrainer):
         from nnssl.training.loss.aligned_mae_loss import AlignedMAELoss
 
         return AlignedMAELoss(
-            out_size=(2, 7, 7),
+            out_size=(3, 36, 36),
             device=self.device,
             recon_weight=5.0,
             fg_cos_weight=1.0,
@@ -418,13 +418,23 @@ class AlignedMAEFTConAnisoTrainer(AlignedMAEFTTrainer):
             fine_grained_cosine_regression=True,  # fine grained reg
         )
 
+class AlignedMAEFTConAniso50Trainer(AlignedMAEFTConAnisoTrainer):
+
+    def __init__(self, *args, **kwargs):
+        super(AlignedMAEFTConAnisoTrainer, self).__init__(*args, **kwargs)
+        self.total_batch_size = 4
+        self.teacher_mom = 0.999
+        self.initial_lr = 1e-3
+        self.num_epochs = 50
+        self.mask_percentage = 0.75  # Default mask percentage for ConMAE
+        self.config_plan.patch_size = (24, 320, 320)
 
 class AlignedMAEFTConAnisoB16Trainer(AlignedMAEFTConAnisoTrainer):
 
     def __init__(self, *args, **kwargs):
         super(AlignedMAEFTConAnisoB16Trainer, self).__init__(*args, **kwargs)
         self.total_batch_size = 16
-        self.config_plan.patch_size = (128, 128, 32)
+        self.config_plan.patch_size = (32, 128, 128)
 
 
 class AlignedMAEFTNoConTrainer(AlignedMAEFTTrainer):
@@ -533,11 +543,12 @@ class GramAlignedMAEFTConNoProjAnisoTrainer(GramAlignedMAEFTConNoProjTrainer):
     def __init__(self, *args, **kwargs):
         super(GramAlignedMAEFTConNoProjAnisoTrainer, self).__init__(*args, **kwargs)
         self.total_batch_size = 4
-        self.teacher_mom = 0.995
-        self.initial_lr = 1e-2
+        self.teacher_mom = 0.999
+        self.initial_lr = 1e-3
         self.num_epochs = 250
         self.mask_percentage = 0.75  # Default mask percentage for ConMAE
-        self.config_plan.patch_size = (256, 256, 32)
+        self.config_plan.patch_size = (24, 320, 320)
+
 
     def build_loss(self):
         """
@@ -547,7 +558,7 @@ class GramAlignedMAEFTConNoProjAnisoTrainer(GramAlignedMAEFTConNoProjTrainer):
         from nnssl.training.loss.aligned_mae_loss import AlignedMAELoss
 
         return AlignedMAELoss(
-            out_size=(2, 7, 7),
+            out_size=(3, 36, 36),
             device=self.device,
             recon_weight=5.0,
             fg_cos_weight=2.0,
@@ -557,12 +568,24 @@ class GramAlignedMAEFTConNoProjAnisoTrainer(GramAlignedMAEFTConNoProjTrainer):
         )
 
 
+class GramAlignedMAEFTConNoProjAniso25Trainer(GramAlignedMAEFTConNoProjAnisoTrainer):
+
+    def __init__(self, *args, **kwargs):
+        super(GramAlignedMAEFTConNoProjAnisoTrainer, self).__init__(*args, **kwargs)
+        self.total_batch_size = 2
+        self.teacher_mom = 0.999
+        self.initial_lr = 1e-3
+        self.num_epochs = 25
+        self.mask_percentage = 0.75  # Default mask percentage for ConMAE
+        self.config_plan.patch_size = (32, 320, 320)
+
+
 class GramAlignedMAEFTConNoProjAnisoB16Trainer(GramAlignedMAEFTConNoProjAnisoTrainer):
 
     def __init__(self, *args, **kwargs):
         super(GramAlignedMAEFTConNoProjAnisoB16Trainer, self).__init__(*args, **kwargs)
         self.total_batch_size = 16
-        self.config_plan.patch_size = (128, 128, 32)
+        self.config_plan.patch_size = (32, 128, 128)
 
 
 class AlignedConConMAETrainer(AlignedMAETrainer):
@@ -657,11 +680,11 @@ class ConMAEFTAnisoTrainer(ConMAEFTTrainer):
         """
         super().__init__(*args, **kwargs)
         self.total_batch_size = 4
-        self.teacher_mom = 0.995
-        self.initial_lr = 1e-2
+        self.teacher_mom = 0.999
+        self.initial_lr = 1e-3
         self.num_epochs = 250
         self.mask_percentage = 0.75  # Default mask percentage for ConMAE
-        self.config_plan.patch_size = (256, 256, 32)
+        self.config_plan.patch_size = (24, 320, 320)
 
     def build_loss(self):
         """
@@ -671,7 +694,7 @@ class ConMAEFTAnisoTrainer(ConMAEFTTrainer):
         from nnssl.training.loss.aligned_mae_loss import AlignedMAELoss
 
         return AlignedMAELoss(
-            out_size=(2, 7, 7),
+            out_size=(3, 36, 36),
             device=self.device,
             recon_weight=5.0,
             fg_cos_weight=0.0,
@@ -687,7 +710,7 @@ class ConMAEFTAnisoB16Trainer(ConMAEFTAnisoTrainer):
         """
         super().__init__(*args, **kwargs)
         self.total_batch_size = 16
-        self.config_plan.patch_size = (128, 128, 32)
+        self.config_plan.patch_size = (32, 128, 128)
 
 
 class FeatConDecAlignedMAEFTTrainer(ConMAETrainer):

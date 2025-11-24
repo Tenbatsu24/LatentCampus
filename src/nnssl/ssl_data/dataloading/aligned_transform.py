@@ -90,7 +90,7 @@ class OverlapTransform(AbstractTransform):
                         do_rotation=True,
                         p_rot_per_axis=1,
                         do_scale=True,
-                        scale=(0.7, 1.4),
+                        scale=(0.8, 1.2),
                         border_mode_data="constant",
                         border_cval_data=0,
                         order_data=order_resampling_data,
@@ -103,15 +103,15 @@ class OverlapTransform(AbstractTransform):
                         p_rot_per_sample=0.2,
                         independent_scale_for_each_axis=False,
                     ),
-                    SimulateLowResolutionTransform(
-                        zoom_range=(0.5, 1),
-                        per_channel=True,
-                        p_per_channel=0.5,
-                        order_downsample=0,
-                        order_upsample=3,
-                        p_per_sample=0.1,
-                        ignore_axes=None,
-                    ),
+                    # SimulateLowResolutionTransform(
+                    #     zoom_range=(0.5, 1),
+                    #     per_channel=True,
+                    #     p_per_channel=0.5,
+                    #     order_downsample=0,
+                    #     order_upsample=3,
+                    #     p_per_sample=0.1,
+                    #     ignore_axes=None,
+                    # ),
                 ]
             )
 
@@ -136,11 +136,15 @@ class OverlapTransform(AbstractTransform):
                         multiplier_range=(0.75, 1.25), p_per_sample=0.15
                     ),
                     ContrastAugmentationTransform(p_per_sample=0.15),
-                    GammaTransform(
-                        (0.7, 1.5), True, True, retain_stats=True, p_per_sample=0.1
-                    ),
-                    GammaTransform(
-                        (0.7, 1.5), False, True, retain_stats=True, p_per_sample=0.3
+                    OneOf(
+                        [
+                            GammaTransform(
+                                (0.7, 1.5), True, True, retain_stats=True, p_per_sample=0.1
+                            ),
+                            GammaTransform(
+                                (0.7, 1.5), False, True, retain_stats=True, p_per_sample=0.3
+                            ),
+                        ]
                     ),
                 ]
             )
