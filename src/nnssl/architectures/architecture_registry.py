@@ -1,14 +1,59 @@
 from typing import Literal
 from torch import nn
-from dynamic_network_architectures.architectures.unet import ResidualEncoderUNet
+
+from dynamic_network_architectures.architectures.unet import (
+    PlainConvUNet,
+    ResidualEncoderUNet,
+)
 
 from nnssl.architectures.noskipResEncUNet import ResidualEncoderUNet_noskip
 
-
 SUPPORTED_ARCHITECTURES = Literal[
-    "ResEncL", "NoSkipResEncL" "PrimusS", "PrimusB", "PrimusM", "PrimusL"
+    "PlainConvUNet",
+    "ResEncL",
+    "NoSkipResEncL" "PrimusS",
+    "PrimusB",
+    "PrimusM",
+    "PrimusL",
 ]
 PRIMUS_SCALES = Literal["S", "M", "B", "L"]
+
+
+def get_plain_conv_unet(
+    num_input_channels: int, num_output_channels: int, deep_supervision: bool = False
+) -> PlainConvUNet:
+    """
+    Creates a plain convolutional U-Net architecture.
+    """
+    n_stages = 7
+    network = PlainConvUNet(
+        input_channels=num_input_channels,
+        n_stages=n_stages,
+        features_per_stage=[32, 64, 128, 256, 320, 320, 320],
+        conv_op=nn.Conv3d,
+        kernel_sizes=[[3, 3, 3] for _ in range(n_stages)],
+        strides=[
+            [1, 1, 1],
+            [1, 2, 2],
+            [2, 2, 2],
+            [2, 2, 2],
+            [1, 2, 2],
+            [1, 2, 2],
+            [1, 2, 2],
+        ],
+        num_classes=num_output_channels,
+        n_conv_per_stage=[2, 2, 2, 2, 2, 2, 2],
+        n_conv_per_stage_decoder=[2, 2, 2, 2, 2, 2],
+        conv_bias=True,
+        norm_op=nn.InstanceNorm3d,
+        norm_op_kwargs={"eps": 1e-5, "affine": True},
+        dropout_op=None,
+        dropout_op_kwargs=None,
+        nonlin=nn.LeakyReLU,
+        nonlin_kwargs={"inplace": True},
+        deep_supervision=deep_supervision,
+    )
+    return network
 
 
 def get_res_enc_l(

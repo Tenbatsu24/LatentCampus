@@ -13,6 +13,7 @@ from dynamic_network_architectures.architectures.abstract_arch import (
 
 from nnssl.architectures.architecture_registry import (
     SUPPORTED_ARCHITECTURES,
+    get_plain_conv_unet,
     get_res_enc_l,
     get_noskip_res_enc_l,
 )
@@ -34,7 +35,11 @@ def get_network_by_name(
     num_input_channels can differ depending on whether we do cascade. Its best to make this info available in the
     trainer rather than inferring it again from the plans here.
     """
-    if architecture_name == "ResEncL":
+    if architecture_name == "PlainConvUNet":
+        model = get_plain_conv_unet(
+            num_input_channels, num_output_channels, deep_supervision
+        )
+    elif architecture_name == "ResEncL":
         model = get_res_enc_l(num_input_channels, num_output_channels, deep_supervision)
     elif architecture_name == "NoSkipResEncL":
         model = get_noskip_res_enc_l(num_input_channels, num_output_channels)
@@ -73,7 +78,7 @@ def get_network_by_name(
         raise ValueError(f"Architecture {architecture_name} is not supported.")
 
     if encoder_only:
-        if architecture_name in ["ResEncL", "NoSkipResEncL"]:
+        if architecture_name in ["PlainConvUNet", "ResEncL", "NoSkipResEncL"]:
             model: ResidualEncoderUNet
             try:
                 model.decoder = torch.nn.Identity()

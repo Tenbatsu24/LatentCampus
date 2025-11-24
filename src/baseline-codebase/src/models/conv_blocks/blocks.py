@@ -44,7 +44,11 @@ class ConvDropoutNormNonlin(nn.Module):
 
         self.conv = self.conv_op(input_channels, output_channels, **self.conv_kwargs)
 
-        if self.dropout_op is not None and self.dropout_op_kwargs["p"] is not None and self.dropout_op_kwargs["p"] > 0:
+        if (
+            self.dropout_op is not None
+            and self.dropout_op_kwargs["p"] is not None
+            and self.dropout_op_kwargs["p"] > 0
+        ):
             self.dropout = self.dropout_op(**self.dropout_op_kwargs)
         else:
             self.dropout = None
@@ -181,7 +185,9 @@ class MultiLayerConvDropoutNormNonlin(nn.Module):
         self.conv_op = conv_op
         self.norm_op = norm_op
 
-        assert num_layers >= 1, "Number of layers must be at least 1, got {}".format(num_layers)
+        assert num_layers >= 1, "Number of layers must be at least 1, got {}".format(
+            num_layers
+        )
         self.num_layers = num_layers
 
         self.conv1 = ConvDropoutNormNonlin(
@@ -225,7 +231,9 @@ class MultiLayerConvDropoutNormNonlin(nn.Module):
     @staticmethod
     def get_block_constructor(n_layers):
         def _block(input_channels, output_channels, **kwargs):
-            return MultiLayerConvDropoutNormNonlin(input_channels, output_channels, num_layers=n_layers, **kwargs)
+            return MultiLayerConvDropoutNormNonlin(
+                input_channels, output_channels, num_layers=n_layers, **kwargs
+            )
 
         return _block
 
@@ -289,7 +297,14 @@ class DoubleLayerResBlock(nn.Module):
 
         if (conv_kwargs["stride"] != 1) or (input_channels != output_channels):
             self.downsample_skip = nn.Sequential(
-                conv_op(input_channels, output_channels, kernel_size=1, padding=0, stride=conv_kwargs["stride"], bias=False),
+                conv_op(
+                    input_channels,
+                    output_channels,
+                    kernel_size=1,
+                    padding=0,
+                    stride=conv_kwargs["stride"],
+                    bias=False,
+                ),
                 norm_op(output_channels, **norm_op_kwargs),
             )
         else:
@@ -365,10 +380,14 @@ class MultiLayerResBlock(nn.Module):
         self.conv_op = conv_op
         self.norm_op = norm_op
 
-        assert num_layers >= 1, "Number of layers must be at least 1, got {}".format(num_layers)
+        assert num_layers >= 1, "Number of layers must be at least 1, got {}".format(
+            num_layers
+        )
 
         assert conv_kwargs["stride"] == 1, "Stride must be 1 for residual blocks"
-        assert conv_kwargs["conv_dilation"] == 1, "Dilation must be 1 for residual blocks"
+        assert (
+            conv_kwargs["conv_dilation"] == 1
+        ), "Dilation must be 1 for residual blocks"
 
         self.num_layers = num_layers
 
@@ -387,7 +406,14 @@ class MultiLayerResBlock(nn.Module):
 
         if (conv_kwargs["stride"] != 1) or (input_channels != output_channels):
             self.downsample_skip = nn.Sequential(
-                conv_op(input_channels, output_channels, kernel_size=1, padding=0, stride=conv_kwargs["stride"], bias=False),
+                conv_op(
+                    input_channels,
+                    output_channels,
+                    kernel_size=1,
+                    padding=0,
+                    stride=conv_kwargs["stride"],
+                    bias=False,
+                ),
                 norm_op(output_channels, **norm_op_kwargs),
             )
         else:
@@ -446,6 +472,8 @@ class MultiLayerResBlock(nn.Module):
     @staticmethod
     def get_block_constructor(n_layers):
         def _block(input_channels, output_channels, **kwargs):
-            return MultiLayerResBlock(input_channels, output_channels, num_layers=n_layers, **kwargs)
+            return MultiLayerResBlock(
+                input_channels, output_channels, num_layers=n_layers, **kwargs
+            )
 
         return _block

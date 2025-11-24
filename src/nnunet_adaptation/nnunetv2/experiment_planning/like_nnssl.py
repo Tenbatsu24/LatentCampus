@@ -191,7 +191,9 @@ def preprocess_like_nnssl(
     # Needs to be overriden to be found lower down to call the correct preprocessor.
     adapted_config.configuration["preprocessor_name"] = "DefaultPreprocessor"
     adapted_config.configuration["architecture"] = architecture_details
-    adapted_config.configuration["patch_size"] = used_patch_size  # Overwrite patch size with pre-training patch size.
+    adapted_config.configuration["patch_size"] = (
+        used_patch_size  # Overwrite patch size with pre-training patch size.
+    )
     adapted_plans.plans["configurations"] = {"3d_fullres": adapted_config.configuration}
 
     plans_name = f"ptPlans__{pretrain_name}____{data_identifier}"

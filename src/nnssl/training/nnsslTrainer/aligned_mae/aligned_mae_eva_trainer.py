@@ -10,7 +10,6 @@ from typing_extensions import override
 
 from nnssl.architectures.consis_arch import (
     ConsisEvaMAE,
-    FeatureContrastiveDecoderAlignedEva,
 )
 from nnssl.utilities.helpers import dummy_context
 from nnssl.ssl_data.dataloading.aligned_transform import OverlapTransform
@@ -503,7 +502,7 @@ class GramAlignedMAEFTConNoProjEvaLR3Trainer(GramAlignedMAEFTConEvaLR3Trainer):
             init_values=self.init_value,
             scale_attn_inner=self.scale_attn_inner,
             use_projector=False,
-            use_projector_global=True
+            use_projector_global=True,
         )
         adapt_plan = self.save_adaption_plan(num_input_channels)
         return network, adapt_plan
@@ -534,59 +533,6 @@ class AlignedConConMAEFTEvaTrainer(AlignedMAEFTLR3EvaTrainer):
             fg_cos_weight=0.2,
             ntxent_weight=0.1,
             fine_grained_contrastive=True,
-            out_size=5,
-        )
-
-
-class FeatConDecAlignedMAEFTEvaTrainer(AlignedMAEFTLR3EvaTrainer):
-
-    def __init__(self, *args, **kwargs):
-        """
-        Initialize the FeatConDecAlignedMAEFTEvaTrainer with the given arguments.
-        This class is specifically designed for training models with feature contrastive loss.
-        """
-        super().__init__(*args, **kwargs)
-        self.teacher_mom = 0.995
-        self.total_batch_size = 4
-        self.initial_lr = 3e-4  # Initial learning rate for the optimizer
-        self.num_epochs = 50
-        self.mask_percentage = (
-            0.75  # Mask percentage for the feature contrastive decoder
-        )
-        self.warmup_duration_whole_net = 5  # Warmup duration for the whole network
-
-    @override
-    def build_architecture_and_adaptation_plan(
-        self, config_plan, num_input_channels, num_output_channels
-    ):
-        network = FeatureContrastiveDecoderAlignedEva(
-            input_channels=num_input_channels,
-            embed_dim=self.embed_dim,
-            patch_embed_size=self.vit_patch_size,
-            output_channels=num_output_channels,
-            input_shape=tuple(self.config_plan.patch_size),
-            encoder_eva_depth=self.encoder_eva_depth,
-            encoder_eva_numheads=self.encoder_eva_numheads,
-            decoder_eva_depth=self.decoder_eva_depth,
-            decoder_eva_numheads=self.decoder_eva_numheads,
-            patch_drop_rate=self.mask_percentage,
-            drop_path_rate=self.drop_path_rate,
-            attn_drop_rate=self.attention_drop_rate,
-            init_values=self.init_value,
-            scale_attn_inner=self.scale_attn_inner,
-        )
-        adapt_plan = self.save_adaption_plan(num_input_channels)
-        return network, adapt_plan
-
-    def build_loss(self):
-        from nnssl.training.loss.aligned_mae_loss import AlignedMAELoss
-
-        return AlignedMAELoss(
-            device=self.device,
-            recon_weight=5.0,
-            fg_cos_weight=0.5,
-            ntxent_weight=0.1,
-            fine_grained_contrastive=False,
             out_size=5,
         )
 

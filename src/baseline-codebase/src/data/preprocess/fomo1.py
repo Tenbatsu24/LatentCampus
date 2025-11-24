@@ -126,9 +126,7 @@ def convert_and_preprocess_task1(
 
     # Collect all subjects to process
     folder_names = [
-        f
-        for f in os.listdir(images_dir)
-        if os.path.isdir(join(images_dir, f, "ses_1"))
+        f for f in os.listdir(images_dir) if os.path.isdir(join(images_dir, f, "ses_1"))
     ]
 
     assert len(folder_names) > 0, "Did not collect any subjects to preprocess."

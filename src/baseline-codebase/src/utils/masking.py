@@ -25,7 +25,9 @@ def generate_random_mask(
     return up_mask
 
 
-def generate_1d_mask(x: torch.Tensor, mask_ratio: float, patch_size: int, out_type: type):
+def generate_1d_mask(
+    x: torch.Tensor, mask_ratio: float, patch_size: int, out_type: type
+):
     assert x.shape[1] in [1, 3], "Channel dim is not 1 or 3. Are you sure?"
     assert out_type in [int, bool]
 
@@ -71,9 +73,17 @@ def upsample_mask(mask: torch.Tensor, scale: int):
     assert len(mask.shape) in [3, 4]  # (B, H, W) or (B, H, W, Z)
 
     if len(mask.shape) == 3:
-        mask = mask.repeat_interleave(scale, dim=1).repeat_interleave(scale, dim=2)  # (B, H * scale, W * scale)
+        mask = mask.repeat_interleave(scale, dim=1).repeat_interleave(
+            scale, dim=2
+        )  # (B, H * scale, W * scale)
     else:
         # (B, H * scale, W * scale, Z * scale)
-        mask = mask.repeat_interleave(scale, dim=1).repeat_interleave(scale, dim=2).repeat_interleave(scale, dim=3)
+        mask = (
+            mask.repeat_interleave(scale, dim=1)
+            .repeat_interleave(scale, dim=2)
+            .repeat_interleave(scale, dim=3)
+        )
 
-    return mask.unsqueeze(1)  # (B, C, H * scale, W * scale) or (B, C, H * scale, W * scale, Z * scale)
+    return mask.unsqueeze(
+        1
+    )  # (B, C, H * scale, W * scale) or (B, C, H * scale, W * scale, Z * scale)

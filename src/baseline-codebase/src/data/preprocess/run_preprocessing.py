@@ -46,7 +46,10 @@ if __name__ == "__main__":
         "--taskid", type=int, required=True, help="Task ID to preprocess (1, 2, or 3)"
     )
     parser.add_argument(
-        "--source_path", type=str, required=True, help="Path to the source data directory"
+        "--source_path",
+        type=str,
+        required=True,
+        help="Path to the source data directory",
     )
     parser.add_argument(
         "--output_path",

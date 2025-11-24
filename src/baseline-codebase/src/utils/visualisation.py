@@ -52,7 +52,9 @@ def get_gif(x, y, y_hat, slice_dim, version_dir, epoch, desc=""):
 
     file_name = f"{path}/epoch_{epoch}.gif"
     # Create gif using some PIL magic
-    frames[0].save(file_name, save_all=True, append_images=frames[1:], duration=1000 // FPS, loop=0)
+    frames[0].save(
+        file_name, save_all=True, append_images=frames[1:], duration=1000 // FPS, loop=0
+    )
     gif = wandb.Video(file_name, format="gif", fps=FPS)
 
     plt.close("all")
@@ -73,7 +75,15 @@ def get_imgs(x, y, y_hat, slice_dim, n, desc="", idx=0):
     return [wandb_img(fig) for fig in figs]
 
 
-def get_figs(x: torch.Tensor, y: torch.Tensor, y_hat: torch.Tensor, slice_dim: int, n: Optional[int] = None, desc="", batch_idx: int = 0):
+def get_figs(
+    x: torch.Tensor,
+    y: torch.Tensor,
+    y_hat: torch.Tensor,
+    slice_dim: int,
+    n: Optional[int] = None,
+    desc="",
+    batch_idx: int = 0,
+):
     assert len(x.shape) == 5, x.shape  # (B, 1, X, Y, Z)
     assert len(y.shape) == 5, y.shape  # (B, 1, X, Y, Z)
     assert len(y_hat.shape) == 5, y_hat.shape  # (B, 1, X, Y, Z)

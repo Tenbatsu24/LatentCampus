@@ -1,10 +1,23 @@
 import logging
-from batchgenerators.utilities.file_and_folder_operations import join, subfiles, isfile, save_pickle, load_pickle
+from batchgenerators.utilities.file_and_folder_operations import (
+    join,
+    subfiles,
+    isfile,
+    save_pickle,
+    load_pickle,
+)
 from yucca.pipeline.configuration.configure_paths import PathConfig
-from yucca.pipeline.configuration.split_data import SplitConfig, simple_split, split_is_precomputed, get_file_names
+from yucca.pipeline.configuration.split_data import (
+    SplitConfig,
+    simple_split,
+    split_is_precomputed,
+    get_file_names,
+)
 
 
-def get_pretrain_split_config(method: str, idx: int, split_ratio: float, path_config: PathConfig):
+def get_pretrain_split_config(
+    method: str, idx: int, split_ratio: float, path_config: PathConfig
+):
     splits_path = join(path_config.task_dir, "splits.pkl")
 
     assert method in [
@@ -22,7 +35,9 @@ def get_pretrain_split_config(method: str, idx: int, split_ratio: float, path_co
             )
             return SplitConfig(splits, method, idx)
         else:
-            logging.warning("Generating new split since splits did not contain a split computed with the same parameters.")
+            logging.warning(
+                "Generating new split since splits did not contain a split computed with the same parameters."
+            )
     else:
         splits = {}
 

@@ -34,10 +34,16 @@ if __name__ == "__main__":
     )
     for c in casenames:
         dataset[c] = {
-            "label": join(extracted_fomo_task_1_dir, "labels", c, "ses_1", "label.nii.gz"),
+            "label": join(
+                extracted_fomo_task_1_dir, "labels", c, "ses_1", "label.nii.gz"
+            ),
             "images": [
-                join(extracted_fomo_task_1_dir, "preprocessed", c, "ses_1", "t1.nii.gz"),
-                join(extracted_fomo_task_1_dir, "preprocessed", c, "ses_1", "t2.nii.gz"),
+                join(
+                    extracted_fomo_task_1_dir, "preprocessed", c, "ses_1", "t1.nii.gz"
+                ),
+                join(
+                    extracted_fomo_task_1_dir, "preprocessed", c, "ses_1", "t2.nii.gz"
+                ),
             ],
         }
 
@@ -68,7 +74,9 @@ if __name__ == "__main__":
 
         # print the sizes of all the images and the label
         # make a dummy segmentation image with the same size as the images with label.txt number mapped to the class
-        label_txt = int(open(label_path.replace("label.nii.gz", "label.txt")).read().strip())
+        label_txt = int(
+            open(label_path.replace("label.nii.gz", "label.txt")).read().strip()
+        )
         print(f"Label txt for {label_path}: {label_txt}")
         if label_txt < 10:
             label_class = 0

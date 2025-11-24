@@ -130,7 +130,9 @@ class PretrainDataset(Dataset):
         # occur in large pretraining datasets.
         if np.isnan(data).any() or np.isinf(data).any():
             if "DISABLE_NAN_WARNING" not in os.environ:
-                print("A case contains NaNs or infs. We have corrected this, but consider handling this with different preprocessing or skipping affected cases.")
+                print(
+                    "A case contains NaNs or infs. We have corrected this, but consider handling this with different preprocessing or skipping affected cases."
+                )
                 print(f"Affected Case: {case}")
                 print("Set DISABLE_NAN_WARNING=1 to disable this warning.")
             data = np.nan_to_num(data, nan=0.0, posinf=1.0, neginf=0.0, copy=True)

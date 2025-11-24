@@ -62,10 +62,17 @@ class MedNeXt(YuccaNet):
             grn=grn,
         )
         if self.contrastive:
-            self.con_head = nn.Sequential(nn.AdaptiveAvgPool3d(1), nn.Flatten(), nn.Linear(dim, 512))
+            self.con_head = nn.Sequential(
+                nn.AdaptiveAvgPool3d(1), nn.Flatten(), nn.Linear(dim, 512)
+            )
 
         if self.rotation:
-            self.rot_head = nn.Sequential(nn.AdaptiveAvgPool3d(1), nn.Flatten(), nn.Linear(dim, 4), nn.Softmax(dim=1))
+            self.rot_head = nn.Sequential(
+                nn.AdaptiveAvgPool3d(1),
+                nn.Flatten(),
+                nn.Linear(dim, 4),
+                nn.Softmax(dim=1),
+            )
 
         # We dont use the mednext decoder during pretraining. Instantiate it here if you need it.
         self.rec_head = None
@@ -387,7 +394,9 @@ class MedNeXtDecoder(nn.Module):
             ]
         )
 
-        self.out_0 = OutBlock(in_channels=starting_filters, n_classes=self.output_channels, dim=dim)
+        self.out_0 = OutBlock(
+            in_channels=starting_filters, n_classes=self.output_channels, dim=dim
+        )
 
         if self.deep_supervision:
             raise NotImplementedError
@@ -436,7 +445,17 @@ class MedNeXtDecoderSSL(nn.Module):
         deep_supervision: bool = False,  # Can be used to test deep supervision
         do_res: bool = True,  # Can be used to individually test residual connection
         do_res_up_down: bool = True,  # Additional 'res' connection on up and down convs
-        block_counts: list = [3, 4, 8, 8, 8, 8, 8, 4, 3],  # Can be used to test staging ratio:
+        block_counts: list = [
+            3,
+            4,
+            8,
+            8,
+            8,
+            8,
+            8,
+            4,
+            3,
+        ],  # Can be used to test staging ratio:
         norm_type="group",
         grn=False,
     ):
@@ -561,7 +580,9 @@ class MedNeXtDecoderSSL(nn.Module):
             ]
         )
 
-        self.out_0 = OutBlock(in_channels=starting_filters, n_classes=self.output_channels, dim=dim)
+        self.out_0 = OutBlock(
+            in_channels=starting_filters, n_classes=self.output_channels, dim=dim
+        )
 
         if self.deep_supervision:
             raise NotImplementedError
@@ -631,7 +652,9 @@ def mednext_s3_lw_dec(
         prediction=False,
     )
 
-    net.rec_head = light_weight_decoder(output_channels=num_classes, starting_filters=32, use_skip_connections=False)
+    net.rec_head = light_weight_decoder(
+        output_channels=num_classes, starting_filters=32, use_skip_connections=False
+    )
     net.pred_head = None
 
     return net
@@ -662,12 +685,17 @@ def mednext_s3_std_dec(
     if reconstruction:
         assert not deep_supervision
         print("Using a standard unet decoder as reconstruction head")
-        net.rec_head = standard_decoder(output_channels=num_classes, starting_filters=32, use_skip_connections=False)
+        net.rec_head = standard_decoder(
+            output_channels=num_classes, starting_filters=32, use_skip_connections=False
+        )
 
     if prediction:
         print("Using a standard unet decoder as prediction head")
         net.pred_head = standard_decoder(
-            output_channels=num_classes, starting_filters=32, use_skip_connections=True, deep_supervision=deep_supervision
+            output_channels=num_classes,
+            starting_filters=32,
+            use_skip_connections=True,
+            deep_supervision=deep_supervision,
         )
 
     return net
@@ -714,7 +742,9 @@ def mednext_m3_lw_dec(
         prediction=False,
     )
 
-    net.rec_head = light_weight_decoder(output_channels=num_classes, starting_filters=32, use_skip_connections=False)
+    net.rec_head = light_weight_decoder(
+        output_channels=num_classes, starting_filters=32, use_skip_connections=False
+    )
     net.pred_head = None
 
     return net
@@ -742,11 +772,15 @@ def mednext_m3_std_dec(
 
     if reconstruction:
         print("Using a standard unet decoder as reconstruction head")
-        net.rec_head = standard_decoder(output_channels=num_classes, starting_filters=32, use_skip_connections=False)
+        net.rec_head = standard_decoder(
+            output_channels=num_classes, starting_filters=32, use_skip_connections=False
+        )
 
     if prediction:
         print("Using a standard unet decoder as prediction head")
-        net.pred_head = standard_decoder(output_channels=num_classes, starting_filters=32, use_skip_connections=True)
+        net.pred_head = standard_decoder(
+            output_channels=num_classes, starting_filters=32, use_skip_connections=True
+        )
 
     return net
 
@@ -792,7 +826,9 @@ def mednext_l3_lw_dec(
         prediction=False,
     )
 
-    net.rec_head = light_weight_decoder(output_channels=num_classes, starting_filters=32, use_skip_connections=False)
+    net.rec_head = light_weight_decoder(
+        output_channels=num_classes, starting_filters=32, use_skip_connections=False
+    )
     net.pred_head = None
 
     return net
@@ -820,10 +856,14 @@ def mednext_l3_std_dec(
 
     if reconstruction:
         print("Using a standard unet decoder as reconstruction head")
-        net.rec_head = standard_decoder(output_channels=num_classes, starting_filters=32, use_skip_connections=False)
+        net.rec_head = standard_decoder(
+            output_channels=num_classes, starting_filters=32, use_skip_connections=False
+        )
 
     if prediction:
         print("Using a standard unet decoder as prediction head")
-        net.pred_head = standard_decoder(output_channels=num_classes, starting_filters=32, use_skip_connections=True)
+        net.pred_head = standard_decoder(
+            output_channels=num_classes, starting_filters=32, use_skip_connections=True
+        )
 
     return net

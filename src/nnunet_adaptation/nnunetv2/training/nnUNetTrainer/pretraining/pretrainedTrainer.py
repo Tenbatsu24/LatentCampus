@@ -676,6 +676,7 @@ class PretrainedTrainer_150ep(PretrainedTrainer):
         self.warmup_duration_whole_net = 15  # lin increase whole network
         self.num_epochs = 150
 
+
 class PretrainedTrainer_150ep_50i(PretrainedTrainer):
 
     def __init__(

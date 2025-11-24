@@ -3,6 +3,7 @@ import torch
 from pathlib import Path
 from src.models.networks import resenc_l
 
+
 def get_in_out_mode(task):
     if task == 1:
         return 4, 2, "classification"
@@ -20,7 +21,7 @@ def initialise_model(path_to_model_weights, task):
         input_channels=input_channels,
         num_classes=num_classes,
         output_channels=num_classes,
-        deep_supervision=False
+        deep_supervision=False,
     )
 
     # remove 'model.' prefix if it exists in the state_dict keys
@@ -59,7 +60,10 @@ def convert_to_onnx(path_to_model_weights, task):
     # save it to /.../Task00{task}_FOMO{task}/onnx_models/LatentCampus_Task00{task}_v{version}.onnx
     path_to_dir = pathlib_path.parent.parent.parent / "onnx_models"
     path_to_dir.mkdir(parents=True, exist_ok=True)
-    path_to_save = path_to_dir / f"LatentCampus_Task00{task}_v{pathlib_path.parent.parent.name.split('_')[-1]}.onnx"
+    path_to_save = (
+        path_to_dir
+        / f"LatentCampus_Task00{task}_v{pathlib_path.parent.parent.name.split('_')[-1]}.onnx"
+    )
 
     # Create example inputs for exporting the model. The inputs should be a tuple of tensors.
     example_inputs = (torch.randn(1, input_channels, 96, 96, 96),)
@@ -73,9 +77,21 @@ def convert_to_onnx(path_to_model_weights, task):
 
 if __name__ == "__main__":
     import argparse
+
     parser = argparse.ArgumentParser(description="Convert PyTorch model to ONNX format")
-    parser.add_argument("--model_weights", type=str, required=True, help="Path to the model weights file")
-    parser.add_argument("--task", type=int, choices=[1, 3], required=True, help="Task number (1 for classification, 3 for regression)")
+    parser.add_argument(
+        "--model_weights",
+        type=str,
+        required=True,
+        help="Path to the model weights file",
+    )
+    parser.add_argument(
+        "--task",
+        type=int,
+        choices=[1, 3],
+        required=True,
+        help="Task number (1 for classification, 3 for regression)",
+    )
     args = parser.parse_args()
 
     onnx_model = convert_to_onnx(args.model_weights, args.task)

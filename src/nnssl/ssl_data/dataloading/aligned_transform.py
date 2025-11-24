@@ -139,10 +139,18 @@ class OverlapTransform(AbstractTransform):
                     OneOf(
                         [
                             GammaTransform(
-                                (0.7, 1.5), True, True, retain_stats=True, p_per_sample=0.1
+                                (0.7, 1.5),
+                                True,
+                                True,
+                                retain_stats=True,
+                                p_per_sample=0.1,
                             ),
                             GammaTransform(
-                                (0.7, 1.5), False, True, retain_stats=True, p_per_sample=0.3
+                                (0.7, 1.5),
+                                False,
+                                True,
+                                retain_stats=True,
+                                p_per_sample=0.3,
                             ),
                         ]
                     ),

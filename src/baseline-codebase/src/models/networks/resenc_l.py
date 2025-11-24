@@ -31,13 +31,21 @@ class MinusOneOneToZeroHundred(nn.Module):
 
 
 class ClsRegHead(nn.Module):
-    def __init__(self, in_channels, num_classes, num_layers=3, hidden_dim=512, dropout=0.5, **kwargs):
+    def __init__(
+        self,
+        in_channels,
+        num_classes,
+        num_layers=3,
+        hidden_dim=512,
+        dropout=0.5,
+        **kwargs,
+    ):
         super().__init__()
         self.num_layers = num_layers
 
         if num_layers == 1:
             self.fc = nn.Linear(in_channels, num_classes)
-            nn.init.kaiming_normal_(self.fc.weight, mode='fan_out', nonlinearity='relu')
+            nn.init.kaiming_normal_(self.fc.weight, mode="fan_out", nonlinearity="relu")
             if self.fc.bias is not None:
                 nn.init.constant_(self.fc.bias, 0)
         else:
@@ -50,12 +58,18 @@ class ClsRegHead(nn.Module):
                 layers.append(nn.SiLU(inplace=True))
                 if dropout > 0:
                     layers.append(nn.Dropout(dropout))
-            self.fc = nn.Sequential(*layers, nn.Linear(hidden_dim, num_classes, bias=False), MinusOneOneToZeroHundred())
+            self.fc = nn.Sequential(
+                *layers,
+                nn.Linear(hidden_dim, num_classes, bias=False),
+                MinusOneOneToZeroHundred(),
+            )
 
             # initialization of the fully connected layer
             for m in self.fc:
                 if isinstance(m, nn.Linear):
-                    nn.init.kaiming_normal_(m.weight, mode='fan_out', nonlinearity='relu')
+                    nn.init.kaiming_normal_(
+                        m.weight, mode="fan_out", nonlinearity="relu"
+                    )
                     if m.bias is not None:
                         nn.init.constant_(m.bias, 0)
 
@@ -78,7 +92,7 @@ class ResEncL(YuccaNet):
         deep_supervision: bool = False,
         conv_op=nn.Conv3d,
         norm_op=nn.InstanceNorm3d,
-        **kwargs
+        **kwargs,
     ):
         super().__init__()
         self.num_classes = num_classes
@@ -113,7 +127,7 @@ class ResEncL(YuccaNet):
                     in_channels=sum(self.num_features_per_stage),
                     num_classes=num_classes,
                     num_layers=3 if mode == "regression" else 1,
-                )
+                ),
             )
         else:
             raise ValueError(
@@ -129,14 +143,14 @@ class ResEncL(YuccaNet):
 
 
 def resenc_l(
-        mode: str = "segmentation",
-        input_channels: int = 1,
-        num_classes: int = 1,
-        output_channels: int = 1,
-        deep_supervision: bool = False,
-        conv_op=nn.Conv3d,
-        norm_op=nn.InstanceNorm3d,
-        **kwargs
+    mode: str = "segmentation",
+    input_channels: int = 1,
+    num_classes: int = 1,
+    output_channels: int = 1,
+    deep_supervision: bool = False,
+    conv_op=nn.Conv3d,
+    norm_op=nn.InstanceNorm3d,
+    **kwargs,
 ):
     """
     Factory function for ResEnc-L, compatible with finetuning code.
@@ -149,11 +163,11 @@ def resenc_l(
         deep_supervision=deep_supervision,
         conv_op=conv_op,
         norm_op=norm_op,
-        **kwargs
+        **kwargs,
     )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # from pathlib import Path
     #
     # _example_state_dict_path = Path("/mnt/c/Users/puruv/Projects/LatentCampus/models/CNN_ConMAE/cnn_conmae_only-weights.pth")
@@ -204,9 +218,11 @@ if __name__ == '__main__':
         input_channels=1,
         num_classes=1,  # Example for regression
         output_channels=1,
-        deep_supervision=False
+        deep_supervision=False,
     )
     _x = torch.randn(4, 1, 64, 64, 64)  # Example input tensor for regression
     output = model(_x)
-    print(output.shape)  # Should print the shape of the output tensor for regression, e.g., (4, 1)
+    print(
+        output.shape
+    )  # Should print the shape of the output tensor for regression, e.g., (4, 1)
     del model

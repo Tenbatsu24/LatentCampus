@@ -1,8 +1,16 @@
 from typing import Callable, Dict, List
-from batchgenerators.utilities.file_and_folder_operations import subfiles, join, save_pickle, isfile, load_pickle
+from batchgenerators.utilities.file_and_folder_operations import (
+    subfiles,
+    join,
+    save_pickle,
+    isfile,
+    load_pickle,
+)
 
 
-def ensure_splits_contains_split(task_dir: str, train_data_dir: str, split_creator: Callable[[List[str], Dict], Dict]):
+def ensure_splits_contains_split(
+    task_dir: str, train_data_dir: str, split_creator: Callable[[List[str], Dict], Dict]
+):
     splits_path = join(task_dir, "splits.pkl")
     files = subfiles(train_data_dir, join=False, suffix=".npy")
     assert len(files) > 0
@@ -21,7 +29,11 @@ def create_combination_split_file(files, splits, prefix1, prefix2):
     subkey1 = f"train_{prefix1}_val_{prefix2}"
     subkey2 = f"train_{prefix2}_val_{prefix1}"
 
-    if key in splits.keys() and subkey1 in splits[key].keys() and subkey2 in splits[key].keys():
+    if (
+        key in splits.keys()
+        and subkey1 in splits[key].keys()
+        and subkey2 in splits[key].keys()
+    ):
         return splits
     else:
         if key not in splits.keys():

@@ -1,7 +1,9 @@
 from typing import Literal
 
 
-def get_finetune_augmentation_params(preset: Literal["basic", "none", "yucca_default", "all"]) -> dict:
+def get_finetune_augmentation_params(
+    preset: Literal["basic", "none", "yucca_default", "all"],
+) -> dict:
     """ "
     Get an augmentation parameter dict from a preset name.
     """

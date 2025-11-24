@@ -32,11 +32,15 @@ if __name__ == "__main__":
         )
     )
     for c in casenames:
-        last_modality_path = Path(extracted_fomo_task_2_dir, "preprocessed", c, "ses_1", "swi.nii.gz")
+        last_modality_path = Path(
+            extracted_fomo_task_2_dir, "preprocessed", c, "ses_1", "swi.nii.gz"
+        )
 
         if not last_modality_path.exists():
             # it is either a t2s or a swi file, so we check for t2s
-            last_modality_path = Path(extracted_fomo_task_2_dir, "preprocessed", c, "ses_1", "t2s.nii.gz")
+            last_modality_path = Path(
+                extracted_fomo_task_2_dir, "preprocessed", c, "ses_1", "t2s.nii.gz"
+            )
 
             if not last_modality_path.exists():
                 raise FileNotFoundError(
@@ -49,11 +53,31 @@ if __name__ == "__main__":
             last_modality = "swi"
 
         dataset[c] = {
-            "label": join(extracted_fomo_task_2_dir, "labels", c, "ses_1", "seg.nii.gz"),
+            "label": join(
+                extracted_fomo_task_2_dir, "labels", c, "ses_1", "seg.nii.gz"
+            ),
             "images": [
-                join(extracted_fomo_task_2_dir, "preprocessed", c, "ses_1", "dwi_b1000.nii.gz"),
-                join(extracted_fomo_task_2_dir, "preprocessed", c, "ses_1", "flair.nii.gz"),
-                join(extracted_fomo_task_2_dir, "preprocessed", c, "ses_1", f"{last_modality}.nii.gz"),
+                join(
+                    extracted_fomo_task_2_dir,
+                    "preprocessed",
+                    c,
+                    "ses_1",
+                    "dwi_b1000.nii.gz",
+                ),
+                join(
+                    extracted_fomo_task_2_dir,
+                    "preprocessed",
+                    c,
+                    "ses_1",
+                    "flair.nii.gz",
+                ),
+                join(
+                    extracted_fomo_task_2_dir,
+                    "preprocessed",
+                    c,
+                    "ses_1",
+                    f"{last_modality}.nii.gz",
+                ),
             ],
         }
 

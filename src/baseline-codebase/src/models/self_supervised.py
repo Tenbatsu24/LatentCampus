@@ -128,8 +128,14 @@ class SelfSupervisedModel(L.LightningModule):
 
         loss = self.rec_loss(y_hat, y, mask=mask if self.rec_loss_masked_only else None)
 
-        if batch_idx == 0 and not self.disable_image_logging and not self.trainer.sanity_checking:
-            self._log_debug_images(x, y, y_hat, stage="train", file_paths=batch["file_path"], idx=0)
+        if (
+            batch_idx == 0
+            and not self.disable_image_logging
+            and not self.trainer.sanity_checking
+        ):
+            self._log_debug_images(
+                x, y, y_hat, stage="train", file_paths=batch["file_path"], idx=0
+            )
 
         assert loss is not None, "Loss is None"
         assert torch.isfinite(loss).all(), f"Loss is not finite: {loss}"
@@ -274,7 +280,9 @@ class SelfSupervisedModel(L.LightningModule):
     def _log_debug_images(self, x, y, y_hat, stage, file_paths, idx=0):
         examples = {}
         if self.current_epoch % 5 == 0:
-            imgs = viz.get_imgs(x, y, y_hat, slice_dim=0, n=4, desc=file_paths[idx], idx=idx)
+            imgs = viz.get_imgs(
+                x, y, y_hat, slice_dim=0, n=4, desc=file_paths[idx], idx=idx
+            )
             examples[f"{stage}/examples/imgs"] = imgs
 
         if examples != {}:

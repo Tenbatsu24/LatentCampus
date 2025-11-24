@@ -98,7 +98,9 @@ class DINOLoss(nn.Module):
         #    Now values are normalized and safe for exp()
         # ---------------------------------------------------------------
         Q = torch.exp(log_Q)  # [K, B_local]
-        Q = Q / Q.sum(dim=0, keepdim=True)  # Make sure the columns sum to 1 to be an assignment
+        Q = Q / Q.sum(
+            dim=0, keepdim=True
+        )  # Make sure the columns sum to 1 to be an assignment
 
         return Q.t()  # return [batch, prototypes]
 
@@ -150,8 +152,12 @@ class DINOLoss(nn.Module):
         if not ignore_diagonal:
             # All student-teacher crop pairs
             # Repeat student logits for each teacher crop and vice versa
-            student_logits_expanded = student_logits.unsqueeze(1).expand(-1, teacher_crops, -1, -1)  # [s, t, B, K]
-            teacher_labels_expanded = teacher_probs.argmax(dim=-1).unsqueeze(0).expand(student_crops, -1, -1)  # [s, t, B]
+            student_logits_expanded = student_logits.unsqueeze(1).expand(
+                -1, teacher_crops, -1, -1
+            )  # [s, t, B, K]
+            teacher_labels_expanded = (
+                teacher_probs.argmax(dim=-1).unsqueeze(0).expand(student_crops, -1, -1)
+            )  # [s, t, B]
 
             # Flatten to [s*t*B, K] and [s*t*B]
             logits = student_logits_expanded.reshape(-1, K)
@@ -159,10 +165,19 @@ class DINOLoss(nn.Module):
         else:
             # All pairs except diagonal (s == t)
             # Create mask to exclude diagonal
-            mask = ~torch.eye(student_crops, teacher_crops, dtype=torch.bool, device=student_logits.device)
+            mask = ~torch.eye(
+                student_crops,
+                teacher_crops,
+                dtype=torch.bool,
+                device=student_logits.device,
+            )
 
-            student_logits_expanded = student_logits.unsqueeze(1).expand(-1, teacher_crops, -1, -1)  # [s, t, B, K]
-            teacher_labels_expanded = teacher_probs.argmax(dim=-1).unsqueeze(0).expand(student_crops, -1, -1)  # [s, t, B]
+            student_logits_expanded = student_logits.unsqueeze(1).expand(
+                -1, teacher_crops, -1, -1
+            )  # [s, t, B, K]
+            teacher_labels_expanded = (
+                teacher_probs.argmax(dim=-1).unsqueeze(0).expand(student_crops, -1, -1)
+            )  # [s, t, B]
 
             # Apply mask and flatten
             logits = student_logits_expanded[mask].reshape(-1, K)
@@ -321,7 +336,8 @@ class DinoConsisLoss(torch.nn.Module):
         with torch.no_grad():
             var_denom = 1 / model_output[self.latent_key].shape[1]
             cw_std = torch.std(
-                F.normalize(model_output[self.latent_key].detach(), dim=1, eps=eps), dim=0
+                F.normalize(model_output[self.latent_key].detach(), dim=1, eps=eps),
+                dim=0,
             ).mean()
             cw_std = cw_std / (var_denom**0.5)
 
@@ -370,10 +386,16 @@ class DinoConsisLoss(torch.nn.Module):
             target[self.image_proj_pred_key].detach(),
         )
         tgt_latents_aa = tgt_latents_aa.roll(b, 0)
-        global_loss = 2 - 2 * (
-            F.normalize(pred_latents_aa, dim=-1, eps=eps) *
-            F.normalize(tgt_latents_aa, dim=-1, eps=eps)
-        ).sum(dim=1).mean()
+        global_loss = (
+            2
+            - 2
+            * (
+                F.normalize(pred_latents_aa, dim=-1, eps=eps)
+                * F.normalize(tgt_latents_aa, dim=-1, eps=eps)
+            )
+            .sum(dim=1)
+            .mean()
+        )
 
         loss = (
             self.recon_weight * recon_loss_huber
@@ -398,7 +420,9 @@ if __name__ == "__main__":
 
     _model_output = {
         "recon": torch.randn(8, 1, 64, 64, 64, requires_grad=True, device=device),
-        "patch_latent": torch.randn(8, 2048, 16, 16, 16, requires_grad=True, device=device),
+        "patch_latent": torch.randn(
+            8, 2048, 16, 16, 16, requires_grad=True, device=device
+        ),
         "proj_pred": torch.randn(8, 2048, requires_grad=True, device=device),
         "latent": torch.randn(8, 1120, requires_grad=True, device=device),
     }

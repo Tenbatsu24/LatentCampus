@@ -169,7 +169,7 @@ def main():
         "overfit_batches": args.overfit_batches,
         "check_val_every_n_epoch": args.check_val_every_n_epoch,
         "accumulate_grad_batches": args.accumulate_grad_batches,
-        "gradient_clip_val": 1.0
+        "gradient_clip_val": 1.0,
     }
 
     # Calculate training metrics based on the config
