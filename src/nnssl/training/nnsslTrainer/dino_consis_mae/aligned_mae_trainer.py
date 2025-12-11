@@ -16,7 +16,11 @@ from nnssl.utilities.helpers import dummy_context
 from nnssl.ssl_data.dataloading.aligned_transform import OverlapTransform
 from batchgenerators.utilities.file_and_folder_operations import save_json
 from nnssl.architectures.dino_consis_arch import DINOConsisPlainMAE, DINOConsisResMAE
-from nnssl.adaptation_planning.adaptation_plan import ArchitecturePlans, AdaptationPlan
+from nnssl.adaptation_planning.adaptation_plan import (
+    ArchitecturePlans,
+    AdaptationPlan,
+    DynamicArchitecturePlans,
+)
 from nnssl.training.nnsslTrainer.masked_image_modeling.BaseMAETrainer import (
     BaseMAETrainer,
 )
@@ -42,9 +46,9 @@ class BaseDinoConsisMAETrainer(BaseMAETrainer):
         self.teacher = None
         self.teacher_mom = 0.95  # Momentum for the teacher model update
         self.config_plan.patch_size = (
-            160,
-            160,
-            160,
+            128,
+            128,
+            128,
         )
 
     def build_loss(self):
@@ -55,7 +59,7 @@ class BaseDinoConsisMAETrainer(BaseMAETrainer):
         from nnssl.training.loss.dino_consis import DinoConsisLoss
 
         # Create the loss function
-        return DinoConsisLoss(device=self.device)
+        return DinoConsisLoss(device=self.device, fine_grained_cosine_regression=True)
 
     def on_validation_epoch_start(self):
         # self.network.eval()
@@ -285,18 +289,49 @@ class DinoConsisPlainMAETrainer(BaseDinoConsisMAETrainer):
         super().__init__(*args, **kwargs)
         self.total_batch_size = 4
 
+        self.architecture_kwargs: DynamicArchitecturePlans = DynamicArchitecturePlans(
+            **{
+                "n_stages": 7,
+                "features_per_stage": [32, 64, 128, 256, 320, 320, 320],
+                "conv_op": "torch.nn.modules.conv.Conv3d",
+                "strides": (
+                    (1, 1, 1),
+                    (1, 2, 2),
+                    (2, 2, 2),
+                    (2, 2, 2),
+                    (1, 2, 2),
+                    (1, 2, 2),
+                    (1, 2, 2),
+                ),
+                "kernel_sizes": [[1, 3, 3], *[[3, 3, 3] for _ in range(7 - 1)]],
+                "n_blocks_per_stage": [2, 2, 2, 2, 2, 2, 2],
+                "n_conv_per_stage_decoder": [2, 2, 2, 2, 2, 2],
+                "conv_bias": True,
+                "norm_op": "torch.nn.modules.instancenorm.InstanceNorm3d",
+                "norm_op_kwargs": {"eps": 1e-05, "affine": True},
+                "dropout_op": None,
+                "dropout_op_kwargs": None,
+                "nonlin": "torch.nn.LeakyReLU",
+                "nonlin_kwargs": {"inplace": True},
+            }
+        )
+
     def save_adaption_plan(self, num_input_channels):
-        arch_plans = ArchitecturePlans(arch_class_name="PlainConvUNet")
+        arch_plans = ArchitecturePlans(
+            arch_class_name="PlainConvUNet",
+            arch_kwargs=self.architecture_kwargs,
+        )
+
         adapt_plan = AdaptationPlan(
             architecture_plans=arch_plans,
             pretrain_plan=self.plan,
             pretrain_num_input_channels=num_input_channels,
             recommended_downstream_patchsize=self.recommended_downstream_patchsize,
             key_to_encoder="encoder.stages",
-            key_to_stem="encoder.stem",
+            key_to_stem="encoder.stages.0",
             keys_to_in_proj=(
-                "encoder.stem.convs.0.conv",
-                "encoder.stem.convs.0.all_modules.0",
+                "encoder.stages.0.0.convs.0.all_modules.0",
+                "encoder.stages.0.0.convs.0.conv",
             ),
         )
         save_json(adapt_plan.serialize(), self.adaptation_json_plan)
@@ -330,9 +365,9 @@ class DinoConsisPlainMAEAnisoTrainer(DinoConsisPlainMAETrainer):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.total_batch_size = 16
+        self.total_batch_size = 4
         self.initial_lr = 1e-3
-        self.config_plan.patch_size = (10, 320, 320)
+        self.config_plan.patch_size = (20, 320, 320)
         self.num_epochs = 50
 
     @override
@@ -357,6 +392,30 @@ class DinoConsisPlainMAEAnisoTrainer(DinoConsisPlainMAETrainer):
         # no changes to original mae since projector can be thrown away
         adapt_plan = self.save_adaption_plan(num_input_channels)
         return architecture, adapt_plan
+
+    def build_loss(self):
+        """
+        Builds the loss function for the model.
+        This method is overridden to provide specific loss logic.
+        """
+        from nnssl.training.loss.dino_consis import DinoConsisLoss
+
+        # Create the loss function
+        return DinoConsisLoss(
+            device=self.device,
+            out_size=(3, 12, 12),
+            fine_grained_cosine_regression=True,
+        )
+
+
+class DinoConsisPlainMAEAniso320Trainer(DinoConsisPlainMAEAnisoTrainer):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.total_batch_size = 4
+        self.initial_lr = 1e-2
+        self.config_plan.patch_size = (20, 320, 320)
+        self.num_epochs = 100
 
 
 class DinoConsisResMAETrainer(BaseDinoConsisMAETrainer):
@@ -437,3 +496,17 @@ class DinoConsisResMAEAnisoTrainer(DinoConsisResMAETrainer):
         # no changes to original mae since projector can be thrown away
         adapt_plan = self.save_adaption_plan(num_input_channels)
         return architecture, adapt_plan
+
+    def build_loss(self):
+        """
+        Builds the loss function for the model.
+        This method is overridden to provide specific loss logic.
+        """
+        from nnssl.training.loss.dino_consis import DinoConsisLoss
+
+        # Create the loss function
+        return DinoConsisLoss(
+            device=self.device,
+            out_size=(3, 12, 12),
+            fine_grained_cosine_regression=True,
+        )

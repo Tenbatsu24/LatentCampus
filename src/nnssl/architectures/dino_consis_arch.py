@@ -1,18 +1,12 @@
-from typing import Tuple
-
 import torch
 import torch.nn as nn
-from einops import rearrange
 
 from torch.nn.init import trunc_normal_
-
-from dynamic_network_architectures.building_blocks.eva import Eva
 from dynamic_network_architectures.architectures.unet import (
     PlainConvUNet,
     ResidualEncoderUNet,
 )
-
-from nnssl.architectures.evaMAE_module import EvaMAE
+from dynamic_network_architectures.building_blocks.unet_decoder import UNetDecoder
 
 
 class DINOHead(nn.Module):
@@ -73,6 +67,58 @@ def _build_mlp(
         return nn.Sequential(*layers)
 
 
+class MaskingPlainDecoder(UNetDecoder):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.dino_heads = nn.ModuleList(
+            [
+                DINOHead(
+                    self.encoder.output_channels[-(len(self.encoder.output_channels))],
+                    self.num_classes,
+                )
+            ]
+        )
+
+    def forward(self, skips, mask=None):
+        """
+        we expect to get the skips in the order they were computed, so the bottleneck should be the last entry
+        :param skips:
+        :param mask:
+        :return:
+        """
+        if mask is None:
+            return super().forward(skips)
+
+        lres_input = skips[-1]
+        seg_outputs = []
+        for s in range(len(self.stages)):
+            x = self.transpconvs[s](lres_input)
+            x = torch.cat((x, skips[-(s + 2)]), 1)
+            x = self.stages[s](x)
+            if self.deep_supervision:
+                raise NotImplementedError(
+                    f"MaskingPlainDecoder does not handle {self.deep_supervision=}"
+                )
+            elif s == (len(self.stages) - 1):
+                feat_last = x.permute(0, 2, 3, 4, 1)
+                selected_locs = feat_last[
+                    mask.unsqueeze(-1).expand_as(feat_last)
+                ].reshape(x.shape[0], -1, x.shape[1])
+                seg_outputs.append(self.dino_heads[-1](selected_locs))
+            lres_input = x
+
+        # invert seg outputs so that the largest segmentation prediction is returned first
+        seg_outputs = seg_outputs[::-1]
+
+        if not self.deep_supervision:
+            r = seg_outputs[0]
+        else:
+            r = seg_outputs
+        return r
+
+
 class DINOConsisPlainMAE(PlainConvUNet):
 
     def __init__(
@@ -91,7 +137,7 @@ class DINOConsisPlainMAE(PlainConvUNet):
             (1, 2, 2),
             (1, 2, 2),
         ),
-        num_classes=1,
+        num_classes=2**11,
         n_conv_per_stage=(2, 2, 2, 2, 2, 2, 2),
         n_conv_per_stage_decoder=(2, 2, 2, 2, 2, 2),
         conv_bias=True,
@@ -100,8 +146,6 @@ class DINOConsisPlainMAE(PlainConvUNet):
         nonlin=nn.LeakyReLU,
         nonlin_kwargs=None,
         deep_supervision=False,
-        use_projector=True,
-        patch_latent_pooling=None,
         **kwargs,
     ):
         if kernel_sizes is None:
@@ -110,8 +154,6 @@ class DINOConsisPlainMAE(PlainConvUNet):
             nonlin_kwargs = {"inplace": True}
         if norm_op_kwargs is None:
             norm_op_kwargs = {"eps": 1e-5, "affine": True}
-        if patch_latent_pooling is None:
-            patch_latent_pooling = (20, 20, 20)
 
         super().__init__(
             input_channels=input_channels,
@@ -131,80 +173,40 @@ class DINOConsisPlainMAE(PlainConvUNet):
             deep_supervision=deep_supervision,
         )
 
-        self.use_projector = use_projector
         self.i_adaptive_pool = nn.AdaptiveAvgPool3d((1, 1, 1))
-        self.v_adaptive_pool = nn.AdaptiveAvgPool3d(patch_latent_pooling)
-        self.patch_latent_pooling = patch_latent_pooling
 
         proj_in_dim = sum(features_per_stage)
 
         self.dino_head = DINOHead(
             in_dim=proj_in_dim,
+            out_dim=num_classes,
         )
         self.dino_head.init_weights()
 
-        if self.use_projector:
-            self.projector = nn.Sequential(
-                nn.Linear(proj_in_dim, 2048),  # this is technically a linear layer
-                nn.BatchNorm1d(2048, affine=False, track_running_stats=False),
-                nn.SiLU(),
-                nn.Linear(2048, 2048),
-                nn.BatchNorm1d(2048, affine=False, track_running_stats=False),
-                nn.SiLU(),
-                nn.Linear(2048, 2048),
-                nn.BatchNorm1d(2048, affine=False, track_running_stats=False),
-            )  # output layer
+        self.decoder = MaskingPlainDecoder(
+            self.encoder,
+            num_classes,
+            n_conv_per_stage_decoder,
+            deep_supervision,
+            nonlin_first=False,
+        )
 
-            self.predictor = nn.Sequential(
-                nn.Linear(2048, 512),
-                nn.BatchNorm1d(512, affine=False, track_running_stats=False),
-                nn.SiLU(),
-                nn.Linear(512, 2048),
-            )
-
-            # initialize the projector weights
-            for m in self.projector.modules():
-                if isinstance(m, nn.Linear):
-                    trunc_normal_(m.weight, std=0.02)
-                    if m.bias is not None:
-                        nn.init.constant_(m.bias, 0)
-
-            for m in self.predictor.modules():
-                if isinstance(m, nn.Linear):
-                    trunc_normal_(m.weight, std=0.02)
-                    if m.bias is not None:
-                        nn.init.constant_(m.bias, 0)
-
-    def forward(self, x):
+    def forward(self, x, mask=None):
         b = x.shape[0]
         skips = self.encoder(x)
-        decoded = self.decoder(skips)
+        print([s.shape for s in skips])
+        voxel_cls = self.decoder(skips, mask)
 
         image_latent = torch.concat(
             [self.i_adaptive_pool(s) for s in skips], dim=1
         ).reshape(b, -1)
-        patch_latent = torch.concat([self.v_adaptive_pool(s) for s in skips], dim=1)
 
-        patch_latent = rearrange(patch_latent, "b c w h d -> (b w h d) c")
-        patch_latent = self.dino_head(patch_latent)
-
-        w, h, d = self.patch_latent_pooling
-        patch_latent = rearrange(
-            patch_latent, "(b w h d) c -> b c w h d", b=b, w=w, h=h, d=d
-        )
-
-        if self.use_projector:
-            proj = self.projector(image_latent)
-            if self.training:
-                proj = self.predictor(proj)
-        else:
-            proj = image_latent
+        global_cls = self.dino_head(image_latent)
 
         return {
             "latent": image_latent,
-            "proj_pred": proj,
-            "patch_latent": patch_latent,
-            "recon": decoded,
+            "proj_pred": global_cls,
+            "patch_latent": voxel_cls,
         }
 
 
@@ -228,8 +230,6 @@ class DINOConsisResMAE(ResidualEncoderUNet):
         nonlin_kwargs=None,
         deep_supervision=False,
         only_last_stage_as_latent=False,
-        use_projector=True,
-        patch_latent_pooling=None,
         **kwargs,
     ):
         if kernel_sizes is None:
@@ -238,8 +238,6 @@ class DINOConsisResMAE(ResidualEncoderUNet):
             nonlin_kwargs = {"inplace": True}
         if norm_op_kwargs is None:
             norm_op_kwargs = {"eps": 1e-5, "affine": True}
-        if patch_latent_pooling is None:
-            patch_latent_pooling = (4, 40, 40)
 
         super().__init__(
             input_channels=input_channels,
@@ -259,10 +257,7 @@ class DINOConsisResMAE(ResidualEncoderUNet):
             deep_supervision=deep_supervision,
         )
 
-        self.use_projector = use_projector
         self.i_adaptive_pool = nn.AdaptiveAvgPool3d((1, 1, 1))
-        self.v_adaptive_pool = nn.AdaptiveAvgPool3d(patch_latent_pooling)
-        self.patch_latent_pooling = patch_latent_pooling
 
         if only_last_stage_as_latent:
             proj_in_dim = features_per_stage[-1]
@@ -276,205 +271,26 @@ class DINOConsisResMAE(ResidualEncoderUNet):
 
         self.dino_head.init_weights()
 
-        if self.use_projector:
-            self.projector = nn.Sequential(
-                nn.Linear(proj_in_dim, 2048),  # this is technically a linear layer
-                nn.BatchNorm1d(2048, affine=False, track_running_stats=False),
-                nn.SiLU(),
-                nn.Linear(2048, 2048),
-                nn.BatchNorm1d(2048, affine=False, track_running_stats=False),
-                nn.SiLU(),
-                nn.Linear(2048, 2048),
-                nn.BatchNorm1d(2048, affine=False, track_running_stats=False),
-            )  # output layer
-
-            self.predictor = nn.Sequential(
-                nn.Linear(2048, 512),
-                nn.BatchNorm1d(512, affine=False, track_running_stats=False),
-                nn.SiLU(),
-                nn.Linear(512, 2048),
-            )
-
-            # initialize the projector weights
-            for m in self.projector.modules():
-                if isinstance(m, nn.Linear):
-                    trunc_normal_(m.weight, std=0.02)
-                    if m.bias is not None:
-                        nn.init.constant_(m.bias, 0)
-
-            for m in self.predictor.modules():
-                if isinstance(m, nn.Linear):
-                    trunc_normal_(m.weight, std=0.02)
-                    if m.bias is not None:
-                        nn.init.constant_(m.bias, 0)
+        self.decoder = MaskingPlainDecoder(
+            self.encoder, num_classes, n_conv_per_stage_decoder, deep_supervision
+        )
 
     def forward(self, x):
         b = x.shape[0]
         skips = self.encoder(x)
-        decoded = self.decoder(skips)
+        print([s.shape for s in skips])
+        voxel_cls = self.decoder(skips)
 
-        if self.only_last_stage_as_latent:
-            skips = [skips[-1]]
         image_latent = torch.concat(
             [self.i_adaptive_pool(s) for s in skips], dim=1
         ).reshape(b, -1)
-        patch_latent = torch.concat([self.v_adaptive_pool(s) for s in skips], dim=1)
 
-        patch_latent = rearrange(patch_latent, "b c w h d -> (b w h d) c")
-        patch_latent = self.dino_head(patch_latent)
-
-        w, h, d = self.patch_latent_pooling
-        patch_latent = rearrange(
-            patch_latent, "(b w h d) c -> b c w h d", b=b, w=w, h=h, d=d
-        )
-
-        if self.use_projector:
-            proj = self.projector(image_latent)
-            if self.training:
-                proj = self.predictor(proj)
-        else:
-            proj = image_latent
+        global_cls = self.dino_head(image_latent)
 
         return {
             "latent": image_latent,
-            "proj_pred": proj,
-            "patch_latent": patch_latent,
-            "recon": decoded,
-        }
-
-
-class DINOConsisEvaMAE(EvaMAE):
-
-    def __init__(
-        self,
-        input_channels: int,
-        embed_dim: int,
-        patch_embed_size: Tuple[int, ...],
-        output_channels: int,
-        input_shape: Tuple[int, int, int] = None,
-        **kwargs,
-    ):
-        super().__init__(
-            input_channels=input_channels,
-            embed_dim=embed_dim,
-            patch_embed_size=patch_embed_size,
-            output_channels=output_channels,
-            input_shape=input_shape,
-            **kwargs,
-        )
-
-        if not self.use_decoder:
-            raise ValueError("ConsisEvaMAE requires a decoder to be used.")
-
-        self.feature_decoder = Eva(
-            embed_dim=embed_dim,
-            depth=2,  # eva_depth,
-            num_heads=16,  # eva_numheads,
-            ref_feat_shape=tuple(
-                [i // ds for i, ds in zip(input_shape, patch_embed_size)]
-            ),
-            num_reg_tokens=kwargs.get("num_register_tokens", 0),
-            use_rot_pos_emb=kwargs.get("use_rot_pos_emb", True),
-            use_abs_pos_emb=kwargs.get("use_abs_pos_emb", True),
-            mlp_ratio=kwargs.get("mlp_ratio", 4 * 2 / 3),
-            drop_path_rate=kwargs.get("drop_path_rate", 0),
-            patch_drop_rate=0,  # No drop in the decoder
-            proj_drop_rate=kwargs.get("proj_drop_rate", 0.0),
-            attn_drop_rate=kwargs.get("attn_drop_rate", 0.0),
-            init_values=kwargs.get("init_values", 0.1),
-            scale_attn_inner=kwargs.get("scale_attn_inner", False),
-        )
-
-        self.attention_pooling = nn.Linear(embed_dim, 1)
-
-        self.dino_head = DINOHead(
-            in_dim=embed_dim,
-        )
-        self.dino_head.init_weights()
-
-        if self.use_projector:
-            self.projector = nn.Sequential(
-                nn.Linear(embed_dim, 2048),  # this is technically a linear layer
-                nn.BatchNorm1d(2048, affine=False, track_running_stats=False),
-                nn.SiLU(),
-                nn.Linear(2048, 2048),
-                nn.BatchNorm1d(2048, affine=False, track_running_stats=False),
-                nn.SiLU(),
-                nn.Linear(2048, 2048),
-                nn.BatchNorm1d(2048, affine=False, track_running_stats=False),
-            )  # output layer
-
-            self.predictor = nn.Sequential(
-                nn.Linear(2048, 512),
-                nn.BatchNorm1d(512, affine=False, track_running_stats=False),
-                nn.SiLU(),
-                nn.Linear(512, 2048),
-            )
-
-            # initialize the projector weights
-            for m in self.projector.modules():
-                if isinstance(m, nn.Linear):
-                    trunc_normal_(m.weight, std=0.02)
-                    if m.bias is not None:
-                        nn.init.constant_(m.bias, 0)
-
-            for m in self.predictor.modules():
-                if isinstance(m, nn.Linear):
-                    trunc_normal_(m.weight, std=0.02)
-                    if m.bias is not None:
-                        nn.init.constant_(m.bias, 0)
-
-    def forward(self, x):
-        # Encode patches
-        x = self.down_projection(x)
-        b, c, w, h, d = x.shape
-        x = rearrange(x, "b c w h d -> b (w h d) c")
-
-        # Encode using EVA (internally applies masking with patch_drop_rate)
-        encoded, keep_indices = self.eva(x)
-        # print(f"Encoded shape: {encoded.shape}, Keep indices shape: {keep_indices.shape if keep_indices is not None else 'None'}")
-        num_patches = w * h * d
-
-        if keep_indices is None or not self.training:
-            feature_decoded = restored_x = encoded
-        else:
-            # Restore full sequence with mask tokens
-            restored_x = self.restore_full_sequence(encoded, keep_indices, num_patches)
-            feature_decoded, _ = self.feature_decoder(restored_x)
-
-        image_latent = torch.matmul(
-            torch.softmax(self.attention_pooling(feature_decoded), dim=1).transpose(
-                -1, -2
-            ),
-            feature_decoded,
-        ).squeeze(-2)
-
-        proj = self.projector(image_latent)
-        if self.training:
-            proj = self.predictor(proj)
-
-        patch_latents = feature_decoded
-        patch_latents = rearrange(
-            patch_latents, "b (w h d) c -> (b w h d) c", b=b, w=w, h=h, d=d
-        )
-        patch_latents = self.dino_head(patch_latents)
-        patch_latents = rearrange(
-            patch_latents, "(b w h d) c -> b c w h d", b=b, w=w, h=h, d=d
-        )
-
-        # Decode with restored sequence and rope embeddings
-        decoded, _ = self.decoder(restored_x)
-
-        # Project back to output shape
-        decoded = rearrange(decoded, "b (w h d) c -> b c w h d", b=b, h=w, w=h, d=d)
-        decoded = self.up_projection(decoded)
-
-        return {
-            "patch_latent": patch_latents,
-            "proj_pred": proj,
-            "latent": image_latent,
-            "recon": decoded,
-            "keep_indices": keep_indices,
+            "proj_pred": global_cls,
+            "patch_latent": voxel_cls,
         }
 
 
@@ -487,40 +303,43 @@ if __name__ == "__main__":
 
     _device = "cuda" if torch.cuda.is_available() else "cpu"
 
-    def measure_memory(model, input_tensor):
+    def measure_memory(model, *input_tensors):
         torch.cuda.reset_peak_memory_stats()
         with torch.no_grad():
-            _ = model(input_tensor)
+            _ = model(*input_tensors)
         mem_allocated = torch.cuda.memory_allocated() / (1024**2)  # in MB
         mem_peak = torch.cuda.max_memory_allocated() / (1024**2)  # in MB
         print(f"Current allocated memory: {mem_allocated:.2f} MB")
         print(f"Peak memory usage: {mem_peak:.2f} MB")
 
-    def measure_memory_cpu(model, input_tensor):
+    def measure_memory_cpu(model, *input_tensors):
         process = psutil.Process(os.getpid())
         mem_before = process.memory_info().rss / (1024**2)  # in MB
         with torch.no_grad():
-            _ = model(input_tensor)
+            _ = model(*input_tensors)
         mem_after = process.memory_info().rss / (1024**2)  # in MB
         print(f"Memory before: {mem_before:.2f} MB")
         print(f"Memory after: {mem_after:.2f} MB")
         print(f"Memory used by forward pass: {mem_after - mem_before:.2f} MB")
 
-    input_shape = (32, 320, 320)
-    input_tensor = torch.randn(2, 1, *input_shape).to(_device)
+    input_shape = (20, 128, 128)
+    input_tensor = torch.randn(1, 1, *input_shape, device=_device)
+    mask = torch.randint(0, 2, (1, *input_shape), device=_device).to(torch.bool)
 
-    model = DINOConsisPlainMAE(patch_latent_pooling=(3, 32, 32))
+    model = DINOConsisPlainMAE(num_classes=2**13)
+    model.train()
+    print(model)
     model = model.to(_device)
 
-    # make the decoder an identity function
-    model.decoder = nn.Identity()
-    model.train(False)
+    # # make the decoder an identity function
+    # model.decoder = nn.Identity()
+    # model.train(False)
     if _device == "cuda":
-        measure_memory(model, input_tensor)
+        measure_memory(model, input_tensor, mask)
     else:
-        measure_memory_cpu(model, input_tensor)
+        measure_memory_cpu(model, input_tensor, mask)
 
-    flops, params = thop.profile(model, inputs=(input_tensor,), verbose=False)
+    flops, params = thop.profile(model, inputs=(input_tensor, mask), verbose=False)
     print(f"FLOPs: {flops / 1e9:.2f} GFLOPs")
     print(f"Parameters: {params / 1e6:.2f} M")
     del model

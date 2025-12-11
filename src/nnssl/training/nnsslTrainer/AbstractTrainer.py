@@ -348,7 +348,8 @@ class AbstractBaseTrainer(ABC):
                 if new_k.startswith("."):
                     new_k = new_k[1:]
                 encoder_weights[new_k] = v
-            elif k.startswith(adapt_plan.key_to_stem):
+
+            if k.startswith(adapt_plan.key_to_stem):
                 new_k = k.replace(adapt_plan.key_to_stem, "")
                 if new_k.startswith("."):
                     new_k = new_k[1:]

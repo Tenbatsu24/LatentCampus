@@ -47,6 +47,11 @@ def get_network_from_plans(
     if deep_supervision is not None:
         if network_class != "Primus":
             architecture_kwargs["deep_supervision"] = deep_supervision
+        if network_class == "PlainConvUNet":
+            architecture_kwargs["n_conv_per_stage"] = architecture_kwargs[
+                "n_blocks_per_stage"
+            ]
+            del architecture_kwargs["n_blocks_per_stage"]
 
     network = nw_class(
         input_channels=input_channels,

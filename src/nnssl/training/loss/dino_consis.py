@@ -124,7 +124,7 @@ class DINOLoss(nn.Module):
         # 1) Normalize teacher with Sinkhorn
         teacher_probs = self.sinkhorn_knopp_teacher(teacher_logits)
 
-        # 2) Stack into [num_crops, batch, K]
+        # 2) Stack into [num_crops, batch, p, K]
         student_logits = torch.stack(torch.chunk(student_logits, 2, dim=0))
         teacher_probs = torch.stack(torch.chunk(teacher_probs, 2, dim=0))
 
@@ -355,18 +355,14 @@ class DinoConsisLoss(torch.nn.Module):
 
         if self.fine_grained_contrastive:
             patch_loss, logits, labels = self.contrastive_loss(
-                rearrange(pred_latents_fg, "b c x y z -> (b x y z) c"),
-                rearrange(
-                    tgt_latents_fg, "b c x y z -> (b x y z) c"
-                ),  # swapped assignment already done
+                rearrange(pred_latents_fg, "b c x y z -> b (x y z) c"),
+                rearrange(tgt_latents_fg, "b c x y z -> b (x y z) c"),
             )
-            acc = logits.argmax(dim=1).eq(labels).sum() / labels.size(0)
         elif self.fine_grained_cosine_regression:
             tgt_latents_fg = tgt_latents_fg.roll(b, 0)
             patch_loss = (
                 2 - 2 * (pred_latents_fg * tgt_latents_fg).sum(dim=1).mean()
             )  # already normalized
-            acc = torch.tensor(0.0, device=patch_loss.device, dtype=patch_loss.dtype)
         else:
             tgt_latents_fg = tgt_latents_fg.roll(b, 0)
             # Flatten into [B, N, C]
@@ -379,23 +375,15 @@ class DinoConsisLoss(torch.nn.Module):
 
             # Compute Gram regularization (mean squared difference)
             patch_loss = torch.mean((G_x - G_y) ** 2)
-            acc = torch.tensor(0.0, device=patch_loss.device, dtype=patch_loss.dtype)
 
         pred_latents_aa, tgt_latents_aa = (
             model_output[self.image_proj_pred_key],
             target[self.image_proj_pred_key].detach(),
         )
-        tgt_latents_aa = tgt_latents_aa.roll(b, 0)
-        global_loss = (
-            2
-            - 2
-            * (
-                F.normalize(pred_latents_aa, dim=-1, eps=eps)
-                * F.normalize(tgt_latents_aa, dim=-1, eps=eps)
-            )
-            .sum(dim=1)
-            .mean()
+        global_loss, logits, labels = self.contrastive_loss(
+            pred_latents_aa, tgt_latents_aa
         )
+        acc = logits.argmax(dim=1).eq(labels).sum() / labels.size(0)
 
         loss = (
             self.recon_weight * recon_loss_huber
@@ -456,8 +444,8 @@ if __name__ == "__main__":
     loss_fn = DinoConsisLoss(
         device,
         out_size=5,
-        fine_grained_contrastive=True,
-        fine_grained_cosine_regression=False,
+        fine_grained_contrastive=False,
+        fine_grained_cosine_regression=True,
         recon_weight=1.0,
         cos_reg_weight=1.0,
         ntxent_weight=1.0,
